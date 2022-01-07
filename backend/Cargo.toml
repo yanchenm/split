@@ -3,7 +3,15 @@ name = "backend"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "backend"
+path = "src/main.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rocket = "0.5.0-rc.1"
+sqlx = { version = "0.5", features = [ "runtime-tokio-native-tls" , "mysql" ] }
+tokio = { version = "1", features = ["full"] }
+anyhow = "1.0"
+dotenv = "0.15.0"
