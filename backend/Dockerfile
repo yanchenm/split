@@ -14,4 +14,4 @@ RUN cargo install --path .
 ENV PORT 8080
 
 # Run the web service on container startup.
-CMD ["backend"]
+CMD ROCKET_PORT=$PORT backend
