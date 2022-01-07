@@ -1,4 +1,10 @@
 steps:
+  # Cache intermediate artifacts
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      - --destination=gcr.io/$PROJECT_ID/image
+      - --cache=true
+      - --cache-ttl=96h
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA', './backend']
