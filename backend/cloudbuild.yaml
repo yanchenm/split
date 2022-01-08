@@ -3,7 +3,8 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA', './backend']
     secretEnv: ["DB_HOST", "DB_USER", "DB_PASSWORD"]
-    env: ["DATABASE_URL=mysql://$${DB_USER}:$${DB_PASSWORD}@$${DB_HOST}:${_DB_PORT}/${_DB_NAME}"]
+    env: 
+     - "DATABASE_URL=mysql://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:${_DB_PORT}/${_DB_NAME}"
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA']
