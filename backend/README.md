@@ -1,7 +1,7 @@
 # split-backend
 
 To run locally:
-```aidl
+```shell
 $ docker build -t split-backend .
 $ docker run -dp 8000:8000 split-backend
 ```
