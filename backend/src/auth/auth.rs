@@ -1,6 +1,7 @@
 use chrono::prelude::*;
 use ethers::abi::ethereum_types::H160;
 use ethers::core::types::Signature;
+use ethers::utils::hex::ToHex;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 use std::marker::PhantomData;
@@ -60,7 +61,7 @@ fn auth_token_is_valid(signed_message: &str, epoch_signed_time: &str) -> (Authed
     }
 
     // Add our specific prefix to user-passed
-    let full_expected_signed_message = &*format!("{}{}", "Split app login: ", epoch_signed_time);
+    let full_expected_signed_message = &*format!("Split app login: {}", epoch_signed_time);
 
     match signature.recover(full_expected_signed_message) {
         Err(_) => return (AuthedState::Error, H160::zero()),
@@ -84,7 +85,7 @@ impl<'r> FromRequest<'r> for AuthedUser<'r> {
                 let (valid, address): (AuthedState, H160) = auth_token_is_valid(key, message);
                 if matches!(valid, AuthedState::Authorized) {
                     Outcome::Success(AuthedUser {
-                        address: address.to_string(),
+                        address: format!("0x{}", address.encode_hex::<String>()),
                         phantom: PhantomData,
                     })
                 } else if matches!(valid, AuthedState::Expired) {
