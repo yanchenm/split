@@ -1,3 +1,4 @@
+use crate::auth::auth::AuthedUser;
 use crate::db::users;
 use crate::utils::responders::StringResponseWithStatus;
 use rocket::http::Status;
@@ -8,10 +9,18 @@ use sqlx::MySqlPool;
 use crate::models::user::User;
 
 #[post("/", format = "json", data = "<new_user>")]
-pub async fn create_user(
+pub async fn create_user<'r>(
     new_user: Json<User>,
     pool: &State<MySqlPool>,
+    user: AuthedUser<'r>,
 ) -> StringResponseWithStatus {
+    if user.address != new_user.address.as_str() {
+        return StringResponseWithStatus {
+            status: Status::BadRequest,
+            message: "User provided does not match authentication provided.".to_string(),
+        };
+    }
+
     // Check if the user already exists
     match users::get_user_by_address(pool, new_user.address.as_str()).await {
         Ok(Some(_)) => {
