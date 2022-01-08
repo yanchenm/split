@@ -13,7 +13,7 @@ const Dashboard: NextPage = () => {
   const wallet = useWallet();
 
   return (
-    <div>
+    <div className="font-default">
       <h1>Dashboard</h1> 
       {wallet.isConnected() ? wallet.account : "Wallet not connected"}
     </div>

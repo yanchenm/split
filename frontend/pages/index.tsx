@@ -34,7 +34,7 @@ const Home: NextPage = () => {
   */
 
   return (
-    <div className="bg-slate-800 h-screen">
+    <div className="font-default bg-slate-800 h-screen">
       <div className="flex justify-between p-10">
         <h1 className="text-3xl font-bold text-slate-300">Web3Split</h1>
         <Button clickHandler={connectAndRedirect} >
