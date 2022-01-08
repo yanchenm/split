@@ -80,10 +80,12 @@ impl<'r> FromRequest<'r> for AuthedUser<'r> {
             Some(key) => key,
         };
 
-        match req.headers().get_one("authorization") {
+        match req.headers().get_one("Authorization") {
             None => Outcome::Failure((Status::BadRequest, AuthedUserError::Missing)),
             Some(key) => {
-                let (valid, address): (AuthedState, H160) = auth_token_is_valid(key, message);
+                let stripped_key = key.trim_start_matches("Bearer ");
+                let (valid, address): (AuthedState, H160) =
+                    auth_token_is_valid(stripped_key, message);
                 if matches!(valid, AuthedState::Authorized) {
                     Outcome::Success(AuthedUser {
                         address: format!("0x{}", address.encode_hex::<String>()),
