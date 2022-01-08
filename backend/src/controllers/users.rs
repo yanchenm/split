@@ -56,3 +56,21 @@ pub async fn create_user<'r>(
         },
     }
 }
+
+#[get("/<address>")]
+pub async fn get_user_by_address(
+    address: String,
+    pool: &State<MySqlPool>,
+) -> Result<Json<User>, StringResponseWithStatus> {
+    match users::get_user_by_address(pool, address.as_str()).await {
+        Ok(Some(user)) => Ok(Json(user)),
+        Ok(None) => Err(StringResponseWithStatus {
+            status: Status::NotFound,
+            message: "user not found".to_string(),
+        }),
+        Err(_) => Err(StringResponseWithStatus {
+            status: Status::InternalServerError,
+            message: "error while getting user".to_string(),
+        }),
+    }
+}
