@@ -1,15 +1,14 @@
 use std::marker::PhantomData;
 
-use rocket::http::Status;
-use rocket::request::{Outcome, Request, FromRequest};
-use ethers::core::types::Signature;
 use ethers::abi::ethereum_types::H160;
+use ethers::core::types::Signature;
+use rocket::http::Status;
+use rocket::request::{FromRequest, Outcome, Request};
 
 pub struct AuthedUser<'r> {
     pub address: String,
-    phantom: PhantomData<&'r String>
+    phantom: PhantomData<&'r String>,
 }
-
 
 #[derive(Debug)]
 pub enum AuthedUserError {
@@ -23,9 +22,9 @@ fn auth_token_is_valid(signed_message: &str, message: &str) -> (bool, H160) {
         Err(_) => return (false, H160::zero()),
         Ok(s) => s,
     };
-    match signature.recover(message){
+    match signature.recover(message) {
         Err(_) => return (false, H160::zero()),
-        Ok(addr) => (true, addr)
+        Ok(addr) => (true, addr),
     }
     // TODO: Verify message has some specific format i.e. "split harmony <date>"
     // TODO: Validate signed date is not past expiry threshold
@@ -34,13 +33,13 @@ fn auth_token_is_valid(signed_message: &str, message: &str) -> (bool, H160) {
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for AuthedUser<'r> {
     type Error = AuthedUserError;
-    
+
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         let message: &str;
 
         message = match req.headers().get_one("message") {
             None => return Outcome::Failure((Status::BadRequest, AuthedUserError::Missing)),
-            Some(key) => key
+            Some(key) => key,
         };
 
         match req.headers().get_one("authorization") {
@@ -50,12 +49,12 @@ impl<'r> FromRequest<'r> for AuthedUser<'r> {
                 if valid {
                     Outcome::Success(AuthedUser {
                         address: address.to_string(),
-                        phantom: PhantomData
+                        phantom: PhantomData,
                     })
                 } else {
                     Outcome::Failure((Status::Unauthorized, AuthedUserError::Invalid))
                 }
-            },
+            }
         }
     }
 }
