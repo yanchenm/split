@@ -1,9 +1,10 @@
-use std::marker::PhantomData;
-
+use chrono::prelude::*;
 use ethers::abi::ethereum_types::H160;
 use ethers::core::types::Signature;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
+use std::marker::PhantomData;
+use std::str::FromStr;
 
 pub struct AuthedUser<'r> {
     pub address: String,
@@ -14,20 +15,57 @@ pub struct AuthedUser<'r> {
 pub enum AuthedUserError {
     Missing,
     Invalid,
+    Expired,
 }
 
-fn auth_token_is_valid(signed_message: &str, message: &str) -> (bool, H160) {
-    let signed_bytes: &[u8] = signed_message.as_bytes();
-    let signature = match Signature::try_from(signed_bytes) {
-        Err(_) => return (false, H160::zero()),
+enum AuthedState {
+    Authorized,
+    Expired,
+    Error,
+}
+
+const SIGNATURE_HOURS_TILL_EXPIRY: i64 = 24 * 14;
+
+fn auth_token_is_valid(signed_message: &str, epoch_signed_time: &str) -> (AuthedState, H160) {
+    let signature = match Signature::from_str(signed_message) {
+        Err(e) => {
+            println!(
+                "Error while parsing signature from signed message string {:?}",
+                e
+            );
+            return (AuthedState::Error, H160::zero());
+        }
         Ok(s) => s,
     };
-    match signature.recover(message) {
-        Err(_) => return (false, H160::zero()),
-        Ok(addr) => (true, addr),
+    let expected_signed_epoch_time = match epoch_signed_time.parse::<i64>() {
+        Err(e) => {
+            println!(
+                "Error while parsing epoch timestamp from message field of request!!! {:?}",
+                e
+            );
+            return (AuthedState::Error, H160::zero());
+        }
+        Ok(t) => t,
+    };
+    // Parse date from message epoch time and add our prefix before recovering addr from signed message.
+    let dt: DateTime<Utc> = DateTime::from_utc(
+        NaiveDateTime::from_timestamp(expected_signed_epoch_time, 0),
+        Utc,
+    );
+    let now = Utc::now();
+    let diff = now - dt;
+
+    if diff.num_hours() > SIGNATURE_HOURS_TILL_EXPIRY || now < dt {
+        return (AuthedState::Expired, H160::zero());
     }
-    // TODO: Verify message has some specific format i.e. "split harmony <date>"
-    // TODO: Validate signed date is not past expiry threshold
+
+    // Add our specific prefix to user-passed
+    let full_expected_signed_message = &*format!("{}{}", "Split app login: ", epoch_signed_time);
+
+    match signature.recover(full_expected_signed_message) {
+        Err(_) => return (AuthedState::Error, H160::zero()),
+        Ok(addr) => (AuthedState::Authorized, addr),
+    }
 }
 
 #[rocket::async_trait]
@@ -35,7 +73,7 @@ impl<'r> FromRequest<'r> for AuthedUser<'r> {
     type Error = AuthedUserError;
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        let message = match req.headers().get_one("message") {
+        let message = match req.headers().get_one("epoch_signed_time") {
             None => return Outcome::Failure((Status::BadRequest, AuthedUserError::Missing)),
             Some(key) => key,
         };
@@ -43,12 +81,14 @@ impl<'r> FromRequest<'r> for AuthedUser<'r> {
         match req.headers().get_one("authorization") {
             None => Outcome::Failure((Status::BadRequest, AuthedUserError::Missing)),
             Some(key) => {
-                let (valid, address): (bool, H160) = auth_token_is_valid(key, message);
-                if valid {
+                let (valid, address): (AuthedState, H160) = auth_token_is_valid(key, message);
+                if matches!(valid, AuthedState::Authorized) {
                     Outcome::Success(AuthedUser {
                         address: address.to_string(),
                         phantom: PhantomData,
                     })
+                } else if matches!(valid, AuthedState::Expired) {
+                    Outcome::Failure((Status::Unauthorized, AuthedUserError::Expired))
                 } else {
                     Outcome::Failure((Status::Unauthorized, AuthedUserError::Invalid))
                 }
