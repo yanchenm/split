@@ -1,3 +1,4 @@
+mod auth;
 mod controllers;
 mod db;
 mod models;
