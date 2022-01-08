@@ -2,9 +2,6 @@ steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA', './backend']
-    secretEnv: ["DB_HOST", "DB_USER", "DB_PASSWORD"]
-    env: 
-     - "DATABASE_URL=mysql://$$DB_USER:$$DB_PASSWORD@$$DB_HOST:${_DB_PORT}/${_DB_NAME}"
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA']
@@ -19,14 +16,6 @@ steps:
       - 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
-availableSecrets:
-  secretManager:
-    - versionName: projects/split-337505/secrets/PROD_DB_HOST/versions/1
-      env: "DB_HOST"
-    - versionName: projects/split-337505/secrets/PROD_DB_USER/versions/1
-      env: "DB_USER"
-    - versionName: projects/split-337505/secrets/PROD_DB_PASSWORD/versions/1
-      env: "DB_PASSWORD"
 images:
   - 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA'
 options:

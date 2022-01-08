@@ -1,0 +1,64 @@
+{
+  "db": "MySQL",
+  "8a55e5f9f628933bdf849eff65e01ca900be54a608f6bbdd75577d79479de746": {
+    "query": "INSERT INTO User (address, username, email) VALUES (?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
+  "e73862f67d0aac0066ac17337946a2ef7d327ad432e14c976a5d21e8e05a59da": {
+    "query": "SELECT * FROM User WHERE address = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "address",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 168
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "username",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 144
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "email",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 0
+            },
+            "char_set": 45,
+            "max_size": 1280
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        true
+      ]
+    }
+  }
+}
