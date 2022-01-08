@@ -51,7 +51,7 @@ pub async fn create_group<'r>(
         pool,
         user.address.as_str(),
         group_id.as_str(),
-        MembershipStatus::ACTIVE,
+        MembershipStatus::OWNER,
     )
     .await
     {

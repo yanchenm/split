@@ -8,7 +8,7 @@ mod utils;
 extern crate rocket;
 
 use crate::controllers::groups::create_group;
-use crate::controllers::users::{create_user, get_user_by_address};
+use crate::controllers::users::{create_user, get_authed_user};
 use std::env;
 
 #[get("/hello/<name>")]
@@ -47,7 +47,7 @@ async fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![hello])
-        .mount("/user", routes![create_user, get_user_by_address])
+        .mount("/user", routes![create_user, get_authed_user])
         .mount("/group", routes![create_group])
         .manage(pool)
 }

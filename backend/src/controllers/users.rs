@@ -14,9 +14,14 @@ use crate::models::user::User;
 pub async fn create_user<'r>(
     new_user: Json<User>,
     pool: &State<MySqlPool>,
-    user: AuthedUser<'r>,
+    authed_user: AuthedUser<'r>,
 ) -> StringResponseWithStatus {
-    if user.address != new_user.address.as_str() {
+    if authed_user.address != new_user.address.to_lowercase().as_str() {
+        error!(
+            "authed user {} tried to create new user {}",
+            authed_user.address,
+            new_user.address.to_lowercase()
+        );
         return StringResponseWithStatus {
             status: Status::BadRequest,
             message: "User provided does not match authentication provided.".to_string(),
@@ -24,7 +29,7 @@ pub async fn create_user<'r>(
     }
 
     // Check if the user already exists
-    match users::get_user_by_address(pool, new_user.address.as_str()).await {
+    match users::get_user_by_address(pool, new_user.address.to_lowercase().as_str()).await {
         Ok(Some(_)) => {
             return StringResponseWithStatus {
                 status: Status::Conflict,
@@ -43,7 +48,7 @@ pub async fn create_user<'r>(
 
     match users::create_new_user(
         pool,
-        new_user.address.as_str(),
+        new_user.address.to_lowercase().as_str(),
         new_user.username.as_str(),
         new_user.email.as_ref().map(|s| s.as_str()),
     )
@@ -63,12 +68,12 @@ pub async fn create_user<'r>(
     }
 }
 
-#[get("/<address>")]
-pub async fn get_user_by_address(
-    address: String,
+#[get("/")]
+pub async fn get_authed_user<'r>(
     pool: &State<MySqlPool>,
+    authed_user: AuthedUser<'r>,
 ) -> Result<Json<User>, StringResponseWithStatus> {
-    match users::get_user_by_address(pool, address.as_str()).await {
+    match users::get_user_by_address(pool, authed_user.address.as_str()).await {
         Ok(Some(user)) => Ok(Json(user)),
         Ok(None) => Err(StringResponseWithStatus {
             status: Status::NotFound,
