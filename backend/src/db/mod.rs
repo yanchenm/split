@@ -1,6 +1,8 @@
 use anyhow::Result;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 
+pub mod users;
+
 const MAX_POOL_SIZE: u32 = 10;
 
 pub async fn initialize(
