@@ -18,8 +18,6 @@ fn hello(name: &str) -> String {
 
 #[launch]
 async fn rocket() -> _ {
-    env_logger::init();
-
     // Only load .env file if local
     match env::var("ENV") {
         Ok(val) if val == "prod" => (),
