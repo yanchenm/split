@@ -1,8 +1,7 @@
-# Use the official Rust image.
-# https://hub.docker.com/_/rust
-FROM rust:1.57
+FROM rust:1.57 as builder
 
-WORKDIR /usr/src/app
+RUN mkdir /build
+WORKDIR /build
 
 # Create a dummy.rs file to allow dependency caching
 RUN echo "fn main() {}" > dummy.rs
@@ -17,5 +16,15 @@ RUN sed -i 's#dummy.rs#src/main.rs#' Cargo.toml
 COPY . .
 RUN cargo build --release
 
+# Actual service can run on a slimmer base image
+FROM debian:stable-slim
+WORKDIR /usr/src/app
+
+# Copy the binary over
+COPY --from=builder /build/target/release/backend ./backend
+
+# Copy env and config files from host
+COPY Rocket.toml .env* ./
+
 # Run the web service on container startup.
-CMD ["target/release/backend"]
+CMD ["./backend"]
