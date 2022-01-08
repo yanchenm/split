@@ -2,6 +2,7 @@ use chrono::prelude::*;
 use ethers::abi::ethereum_types::H160;
 use ethers::core::types::Signature;
 use ethers::utils::hex::ToHex;
+use log::error;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 use std::marker::PhantomData;
@@ -30,7 +31,7 @@ const SIGNATURE_HOURS_TILL_EXPIRY: i64 = 24 * 14;
 fn auth_token_is_valid(signed_message: &str, epoch_signed_time: &str) -> (AuthedState, H160) {
     let signature = match Signature::from_str(signed_message) {
         Err(e) => {
-            println!(
+            error!(
                 "Error while parsing signature from signed message string {:?}",
                 e
             );
@@ -40,7 +41,7 @@ fn auth_token_is_valid(signed_message: &str, epoch_signed_time: &str) -> (Authed
     };
     let expected_signed_epoch_time = match epoch_signed_time.parse::<i64>() {
         Err(e) => {
-            println!(
+            error!(
                 "Error while parsing epoch timestamp from message field of request!!! {:?}",
                 e
             );

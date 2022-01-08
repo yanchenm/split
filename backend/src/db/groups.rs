@@ -6,7 +6,7 @@ pub async fn create_new_group(
     pool: &MySqlPool,
     name: &str,
     description: Option<&str>,
-) -> Result<()> {
+) -> Result<String> {
     // Generate new uuid for group
     let id = Uuid::new_v4();
     let id_str = id
@@ -22,5 +22,5 @@ pub async fn create_new_group(
     )
     .execute(pool)
     .await?;
-    Ok(())
+    Ok(id_str)
 }
