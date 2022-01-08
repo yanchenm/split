@@ -7,6 +7,7 @@ mod utils;
 #[macro_use]
 extern crate rocket;
 
+use crate::controllers::groups::create_group;
 use crate::controllers::users::{create_user, get_user_by_address};
 use std::env;
 
@@ -17,6 +18,8 @@ fn hello(name: &str) -> String {
 
 #[launch]
 async fn rocket() -> _ {
+    env_logger::init();
+
     // Only load .env file if local
     match env::var("ENV") {
         Ok(val) if val == "prod" => (),
@@ -47,5 +50,6 @@ async fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![hello])
         .mount("/user", routes![create_user, get_user_by_address])
+        .mount("/group", routes![create_group])
         .manage(pool)
 }

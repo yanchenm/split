@@ -2,6 +2,7 @@ use crate::auth::auth::AuthedUser;
 use crate::db::users;
 use crate::utils::responders::StringResponseWithStatus;
 
+use log::error;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
@@ -31,11 +32,12 @@ pub async fn create_user<'r>(
             }
         }
         Ok(None) => (),
-        Err(_) => {
+        Err(e) => {
+            error!("error getting user from db: {}", e);
             return StringResponseWithStatus {
                 status: Status::InternalServerError,
                 message: "error while checking if user exists".to_string(),
-            }
+            };
         }
     }
 
@@ -51,10 +53,13 @@ pub async fn create_user<'r>(
             status: Status::Created,
             message: "user created".to_string(),
         },
-        Err(_) => StringResponseWithStatus {
-            status: Status::InternalServerError,
-            message: "error while creating user".to_string(),
-        },
+        Err(e) => {
+            error!("error creating user in db: {}", e);
+            StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while creating user".to_string(),
+            }
+        }
     }
 }
 
@@ -69,9 +74,12 @@ pub async fn get_user_by_address(
             status: Status::NotFound,
             message: "user not found".to_string(),
         }),
-        Err(_) => Err(StringResponseWithStatus {
-            status: Status::InternalServerError,
-            message: "error while getting user".to_string(),
-        }),
+        Err(e) => {
+            error!("error getting user from db: {}", e);
+            Err(StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while getting user".to_string(),
+            })
+        }
     }
 }
