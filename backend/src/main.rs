@@ -1,8 +1,11 @@
+mod controllers;
 mod db;
+mod models;
 
 #[macro_use]
 extern crate rocket;
 
+use crate::controllers::users::create_user;
 use std::env;
 
 #[get("/hello/<name>")]
@@ -39,5 +42,7 @@ async fn rocket() -> _ {
     .await
     .expect("Failed to initialize database");
 
-    rocket::build().mount("/", routes![hello]).manage(pool)
+    rocket::build()
+        .mount("/", routes![hello, create_user])
+        .manage(pool)
 }
