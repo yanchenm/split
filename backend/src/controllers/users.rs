@@ -1,6 +1,7 @@
 use crate::auth::auth::AuthedUser;
 use crate::db::users;
 use crate::utils::responders::StringResponseWithStatus;
+
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;

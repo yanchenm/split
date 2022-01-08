@@ -1,6 +1,7 @@
 use anyhow::Result;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 
+pub mod groups;
 pub mod users;
 
 const MAX_POOL_SIZE: u32 = 10;
