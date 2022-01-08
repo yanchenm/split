@@ -35,9 +35,7 @@ impl<'r> FromRequest<'r> for AuthedUser<'r> {
     type Error = AuthedUserError;
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        let message: &str;
-
-        message = match req.headers().get_one("message") {
+        let message = match req.headers().get_one("message") {
             None => return Outcome::Failure((Status::BadRequest, AuthedUserError::Missing)),
             Some(key) => key,
         };
