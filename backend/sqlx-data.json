@@ -134,6 +134,70 @@
       "nullable": []
     }
   },
+  "e11c140fb9ccdc123bf21550e61e95584ec5c2b654fdf1fa2b66efb15c2fa643": {
+    "query": "SELECT * FROM CurrencyPair ORDER BY fetched DESC LIMIT 1;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "in_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "out_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "rate",
+          "type_info": {
+            "type": "Float",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "fetched",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 1155
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "e172b9e67a3efc3c1b3aa5207c6b56208079270cd99ab607ea3d5da6008f5ae8": {
     "query": "SELECT * FROM Membership WHERE `group` = ? AND user = ?;",
     "describe": {
