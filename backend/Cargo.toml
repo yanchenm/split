@@ -11,7 +11,7 @@ path = "src/main.rs"
 
 [dependencies]
 rocket = { version = "0.5.0-rc.1", features = ["json"] }
-sqlx = { version = "0.5", features = [ "runtime-tokio-native-tls" , "mysql", "offline" ] }
+sqlx = { version = "0.5", features = [ "runtime-tokio-native-tls" , "mysql", "offline", "chrono", "decimal" ] }
 tokio = { version = "1", features = ["full"] }
 anyhow = "1.0"
 dotenv = "0.15.0"
@@ -20,3 +20,4 @@ ethers = "0.6.2"
 chrono = "0.4.0"
 uuid = { version = "0.8", features = ["v4"] }
 log = "0.4.14"
+rust_decimal = { version = "1.6.0" }
