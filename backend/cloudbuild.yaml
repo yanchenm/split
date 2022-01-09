@@ -1,6 +1,6 @@
 steps:
   # Build the container image
-  - name: 'kaniko-project/executor'
+  - name: 'gcr.io/kaniko-project/executor:latest'
     args: [
       '--dockerfile=Dockerfile',
       '--context=./backend',
