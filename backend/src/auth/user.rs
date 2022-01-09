@@ -16,6 +16,8 @@ pub struct AuthedUser<'r> {
 
 pub struct AuthedDBUser<'r> {
     pub address: String,
+    pub username: String,
+    pub email: Option<String>,
     phantom: PhantomData<&'r String>,
 }
 
@@ -57,9 +59,11 @@ impl<'r> FromRequest<'r> for AuthedDBUser<'r> {
             Outcome::Success(db_pool) => {
                 // Check that the user exists
                 match users::get_user_by_address(db_pool, address.as_str()).await {
-                    Ok(Some(_)) => {
+                    Ok(Some(user)) => {
                         return Outcome::Success(AuthedDBUser {
-                            address,
+                            address: user.address,
+                            username: user.username,
+                            email: user.email,
                             phantom: PhantomData,
                         });
                     }
