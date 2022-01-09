@@ -19,4 +19,4 @@ steps:
 images:
   - 'gcr.io/$PROJECT_ID/backend:$COMMIT_SHA'
 options:
-  machineType: 'E2_HIGHCPU_8'
+  machineType: 'E2_HIGHCPU_16'
