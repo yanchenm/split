@@ -64,6 +64,16 @@
       ]
     }
   },
+  "4a15d7c2030e0e3e7b1a4a75638b0653935a731c8be65d9852016055bb33d9be": {
+    "query": "INSERT INTO Transaction (id, `group`, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 7
+      },
+      "nullable": []
+    }
+  },
   "68bee0ff4a861c8ab7eb93b537ee0b157b460c685cafa9928dee22d25d858fca": {
     "query": "UPDATE Membership SET status = ? WHERE `group` = ? AND user = ?;",
     "describe": {
