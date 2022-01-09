@@ -64,6 +64,16 @@
       ]
     }
   },
+  "38d51af5f7033d39b0e16a4d83622e0d28e478cc5f2e27978a816d46a3317d7b": {
+    "query": "UPDATE Transaction SET amount = ?, currency = ?, name = ? WHERE id = ?;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 4
+      },
+      "nullable": []
+    }
+  },
   "4a15d7c2030e0e3e7b1a4a75638b0653935a731c8be65d9852016055bb33d9be": {
     "query": "INSERT INTO Transaction (id, `group`, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?);",
     "describe": {
@@ -247,6 +257,16 @@
         false,
         false
       ]
+    }
+  },
+  "e18224e95833b6316593926f71448062178db96906ef6f756ec9157817ef6589": {
+    "query": "DELETE FROM Split WHERE tx_id = ?;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": []
     }
   },
   "e73862f67d0aac0066ac17337946a2ef7d327ad432e14c976a5d21e8e05a59da": {
