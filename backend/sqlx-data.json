@@ -1,5 +1,66 @@
 {
   "db": "MySQL",
+  "00676a879dacfb25e2c2dc7629bcdf7c5d2d467cea839a4492ba4ae89b51248e": {
+    "query": "SELECT * FROM `Group` WHERE id = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 128
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "name",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 256
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "description",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 0
+            },
+            "char_set": 45,
+            "max_size": 2048
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        true
+      ]
+    }
+  },
+  "68bee0ff4a861c8ab7eb93b537ee0b157b460c685cafa9928dee22d25d858fca": {
+    "query": "UPDATE Membership SET status = ? WHERE `group` = ? AND user = ?;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
   "8a55e5f9f628933bdf849eff65e01ca900be54a608f6bbdd75577d79479de746": {
     "query": "INSERT INTO User (address, username, email) VALUES (?, ?, ?);",
     "describe": {
@@ -8,6 +69,77 @@
         "Right": 3
       },
       "nullable": []
+    }
+  },
+  "907d846421ea9e334053c9682e25087c2f5ccb0db273ea7379a04cac673fc30f": {
+    "query": "INSERT INTO Membership (`group`, user, status) VALUES(?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
+  "9c557365eb660d1e8d4a4b8f971e7c1f7de4f9d8d2c833242dbef13d80e0a810": {
+    "query": "INSERT INTO `Group` (id, name, description) VALUES (?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
+  "e172b9e67a3efc3c1b3aa5207c6b56208079270cd99ab607ea3d5da6008f5ae8": {
+    "query": "SELECT * FROM Membership WHERE `group` = ? AND user = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "group",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4107
+            },
+            "char_set": 45,
+            "max_size": 128
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "user",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4107
+            },
+            "char_set": 45,
+            "max_size": 168
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "status",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 64
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
     }
   },
   "e73862f67d0aac0066ac17337946a2ef7d327ad432e14c976a5d21e8e05a59da": {
