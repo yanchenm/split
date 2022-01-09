@@ -22,7 +22,7 @@ WORKDIR /usr/src/app
 
 # Install necessary packages
 RUN apt-get update \
-    && apt-get install -y ca-certificates update-ca-certificates \
+    && apt-get install -y ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary over
