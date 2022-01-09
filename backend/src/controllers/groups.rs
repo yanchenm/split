@@ -119,17 +119,6 @@ pub async fn invite_to_group<'r>(
         }
     }
 
-    // Check if the invited user exists
-    match users::get_user_by_address(pool, invite.user_id.as_str()).await {
-        Ok(Some(_)) => (),
-        _ => {
-            return StringResponseWithStatus {
-                status: Status::BadRequest,
-                message: "invited user does not exist".to_string(),
-            };
-        }
-    };
-
     // Check if the user is already a member
     match memberships::get_membership_by_group_and_user(
         pool,
