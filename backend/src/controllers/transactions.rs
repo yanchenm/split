@@ -1,7 +1,6 @@
 use crate::db::groups;
 use crate::db::transactions;
-use crate::models::transaction::Transaction;
-use crate::utils::responders::StringResponseWithStatus;
+use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
 use chrono::Utc;
 use rocket::http::Status;
@@ -10,10 +9,30 @@ use rocket::State;
 use rust_decimal::Decimal;
 use sqlx::MySqlPool;
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Transaction {
+    pub name: String,
+    pub group: String,
+    pub total: String,
+    pub currency: String,
+    pub image: Option<String>,
+    pub splits: Vec<Split>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Split {
+    pub address: String,
+    pub share: String,
+}
+
+
 #[post("/", format = "json", data = "<new_transaction>")]
-pub async fn create_transaction(
+pub async fn create_transaction<'r>(
     new_transaction: Json<Transaction>,
     pool: &State<MySqlPool>,
+    authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
     // Check if the group exists
     match groups::get_group_by_id(pool, new_transaction.group.as_str()).await {
@@ -26,10 +45,33 @@ pub async fn create_transaction(
         Err(_) => {
             return StringResponseWithStatus {
                 status: Status::InternalServerError,
-                message: "error while checking if user exists".to_string(),
+                message: "error while checking if group exists".to_string(),
             }
         }
     }
+
+    // Check if person is in the group
+    // match memberships::get_membership_by_group_and_user(
+    //     pool,
+    //     group_id.as_str(),
+    //     authed_user.address.as_str(),
+    // )
+    // .await
+    // {
+    //     Ok(Some(_)) => (),
+    //     Ok(None) => {
+    //         return StringResponseWithStatus {
+    //             status: Status::PreconditionFailed,
+    //             message: "user is not in group".to_string(),
+    //         }
+    //     },
+    //     Err(_) => {
+    //         return StringResponseWithStatus {
+    //             status: Status::InternalServerError,
+    //             message: "error while checking if user is in group".to_string(),
+    //         }
+    //     }
+    // };
     
     let current_date = Utc::now().date().naive_utc();
     let total_amount = string_to_decimal(new_transaction.total.as_str());
@@ -44,9 +86,8 @@ pub async fn create_transaction(
             new_transaction.group.as_str(),
             &amount,
             new_transaction.currency.as_str(),
-            // TODO: Get this from header
-            "Random_paid_by",
-            new_transaction.name.as_str(),
+            authed_user.address.as_str(),
+            new_transaction.name.to_lowercase().as_str(),
             &current_date
         )
         .await
