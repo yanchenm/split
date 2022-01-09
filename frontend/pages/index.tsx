@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import Button from '../components/Button';
 import React from 'react';
 import { W3Context } from './_app';
+import axios from 'axios'
 
 type PageProps = {
   web3Connect: () => Promise<void>

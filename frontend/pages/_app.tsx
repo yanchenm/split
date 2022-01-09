@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
+import axios from 'axios';
 
 type ProvidedWeb3 = {
   w3: Web3,
@@ -10,8 +11,48 @@ type ProvidedWeb3 = {
   isConnected: boolean
 }
 
+// Set axios to intercept requests and add auth header on all of them.
+axios.interceptors.request.use(async (request) => {
+  if (request) {
+    // First check that token exists and isn't expired, try to update otherwise
+    let authToken = localStorage.getItem('token');
+    const currentExpiry = localStorage.getItem('tokenEpochTime');
+    if (!authToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
+      await tryUpdateToken();
+      // Grab the new auth token this method created
+      authToken = localStorage.getItem('token');
+    }
+    if (request.headers && request.headers && authToken) {
+      request.headers.Authorization = authToken;
+    }
+    return request;
+  }
+});
+
+// Attempts to update user's web3 auth token for our site
+const tryUpdateToken = async () => {
+  let anyWindow = window as any;
+  if (typeof anyWindow.ethereum !== 'undefined') {
+    const currentToken = localStorage.getItem('token');
+    const currentExpiry = localStorage.getItem('tokenEpochTime');
+    let w3 = new Web3(anyWindow.ethereum);
+    let accounts = await w3.eth.getAccounts();
+    // Check if current token doesn't exist or is expired (Older than 14 days).
+    if (!currentToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
+      // Shifting by 0 forces the float to integer
+      let epoch = String(new Date().getTime() / 1000 >> 0)
+      let msg = w3.utils.toHex("Split app login: " + epoch);
+      let from = accounts[0];
+      const signature = await anyWindow.ethereum.request({ method: 'personal_sign', params: [msg, from] });
+      localStorage.setItem('token', signature);
+      localStorage.setItem('tokenEpochTime', epoch);
+    }
+  }
+}
+
 export const W3Context = React.createContext<ProvidedWeb3 | null>(null);
 function MyApp({ Component, pageProps }: AppProps) {
+
   let [providedWeb3, setProvidedWeb3] = useState<ProvidedWeb3 | null>(null);
 
   // Attempts to connect an injected wallet (like metamask).
@@ -24,7 +65,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         await anyWindow.ethereum.request({ method: 'eth_requestAccounts' });
         const chain = await anyWindow.ethereum.request({ method: 'eth_chainId' });
         const isConnected = await anyWindow.ethereum.isConnected();
-        console.log({ chain });
+        await tryUpdateToken();
+
         let w3 = new Web3(anyWindow.ethereum);
         let accounts = await w3.eth.getAccounts();
 
@@ -83,13 +125,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         return false;
       }
 
-      try {
-        const accounts = await web3.eth.getAccounts();
-        if (accounts.length > 0) {
-          web3Connect();
-        }
-      } catch (error) {
-        // no op on error
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length > 0) {
+        web3Connect();
       }
     };
 
