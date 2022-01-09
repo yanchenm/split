@@ -8,15 +8,14 @@ mod utils;
 extern crate rocket;
 
 use crate::controllers::currency::refresh_currency_conversions;
-use crate::controllers::groups::{accept_invite_to_group, create_group, invite_to_group};
-use crate::controllers::transactions::{create_transaction, update_transaction};
+use crate::controllers::groups::{
+    accept_invite_to_group, create_group, get_group, get_groups_by_user, invite_to_group,
+};
+use crate::controllers::transactions::{
+    create_transaction, get_transactions_by_group, update_transaction,
+};
 use crate::controllers::users::{create_user, get_authed_user};
 use std::env;
-
-#[get("/hello/<name>")]
-fn hello(name: &str) -> String {
-    format!("{} can suck my cock", name)
-}
 
 #[launch]
 async fn rocket() -> _ {
@@ -48,16 +47,25 @@ async fn rocket() -> _ {
     .expect("Failed to initialize database");
 
     rocket::build()
-        .mount("/", routes![hello])
         .mount("/user", routes![create_user, get_authed_user])
         .mount(
             "/group",
-            routes![create_group, invite_to_group, accept_invite_to_group],
+            routes![
+                create_group,
+                invite_to_group,
+                accept_invite_to_group,
+                get_group,
+                get_groups_by_user
+            ],
         )
         .mount("/currency", routes![refresh_currency_conversions])
         .mount(
             "/transaction",
-            routes![create_transaction, update_transaction],
+            routes![
+                create_transaction,
+                update_transaction,
+                get_transactions_by_group
+            ],
         )
         .manage(pool)
 }
