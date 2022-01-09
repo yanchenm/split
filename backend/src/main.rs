@@ -9,6 +9,7 @@ extern crate rocket;
 
 use crate::controllers::groups::{accept_invite_to_group, create_group, invite_to_group};
 use crate::controllers::users::{create_user, get_authed_user};
+use crate::controllers::transactions::create_transaction;
 use std::env;
 
 #[get("/hello/<name>")]
@@ -52,5 +53,6 @@ async fn rocket() -> _ {
             "/group",
             routes![create_group, invite_to_group, accept_invite_to_group],
         )
+        .mount("/transaction", routes![create_transaction])
         .manage(pool)
 }
