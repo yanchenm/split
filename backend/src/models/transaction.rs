@@ -7,10 +7,10 @@ use serde::{Deserialize, Serialize};
 pub struct Transaction {
     pub id: String,
     pub group: String,
-    pub amount: String,
+    pub amount: Decimal,
     pub currency: String,
-    pub paid_by: Option<String>,
-    pub name: Vec<Split>,
+    pub paid_by: String,
+    pub name: String,
     pub date: NaiveDate,
     pub updated_at: NaiveTime
 }
