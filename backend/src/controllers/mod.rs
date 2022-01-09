@@ -1,3 +1,4 @@
+pub mod currency;
 pub mod groups;
-pub mod users;
 pub mod transactions;
+pub mod users;

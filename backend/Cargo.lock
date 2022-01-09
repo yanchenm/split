@@ -170,6 +170,7 @@ dependencies = [
  "dotenv",
  "ethers",
  "log",
+ "reqwest",
  "rocket",
  "rust_decimal",
  "serde",

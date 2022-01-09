@@ -7,9 +7,11 @@ mod utils;
 #[macro_use]
 extern crate rocket;
 
+use crate::controllers::currency::refresh_currency_conversions;
 use crate::controllers::groups::{accept_invite_to_group, create_group, invite_to_group};
-use crate::controllers::users::{create_user, get_authed_user};
 use crate::controllers::transactions::create_transaction;
+use crate::controllers::users::{create_user, get_authed_user};
+
 use std::env;
 
 #[get("/hello/<name>")]
@@ -54,5 +56,6 @@ async fn rocket() -> _ {
             routes![create_group, invite_to_group, accept_invite_to_group],
         )
         .mount("/transaction", routes![create_transaction])
+        .mount("/currency", routes![refresh_currency_conversions])
         .manage(pool)
 }

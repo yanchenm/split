@@ -21,3 +21,4 @@ chrono = { version = "0.4.0", features = ["serde"] }
 uuid = { version = "0.8", features = ["v4"] }
 log = "0.4.14"
 rust_decimal = { version = "1.6.0" }
+reqwest = "0.11.8"

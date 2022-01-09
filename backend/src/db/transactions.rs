@@ -37,7 +37,7 @@ pub async fn create_new_split(
     pool: &MySqlPool,
     tx_id: &str,
     user: &str,
-    share: &Decimal, 
+    share: &Decimal,
 ) -> Result<()> {
     sqlx::query!(
         "INSERT INTO Split (tx_id, user, share) VALUES (?, ?, ?);",
@@ -53,7 +53,7 @@ pub async fn create_new_split(
 pub async fn batch_transaction_splits(
     pool: &MySqlPool,
     new_transaction: Json<Transaction>,
-    user_address: &str
+    user_address: &str,
 ) -> Result<()> {
     let current_date = Utc::now().date().naive_utc();
     let total_amount = string_to_decimal(new_transaction.total.as_str());
@@ -73,19 +73,14 @@ pub async fn batch_transaction_splits(
         new_transaction.currency.as_str(),
         user_address,
         new_transaction.name.to_lowercase().as_str(),
-        &current_date
-    ).await?;
-
+        &current_date,
+    )
+    .await?;
 
     // TODO: Make this transaction idempotent and atomic
     for split in new_transaction.splits.iter() {
         let share_str = string_to_decimal(split.share.as_str());
-        create_new_split(
-            pool,
-            tx_id_str.as_str(),
-            split.address.as_str(),
-            &share_str,
-        ).await?;
+        create_new_split(pool, tx_id_str.as_str(), split.address.as_str(), &share_str).await?;
     }
 
     tx.commit().await?;
@@ -103,7 +98,7 @@ fn get_scale(number_string: &str) -> usize {
 
 fn string_to_decimal(number_string: &str) -> rust_decimal::Decimal {
     let scale = get_scale(number_string) as u32;
-    let number : i64 = str::replace(number_string, ".", "").parse().unwrap();
+    let number: i64 = str::replace(number_string, ".", "").parse().unwrap();
 
     return Decimal::new(number, scale);
 }
