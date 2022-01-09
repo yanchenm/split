@@ -2,6 +2,8 @@ use anyhow::Result;
 use sqlx::MySqlPool;
 use uuid::Uuid;
 
+use crate::models::group::Group;
+
 pub async fn create_new_group(
     pool: &MySqlPool,
     name: &str,
@@ -23,4 +25,11 @@ pub async fn create_new_group(
     .execute(pool)
     .await?;
     Ok(id_str)
+}
+
+pub async fn get_group_by_id(pool: &MySqlPool, group_id: &str) -> Result<Option<Group>> {
+    let group = sqlx::query_as!(Group, "SELECT * FROM `Group` WHERE id = ?;", group_id)
+        .fetch_optional(pool)
+        .await?;
+    Ok(group)
 }
