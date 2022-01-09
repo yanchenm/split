@@ -74,8 +74,28 @@
       "nullable": []
     }
   },
+  "674a4488a43fbe8375f6b48f1c361984a1891fbead06eb9ad2006bd2d6b0ec2d": {
+    "query": "INSERT INTO Split (tx_id, user, share) VALUES (?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
   "68bee0ff4a861c8ab7eb93b537ee0b157b460c685cafa9928dee22d25d858fca": {
     "query": "UPDATE Membership SET status = ? WHERE `group` = ? AND user = ?;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 3
+      },
+      "nullable": []
+    }
+  },
+  "710f5d7d2b8b94f333f8429d0f7111b9bb229701078e7599d2ac5d268828c2e1": {
+    "query": "INSERT INTO CurrencyPair (in_currency, out_currency, rate) VALUES (?, ?, ?);",
     "describe": {
       "columns": [],
       "parameters": {
