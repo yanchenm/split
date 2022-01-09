@@ -7,7 +7,7 @@ pub mod memberships;
 pub mod transactions;
 pub mod users;
 
-const MAX_POOL_SIZE: u32 = 10;
+const MAX_POOL_SIZE: u32 = 30;
 
 pub async fn initialize(
     host: &str,
