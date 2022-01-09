@@ -9,7 +9,7 @@ use sqlx::MySqlPool;
 use crate::db::groups;
 use crate::db::memberships;
 use crate::models::membership::MembershipStatus;
-use crate::{auth::user::AuthedDBUser, db::users, utils::responders::StringResponseWithStatus};
+use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
 #[derive(Debug, Deserialize)]
 pub struct CreateGroupRequest {
