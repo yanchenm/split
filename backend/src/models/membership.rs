@@ -1,6 +1,6 @@
-use core::fmt;
-
+use anyhow::{anyhow, Error};
 use serde::{Deserialize, Serialize};
+use std::{fmt, str};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum MembershipStatus {
@@ -9,12 +9,11 @@ pub enum MembershipStatus {
     INVITED,
     LEFT,
 }
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Membership {
     pub group: String,
     pub user: String,
-    pub status: MembershipStatus,
+    pub status: String,
 }
 
 impl fmt::Display for MembershipStatus {
@@ -24,6 +23,20 @@ impl fmt::Display for MembershipStatus {
             MembershipStatus::ACTIVE => write!(f, "ACTIVE"),
             MembershipStatus::INVITED => write!(f, "INVITED"),
             MembershipStatus::LEFT => write!(f, "LEFT"),
+        }
+    }
+}
+
+impl str::FromStr for MembershipStatus {
+    type Err = Error;
+
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
+        match input.to_uppercase().as_str() {
+            "OWNER" => Ok(MembershipStatus::OWNER),
+            "ACTIVE" => Ok(MembershipStatus::ACTIVE),
+            "INVITED" => Ok(MembershipStatus::INVITED),
+            "LEFT" => Ok(MembershipStatus::LEFT),
+            _ => Err(anyhow!("invalid membership status")),
         }
     }
 }

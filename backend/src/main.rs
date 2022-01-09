@@ -7,7 +7,7 @@ mod utils;
 #[macro_use]
 extern crate rocket;
 
-use crate::controllers::groups::create_group;
+use crate::controllers::groups::{create_group, invite_to_group};
 use crate::controllers::users::{create_user, get_authed_user};
 use std::env;
 
@@ -48,6 +48,6 @@ async fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![hello])
         .mount("/user", routes![create_user, get_authed_user])
-        .mount("/group", routes![create_group])
+        .mount("/group", routes![create_group, invite_to_group])
         .manage(pool)
 }
