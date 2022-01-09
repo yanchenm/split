@@ -7,6 +7,7 @@ use crate::models::group::Group;
 pub async fn create_new_group(
     pool: &MySqlPool,
     name: &str,
+    currency: &str,
     description: Option<&str>,
 ) -> Result<String> {
     // Generate new uuid for group
@@ -17,9 +18,10 @@ pub async fn create_new_group(
         .to_string();
 
     sqlx::query!(
-        "INSERT INTO `Group` (id, name, description) VALUES (?, ?, ?);",
+        "INSERT INTO `Group` (id, name, currency, description) VALUES (?, ?, ?, ?);",
         id_str,
         name,
+        currency,
         description
     )
     .execute(pool)
@@ -31,5 +33,6 @@ pub async fn get_group_by_id(pool: &MySqlPool, group_id: &str) -> Result<Option<
     let group = sqlx::query_as!(Group, "SELECT * FROM `Group` WHERE id = ?;", group_id)
         .fetch_optional(pool)
         .await?;
+
     Ok(group)
 }

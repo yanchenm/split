@@ -39,6 +39,18 @@
             "char_set": 45,
             "max_size": 2048
           }
+        },
+        {
+          "ordinal": 3,
+          "name": "currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
         }
       ],
       "parameters": {
@@ -47,7 +59,8 @@
       "nullable": [
         false,
         false,
-        true
+        true,
+        false
       ]
     }
   },
@@ -81,12 +94,12 @@
       "nullable": []
     }
   },
-  "9c557365eb660d1e8d4a4b8f971e7c1f7de4f9d8d2c833242dbef13d80e0a810": {
-    "query": "INSERT INTO `Group` (id, name, description) VALUES (?, ?, ?);",
+  "e0e61fc69b4205c310821226239abc90429fa5c8f259523b8c69dceadf058530": {
+    "query": "INSERT INTO `Group` (id, name, currency, description) VALUES (?, ?, ?, ?);",
     "describe": {
       "columns": [],
       "parameters": {
-        "Right": 3
+        "Right": 4
       },
       "nullable": []
     }

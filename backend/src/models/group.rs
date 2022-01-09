@@ -4,5 +4,6 @@ use serde::{Deserialize, Serialize};
 pub struct Group {
     pub id: String,
     pub name: String,
+    pub currency: String,
     pub description: Option<String>,
 }

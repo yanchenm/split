@@ -14,6 +14,7 @@ use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatu
 #[derive(Debug, Deserialize)]
 pub struct CreateGroupRequest {
     pub name: String,
+    pub currency: String,
     pub description: Option<String>,
 }
 
@@ -32,6 +33,7 @@ pub async fn create_group<'r>(
     let group_id = match groups::create_new_group(
         pool,
         new_group.name.as_str(),
+        new_group.currency.as_str(),
         new_group.description.as_ref().map(|s| s.as_str()),
     )
     .await
