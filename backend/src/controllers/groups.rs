@@ -90,8 +90,8 @@ pub async fn invite_to_group<'r>(
     // Check if the inviter is in the group
     match memberships::get_membership_by_group_and_user(
         pool,
-        authed_user.address.as_str(),
         group_id.as_str(),
+        authed_user.address.as_str(),
     )
     .await
     {
@@ -133,8 +133,8 @@ pub async fn invite_to_group<'r>(
     // Check if the user is already a member
     match memberships::get_membership_by_group_and_user(
         pool,
-        invite.user_id.as_str(),
         group_id.as_str(),
+        invite.user_id.as_str(),
     )
     .await
     {
@@ -165,6 +165,52 @@ pub async fn invite_to_group<'r>(
             StringResponseWithStatus {
                 status: Status::InternalServerError,
                 message: "failed to create new membership in db".to_string(),
+            }
+        }
+    }
+}
+
+#[post("/<group_id>/accept")]
+pub async fn accept_invite_to_group<'r>(
+    pool: &State<MySqlPool>,
+    group_id: &str,
+    authed_user: AuthedDBUser<'r>,
+) -> StringResponseWithStatus {
+    // Check that the invite exists
+    match memberships::get_membership_by_group_and_user(
+        pool,
+        group_id,
+        authed_user.address.as_str(),
+    )
+    .await
+    {
+        Ok(Some(MembershipStatus::INVITED)) => (),
+        _ => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "invite does not exist".to_string(),
+            };
+        }
+    };
+
+    // Update membership
+    match memberships::update_membership_status(
+        pool,
+        group_id,
+        authed_user.address.as_str(),
+        MembershipStatus::ACTIVE,
+    )
+    .await
+    {
+        Ok(_) => StringResponseWithStatus {
+            status: Status::Ok,
+            message: "invite accepted".to_string(),
+        },
+        Err(e) => {
+            error!("error updating membership in db: {}", e);
+            StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to update membership in db".to_string(),
             }
         }
     }
