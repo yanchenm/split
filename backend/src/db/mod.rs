@@ -1,10 +1,11 @@
 use anyhow::Result;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 
+pub mod currency_pairs;
 pub mod groups;
 pub mod memberships;
-pub mod users;
 pub mod transactions;
+pub mod users;
 
 const MAX_POOL_SIZE: u32 = 10;
 
