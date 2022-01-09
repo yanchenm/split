@@ -9,7 +9,7 @@ use sqlx::MySqlPool;
 use crate::db::groups;
 use crate::db::memberships;
 use crate::models::membership::MembershipStatus;
-use crate::{auth::auth::AuthedUser, db::users, utils::responders::StringResponseWithStatus};
+use crate::{auth::user::AuthedDBUser, db::users, utils::responders::StringResponseWithStatus};
 
 #[derive(Debug, Deserialize)]
 pub struct CreateGroupRequest {
@@ -26,19 +26,8 @@ pub struct InviteToGroupRequest {
 pub async fn create_group<'r>(
     new_group: Json<CreateGroupRequest>,
     pool: &State<MySqlPool>,
-    authed_user: AuthedUser<'r>,
+    authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
-    // Check if the user exists
-    match users::get_user_by_address(pool, authed_user.address.as_str()).await {
-        Ok(Some(_)) => (),
-        _ => {
-            return StringResponseWithStatus {
-                status: Status::BadRequest,
-                message: "authed user does not exist".to_string(),
-            };
-        }
-    };
-
     // Create group and get id
     let group_id = match groups::create_new_group(
         pool,
@@ -85,7 +74,7 @@ pub async fn invite_to_group<'r>(
     pool: &State<MySqlPool>,
     group_id: String,
     invite: Json<InviteToGroupRequest>,
-    authed_user: AuthedUser<'r>,
+    authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
     // Check if the group exists
     match groups::get_group_by_id(pool, group_id.as_str()).await {

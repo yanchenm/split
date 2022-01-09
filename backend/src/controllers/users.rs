@@ -1,4 +1,4 @@
-use crate::auth::auth::AuthedUser;
+use crate::auth::user::{AuthedDBUser, AuthedUser};
 use crate::db::users;
 use crate::utils::responders::StringResponseWithStatus;
 
@@ -71,7 +71,7 @@ pub async fn create_user<'r>(
 #[get("/")]
 pub async fn get_authed_user<'r>(
     pool: &State<MySqlPool>,
-    authed_user: AuthedUser<'r>,
+    authed_user: AuthedDBUser<'r>,
 ) -> Result<Json<User>, StringResponseWithStatus> {
     match users::get_user_by_address(pool, authed_user.address.as_str()).await {
         Ok(Some(user)) => Ok(Json(user)),
