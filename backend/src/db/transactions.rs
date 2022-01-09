@@ -8,6 +8,7 @@ use uuid::Uuid;
 
 use crate::controllers::transactions::Transaction;
 
+// Transaction queries
 pub async fn create_new_transaction(
     pool: &MySqlPool,
     id: &str,
@@ -33,6 +34,23 @@ pub async fn create_new_transaction(
     Ok(())
 }
 
+pub async fn update_transaction(
+    pool: &MySqlPool,
+    id: &str,
+    amount: &Decimal,
+    currency: &str,
+    name: &str,
+) -> Result<()> {
+    sqlx::query!(
+        "UPDATE Transaction SET amount = ?, currency = ?, name = ? WHERE id = ?;",
+        amount, currency, name, id
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+// Split queries
 pub async fn create_new_split(
     pool: &MySqlPool,
     tx_id: &str,
@@ -50,7 +68,54 @@ pub async fn create_new_split(
     Ok(())
 }
 
-pub async fn batch_transaction_splits(
+pub async fn delete_tx_splits(
+    pool: &MySqlPool,
+    tx_id: &str,
+) -> Result<()> {
+    sqlx::query!(
+        "DELETE FROM Split WHERE tx_id = ?;",
+        tx_id
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+pub async fn batch_update_transaction_splits(
+    pool: &MySqlPool,
+    updated_transaction: Json<Transaction>,
+    tx_id: &str
+    // user_address: &str
+) -> Result<()> {
+    // let current_date = Utc::now().date().naive_utc();
+    let total_amount = string_to_decimal(updated_transaction.total.as_str());
+    let tx = pool.begin().await?;
+
+    update_transaction(
+        pool,
+        tx_id,
+        &total_amount,
+        updated_transaction.currency.as_str(),
+        updated_transaction.name.to_lowercase().as_str(),
+    ).await?;
+
+    delete_tx_splits(pool, tx_id).await?;
+
+    for split in updated_transaction.splits.iter() {
+        let share_str = string_to_decimal(split.share.as_str());
+        create_new_split(
+            pool,
+            tx_id,
+            split.address.as_str(),
+            &share_str,
+        ).await?;
+    }
+
+    tx.commit().await?;
+    Ok(())
+}
+
+pub async fn batch_create_transaction_splits(
     pool: &MySqlPool,
     new_transaction: Json<Transaction>,
     user_address: &str,
@@ -73,11 +138,9 @@ pub async fn batch_transaction_splits(
         new_transaction.currency.as_str(),
         user_address,
         new_transaction.name.to_lowercase().as_str(),
-        &current_date,
-    )
-    .await?;
+        &current_date
+    ).await?;
 
-    // TODO: Make this transaction idempotent and atomic
     for split in new_transaction.splits.iter() {
         let share_str = string_to_decimal(split.share.as_str());
         create_new_split(pool, tx_id_str.as_str(), split.address.as_str(), &share_str).await?;

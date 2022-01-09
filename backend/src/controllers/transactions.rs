@@ -1,4 +1,5 @@
 use crate::db::groups;
+use crate::db::memberships;
 use crate::db::transactions;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
@@ -25,7 +26,6 @@ pub struct Split {
     pub share: String,
 }
 
-
 #[post("/", format = "json", data = "<new_transaction>")]
 pub async fn create_transaction<'r>(
     new_transaction: Json<Transaction>,
@@ -37,10 +37,11 @@ pub async fn create_transaction<'r>(
         Ok(Some(_)) => (),
         Ok(None) => (
             return StringResponseWithStatus {
-            status: Status::PreconditionFailed,
+            status: Status::BadRequest,
             message: "group does not exist".to_string(),
         }),
-        Err(_) => {
+        Err(e) => {
+            error!("error checking group exists: {}", e);
             return StringResponseWithStatus {
                 status: Status::InternalServerError,
                 message: "error while checking if group exists".to_string(),
@@ -49,29 +50,33 @@ pub async fn create_transaction<'r>(
     }
 
     // Check if person is in the group
-    // match memberships::get_membership_by_group_and_user(
-    //     pool,
-    //     group_id.as_str(),
-    //     authed_user.address.as_str(),
-    // )
-    // .await
-    // {
-    //     Ok(Some(_)) => (),
-    //     Ok(None) => {
-    //         return StringResponseWithStatus {
-    //             status: Status::PreconditionFailed,
-    //             message: "user is not in group".to_string(),
-    //         }
-    //     },
-    //     Err(_) => {
-    //         return StringResponseWithStatus {
-    //             status: Status::InternalServerError,
-    //             message: "error while checking if user is in group".to_string(),
-    //         }
-    //     }
-    // };
+    match memberships::get_membership_by_group_and_user(
+        pool,
+        new_transaction.group.as_str(),
+        authed_user.address.as_str(),
+    )
+    .await
+    {
+        Ok(Some(_)) => (),
+        Ok(None) => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "user is not in group".to_string(),
+            }
+        },
+        Err(e) => {
+            error!("error checking membership: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while checking if user is in group".to_string(),
+            }
+        }
+    };
+
+    // TODO: Validate splits add up to 1
     
-    match transactions::batch_transaction_splits(
+    // Create transaction and splits atomically
+    match transactions::batch_create_transaction_splits(
         pool, 
         new_transaction, 
         authed_user.address.as_str(),
@@ -82,6 +87,81 @@ pub async fn create_transaction<'r>(
             return StringResponseWithStatus {
                 status: Status::Created,
                 message: "transaction and splits created".to_string(),
+            }
+        },
+        Err(e) => {
+            error!("error creating transaction in db: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while inserting transaction".to_string(),
+            }
+        }
+    };
+}
+
+
+#[put("/<tx_id>", format = "json", data = "<updated_transaction>")]
+pub async fn update_transaction<'r>(
+    pool: &State<MySqlPool>,
+    tx_id: &str,
+    updated_transaction: Json<Transaction>,
+    authed_user: AuthedDBUser<'r>,
+) -> StringResponseWithStatus {
+    // Check if the group exists
+    match groups::get_group_by_id(pool, updated_transaction.group.as_str()).await {
+        Ok(Some(_)) => (),
+        Ok(None) => (
+            return StringResponseWithStatus {
+            status: Status::BadRequest,
+            message: "group does not exist".to_string(),
+        }),
+        Err(e) => {
+            error!("error checking group exists: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while checking if group exists".to_string(),
+            }
+        }
+    }
+
+    // Check if person is in the group
+    match memberships::get_membership_by_group_and_user(
+        pool,
+        updated_transaction.group.as_str(),
+        authed_user.address.as_str(),
+    )
+    .await
+    {
+        Ok(Some(_)) => (),
+        Ok(None) => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "user is not in group".to_string(),
+            }
+        },
+        Err(e) => {
+            error!("error checking membership: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while checking if user is in group".to_string(),
+            }
+        }
+    };
+
+    // TODO: Validate splits add up to 1
+    
+    // Create transaction and splits atomically
+    match transactions::batch_update_transaction_splits(
+        pool, 
+        updated_transaction, 
+        tx_id
+    )
+    .await
+    {
+        Ok(()) => {
+            return StringResponseWithStatus {
+                status: Status::Accepted,
+                message: "transaction and splits updated".to_string(),
             }
         },
         Err(e) => {
