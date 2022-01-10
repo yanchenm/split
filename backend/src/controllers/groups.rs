@@ -6,6 +6,7 @@ use rocket::{
 };
 use sqlx::MySqlPool;
 
+use crate::db::currency_pairs::does_currency_have_rate;
 use crate::db::groups;
 use crate::db::memberships;
 use crate::models::group::Group;
@@ -30,11 +31,30 @@ pub async fn create_group<'r>(
     pool: &State<MySqlPool>,
     authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
+    // Check that given currency is a supported currency
+    let currency = new_group.currency.to_uppercase();
+    match does_currency_have_rate(pool, &currency).await {
+        Ok(false) => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: format!("{} is not a supported currency", currency),
+            }
+        }
+        Ok(true) => (),
+        Err(e) => {
+            error!("error checking if currency has rate: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to check if currency is supported".to_string(),
+            };
+        }
+    }
+
     // Create group and get id
     let group_id = match groups::create_new_group(
         pool,
         new_group.name.as_str(),
-        new_group.currency.as_str(),
+        currency.as_str(),
         new_group.description.as_ref().map(|s| s.as_str()),
     )
     .await
