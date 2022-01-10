@@ -8,6 +8,7 @@ use sqlx::MySqlPool;
 
 use crate::db::groups;
 use crate::db::memberships;
+use crate::models::group::Group;
 use crate::models::membership::MembershipStatus;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
@@ -204,5 +205,70 @@ pub async fn accept_invite_to_group<'r>(
                 message: "failed to update membership in db".to_string(),
             }
         }
+    }
+}
+
+#[get("/<group_id>")]
+pub async fn get_group<'r>(
+    pool: &State<MySqlPool>,
+    group_id: &str,
+    authed_user: AuthedDBUser<'r>,
+) -> Result<Json<Group>, StringResponseWithStatus> {
+    // Check if user is in the group
+    match memberships::get_membership_by_group_and_user(
+        pool,
+        group_id,
+        authed_user.address.as_str(),
+    )
+    .await
+    {
+        Ok(Some(membership)) => match membership {
+            MembershipStatus::OWNER | MembershipStatus::ACTIVE => (),
+            _ => {
+                return Err(StringResponseWithStatus {
+                    status: Status::BadRequest,
+                    message: "authed user is not a member of the group".to_string(),
+                });
+            }
+        },
+        Ok(None) => {
+            return Err(StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "authed user is not a member of the group".to_string(),
+            });
+        }
+        Err(e) => {
+            error!("error getting membership in db: {}", e);
+            return Err(StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to get membership in db".to_string(),
+            });
+        }
+    }
+
+    match groups::get_group_by_id(pool, group_id).await {
+        Ok(Some(group)) => Ok(Json(group)),
+        Ok(None) => Err(StringResponseWithStatus {
+            status: Status::BadRequest,
+            message: "Group not found".to_string(),
+        }),
+        Err(_) => Err(StringResponseWithStatus {
+            status: Status::InternalServerError,
+            message: "Failed to get group due to error".to_string(),
+        }),
+    }
+}
+
+#[get("/")]
+pub async fn get_groups_by_user<'r>(
+    pool: &State<MySqlPool>,
+    authed_user: AuthedDBUser<'r>,
+) -> Result<Json<Vec<Group>>, StringResponseWithStatus> {
+    match groups::get_groups_by_user(pool, authed_user.address.as_str()).await {
+        Ok(groups) => Ok(Json(groups)),
+        Err(_) => Err(StringResponseWithStatus {
+            status: Status::InternalServerError,
+            message: "Failed to get groups due to server error".to_string(),
+        }),
     }
 }

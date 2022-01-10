@@ -36,3 +36,17 @@ pub async fn get_group_by_id(pool: &MySqlPool, group_id: &str) -> Result<Option<
 
     Ok(group)
 }
+
+pub async fn get_groups_by_user(pool: &MySqlPool, address: &str) -> Result<Vec<Group>> {
+    let groups = sqlx::query_as!(
+        Group,
+        "SELECT g.*
+        FROM `Group` g
+        LEFT JOIN Membership on g.id = Membership.group
+        WHERE user = ?;",
+        address
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(groups)
+}
