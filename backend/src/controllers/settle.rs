@@ -174,7 +174,7 @@ pub async fn get_settlement_by_group<'r>(
             break;
         }
         // This should never happen
-        if (debtor_amt > zero && creditor_amt < zero) {
+        if debtor_amt > zero && creditor_amt < zero {
             return Err(StringResponseWithStatus {
                 status: Status::BadRequest,
                 message: "Fatal error while calculating settlement paths for transactions"
