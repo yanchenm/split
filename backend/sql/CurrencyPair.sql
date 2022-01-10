@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS CurrencyPair (
     out_currency CHAR(3) NOT NULL,
     rate FLOAT NOT NULL,
     fetched TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (in_currency, out_currency, fetched)
+    PRIMARY KEY (in_currency, out_currency)
 );

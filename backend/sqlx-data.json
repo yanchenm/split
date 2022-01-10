@@ -233,16 +233,6 @@
       "nullable": []
     }
   },
-  "710f5d7d2b8b94f333f8429d0f7111b9bb229701078e7599d2ac5d268828c2e1": {
-    "query": "INSERT INTO CurrencyPair (in_currency, out_currency, rate) VALUES (?, ?, ?);",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Right": 3
-      },
-      "nullable": []
-    }
-  },
   "8a55e5f9f628933bdf849eff65e01ca900be54a608f6bbdd75577d79479de746": {
     "query": "INSERT INTO User (address, username, email) VALUES (?, ?, ?);",
     "describe": {
@@ -340,6 +330,16 @@
       ]
     }
   },
+  "d8e67131ffc0a639bf8ca36a71ef8702e71b8db85652eaf2ba73e64f475cd7cb": {
+    "query": "INSERT INTO CurrencyPair (in_currency, out_currency, rate, fetched) \n        VALUES (?, ?, ?, CURRENT_TIMESTAMP) \n        ON DUPLICATE KEY \n        UPDATE rate = ?, fetched = CURRENT_TIMESTAMP;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 4
+      },
+      "nullable": []
+    }
+  },
   "e0e61fc69b4205c310821226239abc90429fa5c8f259523b8c69dceadf058530": {
     "query": "INSERT INTO `Group` (id, name, currency, description) VALUES (?, ?, ?, ?);",
     "describe": {
@@ -396,7 +396,7 @@
           "type_info": {
             "type": "Timestamp",
             "flags": {
-              "bits": 1155
+              "bits": 1153
             },
             "char_set": 63,
             "max_size": 19

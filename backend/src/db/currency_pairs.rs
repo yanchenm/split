@@ -4,16 +4,20 @@ use sqlx::MySqlPool;
 
 use crate::models::currency_pair::CurrencyPair;
 
-pub async fn add_new_currency_pair(
+pub async fn add_or_refresh_currency_pair(
     pool: &MySqlPool,
     in_currency: &str,
     out_currency: &str,
     rate: f32,
 ) -> Result<()> {
     sqlx::query!(
-        "INSERT INTO CurrencyPair (in_currency, out_currency, rate) VALUES (?, ?, ?);",
+        "INSERT INTO CurrencyPair (in_currency, out_currency, rate, fetched) 
+        VALUES (?, ?, ?, CURRENT_TIMESTAMP) 
+        ON DUPLICATE KEY 
+        UPDATE rate = ?, fetched = CURRENT_TIMESTAMP;",
         in_currency,
         out_currency,
+        rate,
         rate
     )
     .execute(pool)
