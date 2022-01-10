@@ -29,7 +29,7 @@ pub async fn create_user<'r>(
     }
 
     // Check if the user already exists
-    match users::get_user_by_address(pool, new_user.address.to_lowercase().as_str()).await {
+    match users::get_user_by_address(pool, new_user.address.as_str()).await {
         Ok(Some(_)) => {
             return StringResponseWithStatus {
                 status: Status::Conflict,
@@ -48,7 +48,7 @@ pub async fn create_user<'r>(
 
     match users::create_new_user(
         pool,
-        new_user.address.to_lowercase().as_str(),
+        new_user.address.as_str(),
         new_user.username.as_str(),
         new_user.email.as_ref().map(|s| s.as_str()),
     )

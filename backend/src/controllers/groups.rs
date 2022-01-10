@@ -32,8 +32,7 @@ pub async fn create_group<'r>(
     authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
     // Check that given currency is a supported currency
-    let currency = new_group.currency.to_uppercase();
-    match does_currency_have_rate(pool, &currency).await {
+    match does_currency_have_rate(pool, new_group.currency.as_str()).await {
         Ok(false) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
@@ -118,16 +117,8 @@ pub async fn invite_to_group<'r>(
     )
     .await
     {
-        Ok(Some(membership)) => match membership {
-            MembershipStatus::OWNER | MembershipStatus::ACTIVE => (),
-            _ => {
-                return StringResponseWithStatus {
-                    status: Status::BadRequest,
-                    message: "authed user is not a member of the group".to_string(),
-                };
-            }
-        },
-        Ok(None) => {
+        Ok(Some(MembershipStatus::OWNER | MembershipStatus::ACTIVE)) => (),
+        Ok(_) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
                 message: "authed user is not a member of the group".to_string(),
