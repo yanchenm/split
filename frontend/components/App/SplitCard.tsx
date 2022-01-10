@@ -1,5 +1,8 @@
 import React from 'react';
 
+import AppButton from '../UI/AppButton';
+
+
 type CardProps = {
   name: string;
   cost: number;
@@ -12,7 +15,7 @@ type WrapperProps = {
   svgSrc: string;
 }
 
-const DetailWrapper: React.FC<WrapperProps> = ({ children, svgSrc }) => {
+const SplitDetail: React.FC<WrapperProps> = ({ children, svgSrc }) => {
   return (
     <span className="flex flex-row items-center py-3 pl-8">
       <img src={svgSrc} className="h-12 w-12" />
@@ -21,12 +24,8 @@ const DetailWrapper: React.FC<WrapperProps> = ({ children, svgSrc }) => {
   )
 }
 
-const CardButton: React.FC = ({ children }) => {
-  return (
-    <button className="bg-violet-900 hover:bg-violet-800 text-base px-6 rounded h-8">
-      {children}
-    </button>
-  )
+const clickHandler = () => {
+  console.log("hello");
 }
 
 const SplitCard: React.FC<CardProps> = ({ name, cost, numTxns, date }) => {
@@ -38,23 +37,23 @@ const SplitCard: React.FC<CardProps> = ({ name, cost, numTxns, date }) => {
       
       <hr className="mx-5 my-2 w-5/6 text-slate-600" />
 
-      <DetailWrapper svgSrc="/dollar.svg">
+      <SplitDetail svgSrc="/dollar.svg">
         {cost} USD
-      </DetailWrapper>
+      </SplitDetail>
 
-      <DetailWrapper svgSrc="/document_stats.svg">
+      <SplitDetail svgSrc="/document_stats.svg">
         {numTxns}
         <h3 className="text-base">Transactions</h3>
-      </DetailWrapper>
+      </SplitDetail>
 
-      <DetailWrapper svgSrc="/calendar.svg">
+      <SplitDetail svgSrc="/calendar.svg">
         {date}
         <h3 className="text-base">Last Change</h3>
-      </DetailWrapper>
+      </SplitDetail>
 
       <span className="flex flex-row items-center justify-evenly py-4">
-        <CardButton>Edit</CardButton>
-        <CardButton>View</CardButton>
+        <AppButton clickHandler={clickHandler}>Edit</AppButton>
+        <AppButton clickHandler={clickHandler}>View</AppButton>
       </span>
     </div>
   )
