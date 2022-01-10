@@ -7,18 +7,21 @@ const ExpenseList: React.FC = () => {
 
   const dummyExpenses = [
     {
+      _id: 'a',
       name: 'Mcdonalds',
       paidBy: 'bob',
       total: 12345.12,
       date: '2020-12-25'
     },
     {
+      _id: 'b',
       name: 'Canoe',
       paidBy: 'john',
       total: 12345.12,
       date: '2020-12-25'
     },
     {
+      _id: 'c',
       name: 'Rouge',
       paidBy: 'greg',
       total: 12345.12,
@@ -39,6 +42,7 @@ const ExpenseList: React.FC = () => {
         {dummyExpenses.map((expense) => {
           return (
             <Expense
+              key={expense._id}
               name={expense.name}
               paidBy={expense.paidBy}
               total={expense.total}
