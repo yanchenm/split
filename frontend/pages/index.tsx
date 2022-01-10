@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import Button from '../components/Button';
+import Button from '../components/UI/Button';
 import React from 'react';
 import { W3Context } from './_app';
 
