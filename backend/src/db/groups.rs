@@ -42,8 +42,9 @@ pub async fn get_groups_by_user(pool: &MySqlPool, address: &str) -> Result<Vec<G
         Group,
         "SELECT g.*
         FROM `Group` g
-        LEFT JOIN Membership on g.id = Membership.group
-        WHERE user = ?;",
+        JOIN Membership
+        ON g.id = Membership.group
+        AND Membership.user = ?;",
         address
     )
     .fetch_all(pool)
