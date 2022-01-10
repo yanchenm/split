@@ -167,11 +167,19 @@ pub async fn get_settlement_by_group<'r>(
             }
         };
 
-        let debtor_amt = debtor.net_owed.clone();
-        let creditor_amt = creditor.net_owed.clone();
+        let debtor_amt = debtor.net_owed;
+        let creditor_amt = creditor.net_owed;
         // If we are getting zero for creditor or debtor amounts, we are done!
         if debtor_amt == zero || creditor_amt == zero {
             break;
+        }
+        // This should never happen
+        if (debtor_amt > zero && creditor_amt < zero) {
+            return Err(StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "Fatal error while calculating settlement paths for transactions"
+                    .to_string(),
+            });
         }
 
         // Case 0: Creditor is owed more than debtor owes
@@ -187,7 +195,7 @@ pub async fn get_settlement_by_group<'r>(
             };
             owed_amts[min_max.1] = NetOwed {
                 address: creditor.address.clone(),
-                net_owed: creditor_amt - debtor_amt,
+                net_owed: creditor_amt - debtor_amt.abs(),
             };
             continue;
         }
