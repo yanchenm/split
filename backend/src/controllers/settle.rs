@@ -124,7 +124,7 @@ pub async fn get_settlement_by_group<'r>(
     for splits in all_splits {
         for split in splits {
             let owed = net_owed.entry(split.user).or_insert(Decimal::new(0, 2));
-            *owed += split.share;
+            *owed -= split.share;
         }
     }
 
