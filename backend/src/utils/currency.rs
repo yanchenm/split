@@ -34,12 +34,22 @@ pub async fn refresh_currency_pairs_from_api(pool: &MySqlPool) -> Result<()> {
     for (currency, rate) in response_data.data {
         let pool_clone = pool.clone();
         handles.push(task::spawn(async move {
-            add_or_refresh_currency_pair(&pool_clone, "USD", currency.as_str(), rate)
-                .await
-                .expect(format!("Failed to add currency pair {} - {}", "USD", currency).as_str());
-            add_or_refresh_currency_pair(&pool_clone, currency.as_str(), "USD", 1.0 / rate)
-                .await
-                .expect(format!("Failed to add currency pair {} - {}", currency, "USD").as_str());
+            add_or_refresh_currency_pair(
+                &pool_clone,
+                "USD",
+                currency.to_uppercase().as_str(),
+                rate,
+            )
+            .await
+            .expect(format!("Failed to add currency pair {} - {}", "USD", currency).as_str());
+            add_or_refresh_currency_pair(
+                &pool_clone,
+                currency.to_uppercase().as_str(),
+                "USD",
+                1.0 / rate,
+            )
+            .await
+            .expect(format!("Failed to add currency pair {} - {}", currency, "USD").as_str());
         }));
     }
     join_all(handles).await;
