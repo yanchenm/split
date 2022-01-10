@@ -36,7 +36,7 @@ pub async fn create_group<'r>(
         Ok(false) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
-                message: format!("{} is not a supported currency", currency),
+                message: format!("{} is not a supported currency", new_group.currency),
             }
         }
         Ok(true) => (),
@@ -53,7 +53,7 @@ pub async fn create_group<'r>(
     let group_id = match groups::create_new_group(
         pool,
         new_group.name.as_str(),
-        currency.as_str(),
+        new_group.currency.as_str(),
         new_group.description.as_ref().map(|s| s.as_str()),
     )
     .await

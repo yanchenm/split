@@ -82,7 +82,7 @@ pub async fn create_transaction<'r>(
         Ok(false) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
-                message: format!("{} is not a supported currency", currency),
+                message: format!("{} is not a supported currency", new_transaction.currency),
             }
         }
         Ok(true) => (),
@@ -175,7 +175,10 @@ pub async fn update_transaction<'r>(
         Ok(false) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
-                message: format!("{} is not a supported currency", currency),
+                message: format!(
+                    "{} is not a supported currency",
+                    updated_transaction.currency
+                ),
             }
         }
         Ok(true) => (),
