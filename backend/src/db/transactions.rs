@@ -92,7 +92,7 @@ pub async fn batch_update_transaction_splits(
         pool,
         tx_id,
         &total_amount,
-        updated_transaction.currency.as_str(),
+        updated_transaction.currency.to_uppercase().as_str(),
         updated_transaction.name.to_lowercase().as_str(),
     )
     .await?;

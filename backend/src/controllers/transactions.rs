@@ -171,6 +171,25 @@ pub async fn update_transaction<'r>(
         }
     };
 
+    // Check if currency is supported
+    let currency = new_transaction.currency.to_uppercase();
+    match does_currency_have_rate(pool, &currency).await {
+        Ok(false) => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: format!("{} is not a supported currency", currency),
+            }
+        }
+        Ok(true) => (),
+        Err(e) => {
+            error!("error checking if currency has rate: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to check if currency is supported".to_string(),
+            };
+        }
+    }
+
     // TODO: Validate splits add up to 1
 
     // Create transaction and splits atomically
