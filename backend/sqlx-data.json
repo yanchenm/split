@@ -475,6 +475,70 @@
       "nullable": []
     }
   },
+  "e512f7abb6123120f4daa82469bbb11dd2d501eb974445a5e751af4862d8d28f": {
+    "query": "SELECT * FROM CurrencyPair WHERE in_currency = ? OR out_currency = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "in_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "out_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "rate",
+          "type_info": {
+            "type": "Float",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "fetched",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 1153
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "e73862f67d0aac0066ac17337946a2ef7d327ad432e14c976a5d21e8e05a59da": {
     "query": "SELECT * FROM User WHERE address = ?;",
     "describe": {
