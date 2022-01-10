@@ -128,7 +128,7 @@ pub async fn batch_create_transaction_splits(
         tx_id_str.as_str(),
         new_transaction.group.as_str(),
         &total_amount,
-        new_transaction.currency.as_str(),
+        new_transaction.currency.to_uppercase().as_str(),
         user_address,
         new_transaction.name.to_lowercase().as_str(),
         &current_date,

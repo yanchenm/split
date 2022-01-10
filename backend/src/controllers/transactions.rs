@@ -1,3 +1,4 @@
+use crate::db::currency_pairs::does_currency_have_rate;
 use crate::db::groups;
 use crate::db::memberships;
 use crate::db::transactions;
@@ -60,8 +61,8 @@ pub async fn create_transaction<'r>(
     )
     .await
     {
-        Ok(Some(_)) => (),
-        Ok(None) => {
+        Ok(Some(MembershipStatus::ACTIVE | MembershipStatus::OWNER)) => (),
+        Ok(Some(_) | None) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
                 message: "user is not in group".to_string(),
@@ -75,6 +76,25 @@ pub async fn create_transaction<'r>(
             };
         }
     };
+
+    // Check if currency is supported
+    let currency = new_transaction.currency.to_uppercase();
+    match does_currency_have_rate(pool, &currency).await {
+        Ok(false) => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: format!("{} is not a supported currency", currency),
+            }
+        }
+        Ok(true) => (),
+        Err(e) => {
+            error!("error checking if currency has rate: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to check if currency is supported".to_string(),
+            };
+        }
+    }
 
     // TODO: Validate splits add up to 1
 

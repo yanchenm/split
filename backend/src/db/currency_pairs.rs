@@ -38,3 +38,15 @@ pub async fn get_latest_refreshed_time(pool: &MySqlPool) -> Result<chrono::DateT
         None => Ok(chrono::Utc::now() - chrono::Duration::hours(25)),
     }
 }
+
+pub async fn does_currency_have_rate(pool: &MySqlPool, currency: &str) -> Result<bool> {
+    let result = sqlx::query!(
+        "SELECT * FROM CurrencyPair WHERE in_currency = ? OR out_currency = ?;",
+        currency.to_uppercase(),
+        currency.to_uppercase()
+    )
+    .fetch_optional(pool)
+    .await?;
+
+    Ok(result.is_some())
+}
