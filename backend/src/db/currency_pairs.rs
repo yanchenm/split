@@ -15,8 +15,8 @@ pub async fn add_or_refresh_currency_pair(
         VALUES (?, ?, ?, CURRENT_TIMESTAMP) 
         ON DUPLICATE KEY 
         UPDATE rate = ?, fetched = CURRENT_TIMESTAMP;",
-        in_currency,
-        out_currency,
+        in_currency.to_uppercase(),
+        out_currency.to_uppercase(),
         rate,
         rate
     )

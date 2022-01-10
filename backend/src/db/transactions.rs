@@ -25,8 +25,8 @@ pub async fn create_new_transaction(
         id,
         group,
         amount,
-        currency,
-        paid_by,
+        currency.to_uppercase(),
+        paid_by.to_lowercase(),
         name,
         date
     )
@@ -45,7 +45,7 @@ pub async fn update_transaction(
     sqlx::query!(
         "UPDATE Transaction SET amount = ?, currency = ?, name = ? WHERE id = ?;",
         amount,
-        currency,
+        currency.to_uppercase(),
         name,
         id
     )
@@ -64,7 +64,7 @@ pub async fn create_new_split(
     sqlx::query!(
         "INSERT INTO Split (tx_id, user, share) VALUES (?, ?, ?);",
         tx_id,
-        user,
+        user.to_lowercase(),
         share,
     )
     .execute(pool)
@@ -92,8 +92,8 @@ pub async fn batch_update_transaction_splits(
         pool,
         tx_id,
         &total_amount,
-        updated_transaction.currency.to_uppercase().as_str(),
-        updated_transaction.name.to_lowercase().as_str(),
+        updated_transaction.currency.as_str(),
+        updated_transaction.name.as_str(),
     )
     .await?;
 
@@ -128,9 +128,9 @@ pub async fn batch_create_transaction_splits(
         tx_id_str.as_str(),
         new_transaction.group.as_str(),
         &total_amount,
-        new_transaction.currency.to_uppercase().as_str(),
+        new_transaction.currency.as_str(),
         user_address,
-        new_transaction.name.to_lowercase().as_str(),
+        new_transaction.name.as_str(),
         &current_date,
     )
     .await?;

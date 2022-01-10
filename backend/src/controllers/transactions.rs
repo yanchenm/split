@@ -78,8 +78,7 @@ pub async fn create_transaction<'r>(
     };
 
     // Check if currency is supported
-    let currency = new_transaction.currency.to_uppercase();
-    match does_currency_have_rate(pool, &currency).await {
+    match does_currency_have_rate(pool, new_transaction.currency.as_str()).await {
         Ok(false) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
@@ -172,8 +171,7 @@ pub async fn update_transaction<'r>(
     };
 
     // Check if currency is supported
-    let currency = new_transaction.currency.to_uppercase();
-    match does_currency_have_rate(pool, &currency).await {
+    match does_currency_have_rate(pool, updated_transaction.currency.as_str()).await {
         Ok(false) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,

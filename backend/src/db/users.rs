@@ -11,7 +11,7 @@ pub async fn create_new_user(
 ) -> Result<()> {
     sqlx::query!(
         "INSERT INTO User (address, username, email) VALUES (?, ?, ?);",
-        address,
+        address.to_lowercase(),
         username,
         email
     )
@@ -21,8 +21,12 @@ pub async fn create_new_user(
 }
 
 pub async fn get_user_by_address(pool: &MySqlPool, address: &str) -> Result<Option<User>> {
-    let user = sqlx::query_as!(User, "SELECT * FROM User WHERE address = ?;", address)
-        .fetch_optional(pool)
-        .await?;
+    let user = sqlx::query_as!(
+        User,
+        "SELECT * FROM User WHERE address = ?;",
+        address.to_lowercase()
+    )
+    .fetch_optional(pool)
+    .await?;
     Ok(user)
 }
