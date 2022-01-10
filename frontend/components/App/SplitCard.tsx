@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 import AppButton from '../UI/AppButton';
-
 
 type CardProps = {
   name: string;
   cost: number;
   numTxns: number;
   date: string;
+  groupId: string;
 }
 
 type WrapperProps = {
@@ -24,13 +25,27 @@ const SplitDetail: React.FC<WrapperProps> = ({ children, svgSrc }) => {
   )
 }
 
-const clickHandler = () => {
-  console.log("hello");
-}
+const SplitCard: React.FC<CardProps> = ({ name, cost, numTxns, date, groupId }) => {
 
-const SplitCard: React.FC<CardProps> = ({ name, cost, numTxns, date }) => {
+  const router = useRouter();
+  const [splitId, setSplitId] = useState('');
+
+  // Set groupId on groupId change
+  useEffect(() => {
+    setSplitId(groupId);
+  }, [groupId])
+
+  const editHandler = () => {
+    router.push(`/app/group/${groupId}`)
+  }
+
+  const viewHandler = () => {
+    console.log(splitId);
+  }
+
+
   return (
-    <div className="rounded-lg w-64 h-90 bg-slate-900 flex flex-col m-3 text-slate-300">
+    <div className="rounded-lg w-64 h-96 bg-slate-900 flex flex-col m-3 text-slate-300">
       <span className="pt-4 pb-1">
         <div className="font-bold text-3xl mb-1 text-center">{name}</div>
       </span>
@@ -52,8 +67,7 @@ const SplitCard: React.FC<CardProps> = ({ name, cost, numTxns, date }) => {
       </SplitDetail>
 
       <span className="flex flex-row items-center justify-evenly py-4">
-        <AppButton clickHandler={clickHandler}>Edit</AppButton>
-        <AppButton clickHandler={clickHandler}>View</AppButton>
+        <AppButton className="w-40" clickHandler={editHandler}>View Details</AppButton>
       </span>
     </div>
   )
