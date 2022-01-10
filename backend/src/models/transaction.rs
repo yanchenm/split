@@ -14,10 +14,3 @@ pub struct DbTransaction {
     pub date: NaiveDate,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Split {
-    pub tx_id: String,
-    pub user: String,
-    pub share: Decimal,
-}

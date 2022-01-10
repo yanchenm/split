@@ -11,6 +11,7 @@ use crate::controllers::currency::refresh_currency_conversions;
 use crate::controllers::groups::{
     accept_invite_to_group, create_group, get_group, get_groups_by_user, invite_to_group,
 };
+use crate::controllers::settle::get_settlement_by_group;
 use crate::controllers::transactions::{
     create_transaction, get_transactions_by_group, update_transaction,
 };
@@ -67,5 +68,6 @@ async fn rocket() -> _ {
                 get_transactions_by_group
             ],
         )
+        .mount("/settle", routes![get_settlement_by_group])
         .manage(pool)
 }

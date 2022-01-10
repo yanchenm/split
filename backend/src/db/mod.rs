@@ -4,6 +4,7 @@ use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 pub mod currency_pairs;
 pub mod groups;
 pub mod memberships;
+pub mod splits;
 pub mod transactions;
 pub mod users;
 
