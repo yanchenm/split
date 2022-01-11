@@ -14,7 +14,7 @@ pub async fn create_new_membership(
     sqlx::query!(
         "INSERT INTO Membership (`group`, user, status) VALUES(?, ?, ?);",
         group,
-        user,
+        user.to_lowercase(),
         status.to_string()
     )
     .execute(pool)
