@@ -35,23 +35,23 @@ const SplitCard: React.FC<CardProps> = ({ name, userBalance, currency, lastUpdat
 
   return (
     <div className="rounded-lg w-64 h-64 bg-slate-900 flex flex-col m-3 text-slate-300">
-      <span className="pt-2 pb-0">
+      <span className="pt-3 pb-2">
         <div className="font-bold text-2xl mb-1 text-center">{name}</div>
       </span>
       
-      <hr className="mx-5 py-1 w-5/6 text-slate-600" />
+      <hr className="mx-5 py-2 w-5/6 text-slate-600" />
 
       <SplitDetail svgSrc={userBalance < 0 ? "/red_dollar.svg" : "/green_dollar.svg"}>
-        <h3 className="text-base text-slate-400">{userBalance < 0 ? "You owe" : "You are owed"}</h3> 
+        <h3 className="text-sm text-slate-400">{userBalance < 0 ? "You owe" : "You are owed"}</h3> 
         {userBalance} {currency}
       </SplitDetail>
 
       <SplitDetail svgSrc="/calendar.svg">
-        <h3 className="text-base text-slate-400">Last Change</h3>
+        <h3 className="text-sm text-slate-400">Last Change</h3>
         {lastUpdate}
       </SplitDetail>
 
-      <span className="flex flex-row items-center justify-evenly py-3">
+      <span className="flex flex-row items-center justify-evenly pt-2 pb-7">
         <AppButton className="w-40" clickHandler={viewHandler}>View Details</AppButton>
       </span>
     </div>
