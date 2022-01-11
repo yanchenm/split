@@ -37,7 +37,7 @@ const GroupStats: React.FC<StatProps> = ({ totalExpenses, numTxns, userBalance }
     <div className="min-w-2xl max-w-3xl h-24 mt-10 border-solid border-2 border-slate-700 rounded-xl">
       <span className="flex flex-row justify-start ml-0 h-full items-center">
         <SingleStat 
-          svgSrc='/dollar.svg'
+          svgSrc={userBalance > 0 ? '/green_dollar.svg' : '/red_dollar.svg'}
           label='Your Total'
           amount={420} 
         />
