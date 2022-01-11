@@ -45,10 +45,6 @@ const Sidebar: React.FC = () => {
             svgSrc='/document_archived.svg' 
             buttonText='View Past Splits' 
           />
-          <SidebarButton 
-            svgSrc='/logout.svg' 
-            buttonText='Log out' 
-          />
         </nav>
       </div>
   )
