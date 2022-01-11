@@ -573,6 +573,31 @@
       ]
     }
   },
+  "d5a452bd7b186a18716b0b0a6363fba611b0904ca263aace60d08ff7276ee255": {
+    "query": "SELECT DISTINCT in_currency as currency FROM CurrencyPair ORDER BY in_currency;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
   "d8e67131ffc0a639bf8ca36a71ef8702e71b8db85652eaf2ba73e64f475cd7cb": {
     "query": "INSERT INTO CurrencyPair (in_currency, out_currency, rate, fetched) \n        VALUES (?, ?, ?, CURRENT_TIMESTAMP) \n        ON DUPLICATE KEY \n        UPDATE rate = ?, fetched = CURRENT_TIMESTAMP;",
     "describe": {
