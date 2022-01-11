@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import Button from '../components/UI/Button';
 import React from 'react';
 import { W3Context } from './_app';
@@ -9,13 +10,21 @@ type PageProps = {
 }
 
 const Home: NextPage<PageProps> = ({ ...props }) => {
+
+  const router = useRouter();
   const { web3Connect } = props;
+
   return (
     <W3Context.Consumer>
       {(consumerProps) => {
         let buttonArea = <></>;
         if (consumerProps && consumerProps.account && consumerProps.isConnected && consumerProps.isHarmony) {
-          buttonArea = <p className='text-xl font-semibold text-slate-300'>{consumerProps.account?.substring(0, 6) + "..." + consumerProps.account?.substring(38)}</p>
+          buttonArea = (
+            <div>
+              <p className='text-xl font-semibold text-slate-300'>{consumerProps.account?.substring(0, 6) + "..." + consumerProps.account?.substring(38)}</p>
+              <Button clickHandler={() => router.push('/app')}>Launch App</Button>
+            </div>
+          )
         } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
           buttonArea = <p className='text-xl font-semibold text-slate-300'>Wrong chain! Please connect to Harmony Network</p>
         } else if (consumerProps && consumerProps.account) {

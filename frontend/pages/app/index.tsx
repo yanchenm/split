@@ -53,7 +53,7 @@ const Dashboard: NextPage = () => {
       {/* Content */}
       <div className="bg-slate-800 flex-1 p-10 text-2xl text-white font-bold h-screen">
         Your Splits
-        <div className="mt-10 flex flex-row flex-wrap overflow-y-auto overflow-hidden h-5/6 shadow-xl shadow-slate-900 rounded-xl">
+        <div className="mt-10 flex flex-row flex-wrap overflow-y-auto overflow-hidden h-5/6 shadow-xl shadow-slate-900 rounded-xl content-start">
           {
             splitGroups.map((split) => {
               return (

@@ -34,7 +34,7 @@ const SplitCard: React.FC<CardProps> = ({ name, userBalance, currency, lastUpdat
   }
 
   return (
-    <div className="rounded-lg w-64 h-64 bg-slate-900 flex flex-col m-3 text-slate-300">
+    <div className="rounded-lg w-64 h-64 bg-slate-900 flex flex-col m-3 text-slate-300 grow-0">
       <span className="pt-3 pb-2">
         <div className="font-bold text-2xl mb-1 text-center">{name}</div>
       </span>
