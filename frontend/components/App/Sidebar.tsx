@@ -20,7 +20,7 @@ const Sidebar: React.FC = () => {
     <div className="bg-slate-900 text-slate-300 w-64 space-y-6 px-4 py-7">
 
         {/* Logo */}
-        <a href="/" className="flex items-center space-x-2 px-4">
+        <a className="flex items-center space-x-2 px-4">
           <img src="/cake.svg" className="w-8 h-8" />
           <span className="text-2xl font-extrabold">
             Ligma
