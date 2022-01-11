@@ -2,6 +2,8 @@ use std::{collections::HashMap, env};
 
 use anyhow::{anyhow, Result};
 use rocket::futures::future::join_all;
+use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 use sqlx::MySqlPool;
 use tokio::task;
@@ -9,8 +11,35 @@ use tokio::task;
 use crate::db::currency_pairs::add_or_refresh_currency_pair;
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct CurrencyAPIResponse {
-    pub data: HashMap<String, f32>,
+struct CurrencyAPIResponse {
+    data: HashMap<String, Decimal>,
+}
+
+#[derive(Debug, Deserialize)]
+struct CMCResponse {
+    data: CMCResponseData,
+}
+
+#[derive(Debug, Deserialize)]
+struct CMCResponseData {
+    #[serde(rename = "ONE")]
+    harmony_data: HarmonyData,
+}
+
+#[derive(Debug, Deserialize)]
+struct HarmonyData {
+    quote: QuoteData,
+}
+
+#[derive(Debug, Deserialize)]
+struct QuoteData {
+    #[serde(rename = "USD")]
+    usd: PriceData,
+}
+
+#[derive(Debug, Deserialize)]
+struct PriceData {
+    price: Decimal,
 }
 
 pub async fn refresh_currency_pairs_from_api(pool: &MySqlPool) -> Result<()> {
@@ -46,12 +75,50 @@ pub async fn refresh_currency_pairs_from_api(pool: &MySqlPool) -> Result<()> {
                 &pool_clone,
                 currency.to_uppercase().as_str(),
                 "USD",
-                1.0 / rate,
+                dec!(1.0) / rate,
             )
             .await
             .expect(format!("Failed to add currency pair {} - {}", currency, "USD").as_str());
         }));
     }
     join_all(handles).await;
+    Ok(())
+}
+
+pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
+    let base_url = env::var("CMC_API_URL")?;
+    let api_key = env::var("CMC_API_KEY")?;
+    let request_url = format!("{}?symbol=ONE&convert=USD", base_url);
+    let response = reqwest::Client::new()
+        .get(&request_url)
+        .header("X-CMC_PRO_API_KEY", api_key)
+        .send()
+        .await?;
+
+    match response.status() {
+        reqwest::StatusCode::OK => (),
+        status => {
+            return Err(anyhow!(
+                "failed to get harmony price from CMC api: status {}",
+                status
+            ))
+        }
+    };
+
+    let response_data = response.json::<CMCResponse>().await?;
+    add_or_refresh_currency_pair(
+        pool,
+        "ONE",
+        "USD",
+        response_data.data.harmony_data.quote.usd.price,
+    )
+    .await?;
+    add_or_refresh_currency_pair(
+        pool,
+        "USD",
+        "ONE",
+        dec!(1.0) / response_data.data.harmony_data.quote.usd.price,
+    )
+    .await?;
     Ok(())
 }
