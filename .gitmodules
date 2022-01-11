@@ -1,0 +1,3 @@
+[submodule "contract/lib/solmate"]
+	path = contract/lib/solmate
+	url = https://github.com/rari-capital/solmate
