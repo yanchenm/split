@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 import SplitCard from '../../components/App/SplitCard';
 import NewCard from '../../components/App/NewCard';
