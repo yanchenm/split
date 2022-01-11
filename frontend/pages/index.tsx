@@ -3,6 +3,11 @@ import Button from '../components/UI/Button';
 import React from 'react';
 import { W3Context } from './_app';
 import axios from 'axios'
+import NewCard from '../components/App/NewCard'
+import Sidebar from '../components/App/Sidebar'
+import SplitCard from '../components/App/SplitCard'
+import Expense from '../components/DetailView/Expense'
+import NewSplit from '../components/App/NewSplit'
 
 type PageProps = {
   web3Connect: () => Promise<void>
@@ -30,7 +35,8 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               <h1 className="text-3xl font-bold text-slate-300">Web3Split</h1>
               {buttonArea}
             </div>
-            <div className="flex flex-col h-40 justify-between items-center mt-40">
+            <NewSplit></NewSplit>
+            <div className="flex flex-col h-40 justify-between = mt-40">
               <h1 className="text-3xl font-bold text-slate-300 text-center">Penis on the <br /> BLOCK CHAIN</h1>
             </div>
           </div>
