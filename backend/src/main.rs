@@ -7,7 +7,9 @@ mod utils;
 #[macro_use]
 extern crate rocket;
 
-use crate::controllers::currency::{refresh_currency_conversions, refresh_harmony_price};
+use crate::controllers::currency::{
+    get_supported_currencies, refresh_currency_conversions, refresh_harmony_price,
+};
 use crate::controllers::groups::{
     accept_invite_to_group, create_group, get_group, get_groups_by_user, invite_to_group,
 };
@@ -61,7 +63,11 @@ async fn rocket() -> _ {
         )
         .mount(
             "/currency",
-            routes![refresh_currency_conversions, refresh_harmony_price],
+            routes![
+                get_supported_currencies,
+                refresh_currency_conversions,
+                refresh_harmony_price
+            ],
         )
         .mount(
             "/transaction",

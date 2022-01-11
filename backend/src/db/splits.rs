@@ -3,7 +3,17 @@ use sqlx::MySqlPool;
 
 use crate::models::split::Split;
 
-pub async fn get_splits_by_txn(pool: &MySqlPool, tx_id: &str) -> Result<Vec<Split>> {
+#[derive(Debug)]
+pub struct SplitWithCurrency {
+    pub split: Split,
+    pub currency: String,
+}
+
+pub async fn get_splits_with_currency_by_txn(
+    pool: &MySqlPool,
+    tx_id: &str,
+    currency: &str,
+) -> Result<Vec<SplitWithCurrency>> {
     let splits = sqlx::query_as!(
         Split,
         "SELECT * FROM Split s
@@ -11,6 +21,12 @@ pub async fn get_splits_by_txn(pool: &MySqlPool, tx_id: &str) -> Result<Vec<Spli
         tx_id,
     )
     .fetch_all(pool)
-    .await?;
+    .await?
+    .iter()
+    .map(|split| SplitWithCurrency {
+        split: split.to_owned(),
+        currency: currency.to_string(),
+    })
+    .collect::<Vec<_>>();
     Ok(splits)
 }

@@ -8,7 +8,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::MySqlPool;
 use tokio::task;
 
-use crate::db::currency_pairs::add_or_refresh_currency_pair;
+use crate::db::currency_pairs::{
+    add_or_refresh_currency_pair, get_currency_to_usd_rate, get_usd_to_currency_rate,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 struct CurrencyAPIResponse {
@@ -121,4 +123,22 @@ pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
     )
     .await?;
     Ok(())
+}
+
+pub async fn get_currency_conversion_rate(
+    pool: &MySqlPool,
+    from: String,
+    to: String,
+) -> Result<(Decimal, String)> {
+    let in_to_usd_rate = if from != "USD" {
+        get_currency_to_usd_rate(pool, from.as_str()).await?
+    } else {
+        dec!(1.0)
+    };
+    let usd_to_out_rate = if to != "USD" {
+        get_usd_to_currency_rate(pool, to.as_str()).await?
+    } else {
+        dec!(1.0)
+    };
+    Ok((in_to_usd_rate * usd_to_out_rate, from))
 }

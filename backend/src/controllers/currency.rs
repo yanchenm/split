@@ -1,8 +1,9 @@
 use log::error;
-use rocket::{http::Status, State};
+use rocket::{http::Status, serde::json::Json, State};
 use sqlx::MySqlPool;
 
 use crate::{
+    db,
     db::currency_pairs::get_latest_refreshed_time,
     utils::{
         currency::{refresh_currency_pairs_from_api, refresh_harmony_price_from_api},
@@ -80,6 +81,22 @@ pub async fn refresh_harmony_price(pool: &State<MySqlPool>) -> StringResponseWit
                 status: Status::InternalServerError,
                 message: "failed to refresh harmony price".to_string(),
             }
+        }
+    }
+}
+
+#[get("/supported")]
+pub async fn get_supported_currencies(
+    pool: &State<MySqlPool>,
+) -> Result<Json<Vec<String>>, StringResponseWithStatus> {
+    match db::currency_pairs::get_supported_currencies(pool).await {
+        Ok(currencies) => Ok(Json(currencies)),
+        Err(e) => {
+            error!("failed to get supported currencies: {}", e);
+            return Err(StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to get supported currencies".to_string(),
+            });
         }
     }
 }
