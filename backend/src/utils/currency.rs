@@ -5,7 +5,7 @@ use rocket::futures::future::join_all;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
-use sqlx::MySqlPool;
+use sqlx::{MySql, MySqlPool};
 use tokio::task;
 
 use crate::db::currency_pairs::add_or_refresh_currency_pair;
@@ -121,4 +121,15 @@ pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
     )
     .await?;
     Ok(())
+}
+
+pub async fn convert_currency(
+    pool: &MySql,
+    from: &str,
+    to: &str,
+    amount: Decimal,
+) -> Result<Decimal> {
+    let in_to_usd_rate = get_currency_to_usd_rate(pool, from).await?;
+    let usd_to_out_rate = get_usd_to_currency_rate(pool, to).await?;
+    Ok(amount * in_to_usd_rate * usd_to_out_rate)
 }
