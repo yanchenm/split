@@ -2,7 +2,7 @@
 pragma solidity 0.8.10;
 
 import "ds-test/test.sol";
-import "src/MultiSend.sol";
+import "../MultiSend.sol";
 
 contract TestMultiSend is DSTest {
     MultiSend multisend;
@@ -52,7 +52,7 @@ contract TestMultiSend is DSTest {
         amounts[0] = 1 wei;
         amounts[1] = 2 wei;
         amounts[2] = 3 wei;
-        assertTrue(multisend.multiTransfer{value: 6}(addrs, amounts));
+        multisend.multiTransfer{value: 6}(addrs, amounts);
         uint256 postBalance = address(this).balance;
         assertEq(preBalance - 6 wei, postBalance);
         assertEq(
