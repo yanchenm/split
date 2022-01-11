@@ -64,7 +64,7 @@ pub async fn refresh_harmony_price(pool: &State<MySqlPool>) -> StringResponseWit
             error!("Failed to get latest harmony price: {}", e);
             return StringResponseWithStatus {
                 status: Status::InternalServerError,
-                message: "failed to refresh harmony price".to_string(),
+                message: "failed to get latest harmony price".to_string(),
             };
         }
     };
