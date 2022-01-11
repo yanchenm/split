@@ -34,6 +34,11 @@ struct HarmonyData {
 #[derive(Debug, Deserialize)]
 struct QuoteData {
     #[serde(rename = "USD")]
+    usd: PriceData,
+}
+
+#[derive(Debug, Deserialize)]
+struct PriceData {
     price: Decimal,
 }
 
@@ -105,14 +110,14 @@ pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
         pool,
         "ONE",
         "USD",
-        response_data.data.harmony_data.quote.price,
+        response_data.data.harmony_data.quote.usd.price,
     )
     .await?;
     add_or_refresh_currency_pair(
         pool,
         "USD",
         "ONE",
-        dec!(1.0) / response_data.data.harmony_data.quote.price,
+        dec!(1.0) / response_data.data.harmony_data.quote.usd.price,
     )
     .await?;
     Ok(())
