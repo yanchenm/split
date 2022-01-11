@@ -267,6 +267,70 @@
       "nullable": []
     }
   },
+  "3cdaa98175d5f1734b1c3b4bcde2026954446d0f0a3fa7f2133ffe0080dd8225": {
+    "query": "SELECT * FROM CurrencyPair WHERE in_currency = 'USD' AND out_currency = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "in_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "out_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "rate",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 29
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "fetched",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 1153
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "4a15d7c2030e0e3e7b1a4a75638b0653935a731c8be65d9852016055bb33d9be": {
     "query": "INSERT INTO Transaction (id, `group`, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?);",
     "describe": {
@@ -315,6 +379,121 @@
         "Right": 3
       },
       "nullable": []
+    }
+  },
+  "9abb2b6726b7e7ddeea78fbcd49ae6a5379a6d79a05f543c948e19c331ba7f10": {
+    "query": "SELECT * FROM Split s\n        WHERE s.tx_id = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "tx_id",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4107
+            },
+            "char_set": 45,
+            "max_size": 128
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "user",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4107
+            },
+            "char_set": 45,
+            "max_size": 168
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "share",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "c0bf7852a5cbd2f23481455ac9214a35bd9a42beed0ab50d2fb4911d3d2d7eb6": {
+    "query": "SELECT * FROM CurrencyPair WHERE in_currency = ? AND out_currency = 'USD';",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "in_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "out_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "rate",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 29
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "fetched",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 1153
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ]
     }
   },
   "c2f653e6cbf65632e5f1a18e136476a740a2b5b004394c0366d85e07452925f5": {

@@ -50,3 +50,25 @@ pub async fn does_currency_have_rate(pool: &MySqlPool, currency: &str) -> Result
 
     Ok(result.is_some())
 }
+
+pub async fn get_usd_to_currency_rate(pool: &MySqlPool, currency: &str) -> Result<Decimal> {
+    let result = sqlx::query_as!(
+        CurrencyPair,
+        "SELECT * FROM CurrencyPair WHERE in_currency = 'USD' AND out_currency = ?;",
+        currency.to_uppercase()
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(result.rate)
+}
+
+pub async fn get_currency_to_usd_rate(pool: &MySqlPool, currency: &str) -> Result<Decimal> {
+    let result = sqlx::query_as!(
+        CurrencyPair,
+        "SELECT * FROM CurrencyPair WHERE in_currency = ? AND out_currency = 'USD';",
+        currency.to_uppercase()
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(result.rate)
+}
