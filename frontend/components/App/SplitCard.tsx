@@ -18,7 +18,7 @@ type WrapperProps = {
 
 const SplitDetail: React.FC<WrapperProps> = ({ children, svgSrc }) => {
   return (
-    <span className="flex flex-row items-center py-2 pl-8">
+    <span className="flex flex-row items-center py-2 pt-0 pl-8">
       <img src={svgSrc} className="h-12 w-12" />
       <div className="font-medium text-xl mb-1 pl-5">{children}</div>
     </span>
@@ -39,9 +39,9 @@ const SplitCard: React.FC<CardProps> = ({ name, userBalance, currency, lastUpdat
         <div className="font-bold text-2xl mb-1 text-center">{name}</div>
       </span>
       
-      <hr className="mx-5 my-2 w-5/6 text-slate-600" />
+      <hr className="mx-5 py-1 w-5/6 text-slate-600" />
 
-      <SplitDetail svgSrc="/green_dollar.svg">
+      <SplitDetail svgSrc={userBalance < 0 ? "/red_dollar.svg" : "/green_dollar.svg"}>
         <h3 className="text-base text-slate-400">{userBalance < 0 ? "You owe" : "You are owed"}</h3> 
         {userBalance} {currency}
       </SplitDetail>
@@ -51,7 +51,7 @@ const SplitCard: React.FC<CardProps> = ({ name, userBalance, currency, lastUpdat
         {lastUpdate}
       </SplitDetail>
 
-      <span className="flex flex-row items-center justify-evenly py-4">
+      <span className="flex flex-row items-center justify-evenly py-3">
         <AppButton className="w-40" clickHandler={viewHandler}>View Details</AppButton>
       </span>
     </div>

@@ -39,20 +39,20 @@ const GroupStats: React.FC<StatProps> = ({ totalExpenses, numTxns, userBalance }
         <SingleStat 
           svgSrc={userBalance > 0 ? '/green_dollar.svg' : '/red_dollar.svg'}
           label='Your Total'
-          amount={420} 
+          amount={userBalance} 
         />
         <SingleStat 
           svgSrc='/cake.svg'
           label='Total Expenses'
-          amount={69} 
+          amount={totalExpenses} 
         />
         <SingleStat 
           svgSrc='/plus.svg'
           label='Total Transactions'
-          amount={69} 
+          amount={numTxns} 
         />
         <span className="pl-14">
-          <AppButton className="" clickHandler={hello}>Settle Up</AppButton>
+          <AppButton className="text-slate-300" clickHandler={hello}>Settle Up</AppButton>
         </span>
       </span>
     </div>
