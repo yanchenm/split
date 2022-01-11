@@ -11,7 +11,7 @@ const DetailView: NextPage = () => {
   const { id } = router.query;
 
   return (
-    <div className="bg-slate-800 text-slate-400 h-screen">
+    <div className="bg-slate-800 text-slate-400 h-screen overflow-y-auto">
       <div className="text-5xl pt-10 pl-10 flex flex-row items-center justify-between">
          <h3 className="pl-10 text-slate-100 ml-9">{id}</h3>
          <AppButton className="mr-16 text-slate-300" clickHandler={() => {router.push('/app')}}>Back</AppButton>
@@ -22,6 +22,8 @@ const DetailView: NextPage = () => {
 
         <ExpenseList />
 
+      </div>
+      <div>
       </div>
     </div>
   )
