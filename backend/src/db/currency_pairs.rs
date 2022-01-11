@@ -5,6 +5,11 @@ use sqlx::MySqlPool;
 
 use crate::models::currency_pair::CurrencyPair;
 
+#[derive(Debug)]
+struct Currency {
+    currency: String,
+}
+
 pub async fn add_or_refresh_currency_pair(
     pool: &MySqlPool,
     in_currency: &str,
@@ -71,4 +76,18 @@ pub async fn get_currency_to_usd_rate(pool: &MySqlPool, currency: &str) -> Resul
     .fetch_one(pool)
     .await?;
     Ok(result.rate)
+}
+
+pub async fn get_supported_currencies(pool: &MySqlPool) -> Result<Vec<String>> {
+    let currencies = sqlx::query_as!(
+        Currency,
+        "SELECT DISTINCT in_currency as currency FROM CurrencyPair ORDER BY in_currency;"
+    )
+    .fetch_all(pool)
+    .await?
+    .iter()
+    .map(|c| c.currency.clone())
+    .collect();
+
+    Ok(currencies)
 }
