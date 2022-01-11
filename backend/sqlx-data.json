@@ -77,6 +77,70 @@
       ]
     }
   },
+  "08fd5943d40daa7f3e661136c21f2bc587586b17ad65a261b3bb35f9102fc0dd": {
+    "query": "SELECT * FROM CurrencyPair WHERE in_currency = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "in_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "out_currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "rate",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 29
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "fetched",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 1153
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  },
   "2ef89538ffbe4497a63477dd5f5d16ffe1e44ad8abae7cdf6730cd165820919c": {
     "query": "SELECT * FROM Transaction t\n        WHERE t.group = ?;",
     "describe": {
@@ -114,7 +178,7 @@
               "bits": 36865
             },
             "char_set": 63,
-            "max_size": 12
+            "max_size": 20
           }
         },
         {
@@ -382,12 +446,12 @@
           "ordinal": 2,
           "name": "rate",
           "type_info": {
-            "type": "Float",
+            "type": "NewDecimal",
             "flags": {
               "bits": 36865
             },
             "char_set": 63,
-            "max_size": 12
+            "max_size": 29
           }
         },
         {
@@ -473,70 +537,6 @@
         "Right": 1
       },
       "nullable": []
-    }
-  },
-  "e512f7abb6123120f4daa82469bbb11dd2d501eb974445a5e751af4862d8d28f": {
-    "query": "SELECT * FROM CurrencyPair WHERE in_currency = ? OR out_currency = ?;",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "in_currency",
-          "type_info": {
-            "type": "String",
-            "flags": {
-              "bits": 4099
-            },
-            "char_set": 45,
-            "max_size": 12
-          }
-        },
-        {
-          "ordinal": 1,
-          "name": "out_currency",
-          "type_info": {
-            "type": "String",
-            "flags": {
-              "bits": 4099
-            },
-            "char_set": 45,
-            "max_size": 12
-          }
-        },
-        {
-          "ordinal": 2,
-          "name": "rate",
-          "type_info": {
-            "type": "Float",
-            "flags": {
-              "bits": 36865
-            },
-            "char_set": 63,
-            "max_size": 12
-          }
-        },
-        {
-          "ordinal": 3,
-          "name": "fetched",
-          "type_info": {
-            "type": "Timestamp",
-            "flags": {
-              "bits": 1153
-            },
-            "char_set": 63,
-            "max_size": 19
-          }
-        }
-      ],
-      "parameters": {
-        "Right": 2
-      },
-      "nullable": [
-        false,
-        false,
-        false,
-        false
-      ]
     }
   },
   "e73862f67d0aac0066ac17337946a2ef7d327ad432e14c976a5d21e8e05a59da": {

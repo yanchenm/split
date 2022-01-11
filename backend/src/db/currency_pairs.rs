@@ -42,8 +42,7 @@ pub async fn get_latest_refreshed_time(pool: &MySqlPool) -> Result<chrono::DateT
 
 pub async fn does_currency_have_rate(pool: &MySqlPool, currency: &str) -> Result<bool> {
     let result = sqlx::query!(
-        "SELECT * FROM CurrencyPair WHERE in_currency = ? OR out_currency = ?;",
-        currency.to_uppercase(),
+        "SELECT * FROM CurrencyPair WHERE in_currency = ?;",
         currency.to_uppercase()
     )
     .fetch_optional(pool)

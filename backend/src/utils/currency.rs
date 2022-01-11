@@ -11,30 +11,30 @@ use tokio::task;
 use crate::db::currency_pairs::add_or_refresh_currency_pair;
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct CurrencyAPIResponse {
-    pub data: HashMap<String, Decimal>,
+struct CurrencyAPIResponse {
+    data: HashMap<String, Decimal>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct CMCResponse {
-    pub data: CMCResponseData,
+struct CMCResponse {
+    data: CMCResponseData,
 }
 
 #[derive(Debug, Deserialize)]
 struct CMCResponseData {
     #[serde(rename = "ONE")]
-    pub harmony_data: HarmonyData,
+    harmony_data: HarmonyData,
 }
 
 #[derive(Debug, Deserialize)]
 struct HarmonyData {
-    pub quote: QuoteData,
+    quote: QuoteData,
 }
 
 #[derive(Debug, Deserialize)]
 struct QuoteData {
     #[serde(rename = "USD")]
-    pub price: Decimal,
+    price: Decimal,
 }
 
 pub async fn refresh_currency_pairs_from_api(pool: &MySqlPool) -> Result<()> {
@@ -101,6 +101,13 @@ pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
     };
 
     let response_data = response.json::<CMCResponse>().await?;
+    add_or_refresh_currency_pair(
+        pool,
+        "ONE",
+        "USD",
+        response_data.data.harmony_data.quote.price,
+    )
+    .await?;
     add_or_refresh_currency_pair(
         pool,
         "USD",
