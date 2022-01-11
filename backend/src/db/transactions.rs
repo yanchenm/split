@@ -8,6 +8,7 @@ use uuid::Uuid;
 
 use crate::controllers::transactions::Transaction;
 use crate::models::transaction::DbTransaction;
+use crate::utils::transaction_helpers::string_to_decimal;
 
 // Transaction queries
 pub async fn create_new_transaction(
@@ -157,20 +158,4 @@ pub async fn get_transactions_by_group(
     .fetch_all(pool)
     .await?;
     Ok(transactions)
-}
-
-fn get_scale(number_string: &str) -> usize {
-    let maybe_period_index = number_string.find('.');
-
-    match maybe_period_index {
-        Some(period_index) => number_string.chars().count() - period_index - 1,
-        None => 0,
-    }
-}
-
-fn string_to_decimal(number_string: &str) -> rust_decimal::Decimal {
-    let scale = get_scale(number_string) as u32;
-    let number: i64 = str::replace(number_string, ".", "").parse().unwrap();
-
-    return Decimal::new(number, scale);
 }

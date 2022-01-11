@@ -5,13 +5,18 @@ use crate::db::transactions;
 use crate::models::membership::MembershipStatus;
 use crate::models::transaction::DbTransaction;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
+use crate::utils::transaction_helpers::string_to_decimal;
 
+use anyhow::{anyhow, Error};
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
+use rust_decimal::Decimal;
 use sqlx::MySqlPool;
+use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
+
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Transaction {
@@ -29,12 +34,36 @@ pub struct Split {
     pub share: String,
 }
 
+static DECIMAL_SIZE: usize = 18;
+
 #[post("/", format = "json", data = "<new_transaction>")]
 pub async fn create_transaction<'r>(
     new_transaction: Json<Transaction>,
     pool: &State<MySqlPool>,
     authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
+    match validate_splits(&new_transaction.splits) {
+        Ok(_) => (),
+        Err(e) => {
+            error!("splits are invalid: {}", e);
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "transaction request invalid".to_string(),
+            }
+        },
+    }
+
+    match validate_total(&new_transaction.total, &new_transaction.splits) {
+        Ok(_) => (),
+        Err(e) => {
+            error!("total is invalid {}", e);
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "transaction request invalid".to_string(),
+            }
+        },
+    }
+
     // Check if the group exists
     match groups::get_group_by_id(pool, new_transaction.group.as_str()).await {
         Ok(Some(_)) => (),
@@ -256,4 +285,56 @@ pub async fn get_transactions_by_group<'r>(
             message: "Failed to get transactions for group due to error".to_string(),
         }),
     }
+}
+
+fn validate_string_is_valid_decimal<'v>(maybe_decimal: &str) -> Result<(), Error> {
+    for c in maybe_decimal.chars() {
+        if !c.is_numeric() && c != '.'{
+            Err(anyhow!("invalid decimal string"))?;
+        }
+    }
+
+    let whole_number_len = maybe_decimal.find('.').unwrap_or_else(|| maybe_decimal.chars().count());
+    if whole_number_len > DECIMAL_SIZE {
+        Err(anyhow!("invalid decimal string"))?;
+    }
+    Ok(())
+}
+
+
+fn validate_splits<'v>(_splits: &Vec<Split>) -> Result<(), Error> {
+    let mut split_addresses_set = HashSet::new();
+    for split in _splits {
+        match validate_string_is_valid_decimal(split.share.as_str()) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        };
+        if split_addresses_set.contains(&split.address.as_str()) {
+            Err(anyhow!("duplicated split address"))?
+        }
+        split_addresses_set.insert(split.address.as_str());
+    }
+
+    Ok(())
+}
+
+fn validate_total<'v>(total: &str, _splits: &Vec<Split>) -> Result<(), Error> {
+    match validate_string_is_valid_decimal(total) {
+        Ok(_) => (),
+        Err(e) => return Err(e),
+    }
+    fn sum_split_shares(splits: &[Split]) -> Decimal {
+        let decimal_vec = splits.iter().map(|s| string_to_decimal(&s.share.as_str()));
+        let mut sum: Decimal = Decimal::new(0, 2);
+        for decimal in decimal_vec {
+            sum = sum + decimal;
+        }
+
+        return sum;
+    }
+    if sum_split_shares(_splits) != string_to_decimal(total) {
+        Err(anyhow!("total is not equal to split share sum"))?
+    }
+
+    Ok(())
 }
