@@ -1,5 +1,6 @@
 use log::error;
 use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 
 use rocket::http::Status;
@@ -104,6 +105,21 @@ pub async fn get_settlement_by_group<'r>(
         }
     };
 
+    // Cache all currency conversion rates
+    let mut currency_rates = HashMap::new();
+
+    // Cache group currency to ONE by default
+    let one_rate = match convert_currency(pool, group.currency.as_str(), "ONE", dec!(1)).await {
+        Ok(rate) => rate,
+        Err(e) => {
+            error!("error getting ONE conversion rate: {}", e);
+            return Err(StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to get ONE conversion rate".to_string(),
+            });
+        }
+    };
+
     // Get Transactions for group
     let transactions = match transactions::get_transactions_by_group(pool, group_id).await {
         Ok(txns) => txns,
@@ -134,6 +150,28 @@ pub async fn get_settlement_by_group<'r>(
             }
         };
         splits_with_currency.push(splits);
+
+        // Get currency conversion to base if required
+        if txn.currency != group.currency && !currency_rates.contains_key(&txn.currency) {
+            let rate = match convert_currency(
+                pool,
+                txn.currency.as_str(),
+                group.currency.as_str(),
+                dec!(1),
+            )
+            .await
+            {
+                Ok(rate) => rate,
+                Err(e) => {
+                    error!("error getting currency conversion rate: {}", e);
+                    return Err(StringResponseWithStatus {
+                        status: Status::InternalServerError,
+                        message: "failed to get currency conversion rate".to_string(),
+                    });
+                }
+            };
+            currency_rates.insert(&txn.currency, rate);
+        }
     }
 
     let mut net_owed = HashMap::new();
@@ -146,26 +184,16 @@ pub async fn get_settlement_by_group<'r>(
         let mut final_amount = txn.amount.clone();
 
         if txn.currency != group.currency {
-            final_amount = match convert_currency(
-                pool,
-                txn.currency.as_str(),
-                group.currency.as_str(),
-                final_amount,
-            )
-            .await
-            {
-                Ok(amount) => amount,
-                Err(e) => {
-                    error!(
-                        "failed to convert currency for transaction {}: {}",
-                        txn.id, e
-                    );
+            let conversion_rate = match currency_rates.get(&txn.currency) {
+                Some(rate) => rate,
+                None => {
                     return Err(StringResponseWithStatus {
-                        status: Status::InternalServerError,
-                        message: "failed to convert currency for transaction".to_string(),
+                        status: Status::BadRequest,
+                        message: "currency conversion rate not found".to_string(),
                     });
                 }
             };
+            final_amount *= conversion_rate;
         }
 
         *owed += final_amount;
@@ -180,23 +208,16 @@ pub async fn get_settlement_by_group<'r>(
             let mut final_share = split.share.clone();
 
             if split_with_currency.currency != group.currency {
-                final_share = match convert_currency(
-                    pool,
-                    split_with_currency.currency.as_str(),
-                    group.currency.as_str(),
-                    final_share,
-                )
-                .await
-                {
-                    Ok(amount) => amount,
-                    Err(e) => {
-                        error!("failed to convert currency for split: {}", e);
+                let conversion_rate = match currency_rates.get(&split_with_currency.currency) {
+                    Some(rate) => rate,
+                    None => {
                         return Err(StringResponseWithStatus {
-                            status: Status::InternalServerError,
-                            message: "failed to convert currency for split".to_string(),
+                            status: Status::BadRequest,
+                            message: "currency conversion rate not found".to_string(),
                         });
                     }
                 };
+                final_share *= conversion_rate;
             }
 
             *owed -= final_share;
@@ -260,29 +281,11 @@ pub async fn get_settlement_by_group<'r>(
 
         // Case 0: Creditor is owed more than debtor owes
         if debtor_amt.abs() < creditor_amt.abs() {
-            let debtor_amt_ones = match convert_currency(
-                pool,
-                group.currency.as_str(),
-                "ONE",
-                debtor_amt.clone().abs(),
-            )
-            .await
-            {
-                Ok(amount) => amount,
-                Err(e) => {
-                    error!("failed to convert currency to ones: {}", e);
-                    return Err(StringResponseWithStatus {
-                        status: Status::InternalServerError,
-                        message: "failed to convert currency to ones".to_string(),
-                    });
-                }
-            };
-
             ret.push(Debt {
                 debtor: debtor.address.clone(),
                 creditor: creditor.address.clone(),
                 net_owed: debtor_amt.abs(),
-                net_owed_ones: debtor_amt_ones,
+                net_owed_ones: debtor_amt.abs() * one_rate,
             });
             owed_amts[min_max.0] = NetOwed {
                 address: debtor.address.clone(),
@@ -296,29 +299,11 @@ pub async fn get_settlement_by_group<'r>(
         }
         // Case 1: Creditor is owed less than debtor owes
         else if debtor_amt.abs() > creditor_amt.abs() {
-            let creditor_amt_ones = match convert_currency(
-                pool,
-                group.currency.as_str(),
-                "ONE",
-                creditor_amt.clone().abs(),
-            )
-            .await
-            {
-                Ok(amount) => amount,
-                Err(e) => {
-                    error!("failed to convert currency to ones: {}", e);
-                    return Err(StringResponseWithStatus {
-                        status: Status::InternalServerError,
-                        message: "failed to convert currency to ones".to_string(),
-                    });
-                }
-            };
-
             ret.push(Debt {
                 debtor: debtor.address.clone(),
                 creditor: creditor.address.clone(),
                 net_owed: creditor_amt,
-                net_owed_ones: creditor_amt_ones,
+                net_owed_ones: creditor_amt * one_rate,
             });
             owed_amts[min_max.0] = NetOwed {
                 address: debtor.address.clone(),
@@ -332,29 +317,11 @@ pub async fn get_settlement_by_group<'r>(
         }
         // Case 2: Creditor is owed exactly what debtor owes
         else {
-            let creditor_amt_ones = match convert_currency(
-                pool,
-                group.currency.as_str(),
-                "ONE",
-                creditor_amt.clone().abs(),
-            )
-            .await
-            {
-                Ok(amount) => amount,
-                Err(e) => {
-                    error!("failed to convert currency to ones: {}", e);
-                    return Err(StringResponseWithStatus {
-                        status: Status::InternalServerError,
-                        message: "failed to convert currency to ones".to_string(),
-                    });
-                }
-            };
-
             ret.push(Debt {
                 debtor: debtor.address.clone(),
                 creditor: creditor.address.clone(),
                 net_owed: creditor_amt,
-                net_owed_ones: creditor_amt_ones,
+                net_owed_ones: creditor_amt * one_rate,
             });
             owed_amts[min_max.0] = NetOwed {
                 address: debtor.address.clone(),
