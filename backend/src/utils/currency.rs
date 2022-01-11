@@ -5,10 +5,12 @@ use rocket::futures::future::join_all;
 use rust_decimal::Decimal;
 use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
-use sqlx::{MySql, MySqlPool};
+use sqlx::MySqlPool;
 use tokio::task;
 
-use crate::db::currency_pairs::add_or_refresh_currency_pair;
+use crate::db::currency_pairs::{
+    add_or_refresh_currency_pair, get_currency_to_usd_rate, get_usd_to_currency_rate,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 struct CurrencyAPIResponse {
@@ -124,7 +126,7 @@ pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
 }
 
 pub async fn convert_currency(
-    pool: &MySql,
+    pool: &MySqlPool,
     from: &str,
     to: &str,
     amount: Decimal,
