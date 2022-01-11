@@ -1,6 +1,6 @@
 use log::error;
+use rocket::futures::future::try_join_all;
 use rust_decimal::Decimal;
-use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 
 use rocket::http::Status;
@@ -10,11 +10,11 @@ use sqlx::MySqlPool;
 
 use crate::db::{groups, memberships, splits, transactions};
 use crate::models::membership::MembershipStatus;
-use crate::models::split::Split;
-use crate::utils::currency::convert_currency;
+use crate::utils::currency::get_currency_conversion_rate;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
-use std::collections::HashMap;
+use std;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Debt {
@@ -28,12 +28,6 @@ pub struct Debt {
 pub struct NetOwed {
     address: String,
     net_owed: Decimal,
-}
-
-#[derive(Debug)]
-struct SplitsWithCurrency {
-    splits: Vec<Split>,
-    currency: String,
 }
 
 // Requires that owed_vec is not empty
@@ -105,20 +99,18 @@ pub async fn get_settlement_by_group<'r>(
         }
     };
 
-    // Cache all currency conversion rates
-    let mut currency_rates = HashMap::new();
-
     // Cache group currency to ONE by default
-    let one_rate = match convert_currency(pool, group.currency.as_str(), "ONE", dec!(1)).await {
-        Ok(rate) => rate,
-        Err(e) => {
-            error!("error getting ONE conversion rate: {}", e);
-            return Err(StringResponseWithStatus {
-                status: Status::InternalServerError,
-                message: "failed to get ONE conversion rate".to_string(),
-            });
-        }
-    };
+    let (one_rate, _) =
+        match get_currency_conversion_rate(pool, group.currency.clone(), "ONE".to_string()).await {
+            Ok(rate) => rate,
+            Err(e) => {
+                error!("error getting ONE conversion rate: {}", e);
+                return Err(StringResponseWithStatus {
+                    status: Status::InternalServerError,
+                    message: "failed to get ONE conversion rate".to_string(),
+                });
+            }
+        };
 
     // Get Transactions for group
     let transactions = match transactions::get_transactions_by_group(pool, group_id).await {
@@ -134,57 +126,60 @@ pub async fn get_settlement_by_group<'r>(
     };
 
     // Get splits for each transaction
-    let mut splits_with_currency = vec![];
-    for txn in &transactions {
-        let splits = match splits::get_splits_by_txn(pool, txn.id.as_str()).await {
-            Ok(splits) => SplitsWithCurrency {
-                splits,
-                currency: txn.currency.clone(),
-            },
-            Err(e) => {
-                error!("error getting splits in db: {}", e);
-                return Err(StringResponseWithStatus {
-                    status: Status::InternalServerError,
-                    message: "failed to get splits in db".to_string(),
-                });
-            }
-        };
-        splits_with_currency.push(splits);
+    let split_reqs = transactions.iter().map(|transaction| {
+        splits::get_splits_with_currency_by_txn(
+            pool,
+            transaction.id.as_str(),
+            transaction.currency.as_str(),
+        )
+    });
 
-        // Get currency conversion to base if required
-        if txn.currency != group.currency && !currency_rates.contains_key(&txn.currency) {
-            let rate = match convert_currency(
-                pool,
-                txn.currency.as_str(),
-                group.currency.as_str(),
-                dec!(1),
-            )
-            .await
-            {
-                Ok(rate) => rate,
-                Err(e) => {
-                    error!("error getting currency conversion rate: {}", e);
-                    return Err(StringResponseWithStatus {
-                        status: Status::InternalServerError,
-                        message: "failed to get currency conversion rate".to_string(),
-                    });
-                }
-            };
-            currency_rates.insert(&txn.currency, rate);
+    let all_splits = match try_join_all(split_reqs).await {
+        Ok(splits) => splits,
+        Err(_) => {
+            return Err(StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "Failed to get transactions for group due to error".to_string(),
+            })
         }
+    };
+
+    // Get distinct currencies to convert from
+    let distinct_currencies_reqs = transactions
+        .iter()
+        .filter(|txn| txn.currency != group.currency)
+        .map(|txn| txn.currency.clone())
+        .collect::<HashSet<String>>()
+        .into_iter()
+        .map(|currency| get_currency_conversion_rate(pool, currency, group.currency.clone()));
+
+    let currency_pairs = match try_join_all(distinct_currencies_reqs).await {
+        Ok(currency_pair) => currency_pair,
+        Err(_) => {
+            return Err(StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "failed to get currency conversion".to_string(),
+            })
+        }
+    };
+
+    // Cache currency conversion rates
+    let mut conversion_rates = HashMap::new();
+    for (rate, currency) in currency_pairs {
+        conversion_rates.insert(currency, rate);
     }
 
     let mut net_owed = HashMap::new();
 
     // Add txn credits to net_owed
-    for txn in &transactions {
+    for txn in transactions {
         let owed = net_owed
             .entry(txn.paid_by.clone())
             .or_insert(Decimal::new(0, 2));
         let mut final_amount = txn.amount.clone();
 
         if txn.currency != group.currency {
-            let conversion_rate = match currency_rates.get(&txn.currency) {
+            let conversion_rate = match conversion_rates.get(&txn.currency) {
                 Some(rate) => rate,
                 None => {
                     return Err(StringResponseWithStatus {
@@ -200,15 +195,15 @@ pub async fn get_settlement_by_group<'r>(
     }
 
     // Add split debt to net_owed
-    for split_with_currency in splits_with_currency {
-        for split in split_with_currency.splits {
+    for splits in all_splits {
+        for split_with_currency in splits {
             let owed = net_owed
-                .entry(split.user.clone())
+                .entry(split_with_currency.split.user.clone())
                 .or_insert(Decimal::new(0, 2));
-            let mut final_share = split.share.clone();
+            let mut final_share = split_with_currency.split.share.clone();
 
             if split_with_currency.currency != group.currency {
-                let conversion_rate = match currency_rates.get(&split_with_currency.currency) {
+                let conversion_rate = match conversion_rates.get(&split_with_currency.currency) {
                     Some(rate) => rate,
                     None => {
                         return Err(StringResponseWithStatus {

@@ -125,13 +125,12 @@ pub async fn refresh_harmony_price_from_api(pool: &MySqlPool) -> Result<()> {
     Ok(())
 }
 
-pub async fn convert_currency(
+pub async fn get_currency_conversion_rate(
     pool: &MySqlPool,
-    from: &str,
-    to: &str,
-    amount: Decimal,
-) -> Result<Decimal> {
-    let in_to_usd_rate = get_currency_to_usd_rate(pool, from).await?;
-    let usd_to_out_rate = get_usd_to_currency_rate(pool, to).await?;
-    Ok(amount * in_to_usd_rate * usd_to_out_rate)
+    from: String,
+    to: String,
+) -> Result<(Decimal, String)> {
+    let in_to_usd_rate = get_currency_to_usd_rate(pool, from.as_str()).await?;
+    let usd_to_out_rate = get_usd_to_currency_rate(pool, to.as_str()).await?;
+    Ok((in_to_usd_rate * usd_to_out_rate, from))
 }
