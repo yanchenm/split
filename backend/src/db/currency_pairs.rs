@@ -1,5 +1,6 @@
 use anyhow::Result;
 use chrono;
+use rust_decimal::Decimal;
 use sqlx::MySqlPool;
 
 use crate::models::currency_pair::CurrencyPair;
@@ -8,7 +9,7 @@ pub async fn add_or_refresh_currency_pair(
     pool: &MySqlPool,
     in_currency: &str,
     out_currency: &str,
-    rate: f32,
+    rate: Decimal,
 ) -> Result<()> {
     sqlx::query!(
         "INSERT INTO CurrencyPair (in_currency, out_currency, rate, fetched) 
