@@ -25,7 +25,12 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                   <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold ">
                     {consumerProps.account?.substring(0, 6) + '...' + consumerProps.account?.substring(38)}
                   </p>
-                  <Button clickHandler={() => router.push({ pathname: '/app' })}>Launch App</Button>
+                  <Button
+                    classNames={'bg-violet-800 hover:bg-blue-500'}
+                    clickHandler={() => router.push({ pathname: '/app' })}
+                  >
+                    Launch App
+                  </Button>
                 </div>
               );
             } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
@@ -39,21 +44,31 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                 <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">Network disconnected...</p>
               );
             } else {
-              buttonArea = <Button clickHandler={web3Connect}>Connect Wallet</Button>;
+              buttonArea = (
+                <Button classNames={'bg-violet-800 hover:bg-blue-500'} clickHandler={web3Connect}>
+                  Connect Wallet
+                </Button>
+              );
             }
 
             return (
               <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
                 <div className="bg-gray-300 dark:bg-slate-800 h-screen">
                   <div className="flex justify-between p-10">
-                    <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">Web3Split</h1>
+                    <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
                     <ToggleButton toggleState={darkmodeProps.isDarkmode} toggleHandler={darkmodeProps.toggleDarkmode} />
                     {buttonArea}
                   </div>
                   <div className="flex flex-col h-40 justify-between items-center mt-40">
-                    <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold text-center">
-                      Penis on the <br /> BLOCK CHAIN
+                    <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-cyan-500 to-violet-600">
+                      Find Your Money on the <br /> BLOCK CHAIN
                     </h1>
+                    <Button
+                      classNames={'bg-gradient-to-r from-cyan-500 to-violet-600 margin-top mt-6'}
+                      clickHandler={web3Connect}
+                    >
+                      Get Started
+                    </Button>
                   </div>
                 </div>
               </div>
