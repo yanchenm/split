@@ -8,6 +8,7 @@ import { getSettlementsForGroup } from '../../utils/routes/settle';
 import type { Group } from '../../utils/routes/group';
 import { useEffect, useState } from 'react';
 import ReactLoading from 'react-loading';
+import NewGroupModal from '../../components/app/NewGroupModal';
 
 type GroupWithBalance = {
   group: Group;
@@ -22,6 +23,14 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
   const { providedWeb3 } = props;
   const [splitGroups, setSplitGroups] = useState<Array<Group>>([]);
   const [splitGroupsWithBalance, setSplitGroupsWithBalance] = useState<Array<GroupWithBalance>>([]);
+  const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
+
+  const openNewGroupModal = () => {
+    setIsNewGroupModalOpen(true);
+  };
+  const closeNewGroupModal = () => {
+    setIsNewGroupModalOpen(false);
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -111,9 +120,10 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
                     );
                   })
                 )}
-                <NewCard />
+                <NewCard clickHandler={openNewGroupModal}/>
               </div>
             </div>
+            <NewGroupModal isOpen={isNewGroupModalOpen} closeModal={closeNewGroupModal} openModal={openNewGroupModal} />
           </div>
         );
       }}
