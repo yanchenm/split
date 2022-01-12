@@ -120,7 +120,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               );
             }
             
-            let isNotRegisteredAndConnected = !isRegistered && consumerProps?.isConnected || false;
+            let isNotRegisteredAndConnected = !isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected || false;
 
             return (              
               <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
