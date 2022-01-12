@@ -23,3 +23,4 @@ log = "0.4.14"
 rust_decimal = { version = "1.20.0" }
 rust_decimal_macros = { version = "1.20.0" }
 reqwest = "0.11.8"
+rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }
