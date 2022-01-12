@@ -69,7 +69,7 @@ const Dashboard: NextPage = () => {
 
             {/* Content */}
             <div className="bg-gray-100 text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen transition duration-200">
-              Current Splits
+              Current Groups
               <div className="bg-gray-200 dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap overflow-y-auto overflow-hidden h-5/6 shadow-xl rounded-xl content-start">
                 {
                   splitGroups.map((split) => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { DarkmodeContext } from '../../pages/_app';
+import { DocumentAddIcon, DocumentSearchIcon, DocumentDuplicateIcon } from '@heroicons/react/outline';
 
 import ToggleButton from '../UI/ToggleButton';
 
@@ -35,22 +36,19 @@ const Sidebar: React.FC = () => {
 
               {/* Navbar */}
               <nav>
-                <SidebarButton 
-                  svgSrc='/document_plus.svg' 
-                  buttonText='New Split' 
-                />
-                <SidebarButton
-                  svgSrc='/document_search.svg'
-                  buttonText='View Open Splits' 
-                />
-                <SidebarButton 
-                  svgSrc='/signature.svg' 
-                  buttonText='Settle Split' 
-                />
-                <SidebarButton 
-                  svgSrc='/document_archived.svg' 
-                  buttonText='View Past Splits' 
-                />
+                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                  <DocumentAddIcon className="h-7 w-7" />
+                  <button className="pl-4 text-left font-medium">New Group</button>
+                </div>
+                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                  <DocumentSearchIcon className="h-7 w-7" />
+                  <button className="pl-4 text-left font-medium">View Open Groups</button>
+                </div>
+                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                  <DocumentDuplicateIcon className="h-7 w-7" />
+                  <button className="pl-4 text-left font-medium">View Past Groups</button>
+                </div>
+
               </nav>
             </div>
             {/* Dark mode toggle button */}
