@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+
+use anyhow::anyhow;
 use anyhow::Result;
 use chrono::NaiveDate;
 use chrono::Utc;
@@ -7,7 +10,8 @@ use sqlx::MySqlPool;
 use uuid::Uuid;
 
 use crate::controllers::transactions::Transaction;
-use crate::models::transaction::DbTransaction;
+use crate::models::split::Split;
+use crate::models::transaction::{DbTransaction, DbTransactionWithSplits, TransactionWithSplits};
 use crate::utils::transaction_helpers::string_to_decimal;
 
 // Transaction queries
@@ -73,25 +77,15 @@ pub async fn create_new_split(
     Ok(())
 }
 
-pub async fn delete_transaction(
-    pool: &MySqlPool,
-    tx_id: &str,
-) -> Result<()> {
-
+pub async fn delete_transaction(pool: &MySqlPool, tx_id: &str) -> Result<()> {
     let mut tx = pool.begin().await?;
-    sqlx::query!(
-        "DELETE FROM Split WHERE tx_id = ?;",
-        tx_id
-    )
-    .execute(&mut tx)
-    .await?;
+    sqlx::query!("DELETE FROM Split WHERE tx_id = ?;", tx_id)
+        .execute(&mut tx)
+        .await?;
 
-    sqlx::query!(
-        "DELETE FROM Transaction WHERE id = ?;",
-        tx_id
-    )
-    .execute(&mut tx)
-    .await?;
+    sqlx::query!("DELETE FROM Transaction WHERE id = ?;", tx_id)
+        .execute(&mut tx)
+        .await?;
 
     tx.commit().await?;
     Ok(())
@@ -199,4 +193,62 @@ pub async fn get_transaction_by_id_and_paid_by(
     .fetch_optional(pool)
     .await?;
     Ok(transactions)
+}
+
+pub async fn get_transactions_by_group_with_splits(
+    pool: &MySqlPool,
+    group_id: &str,
+) -> Result<Vec<TransactionWithSplits>> {
+    let transactions_with_splits = sqlx::query_as!(
+        DbTransactionWithSplits,
+        "SELECT * FROM Split s
+        JOIN Transaction t ON t.group = ? AND s.tx_id = t.id;",
+        group_id
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let mut txn_map = HashMap::new();
+    let mut txn_split_map = HashMap::new();
+
+    transactions_with_splits.iter().for_each(|txn| {
+        txn_map.insert(
+            txn.id.clone(),
+            DbTransaction {
+                id: txn.id.clone(),
+                group: txn.group.clone(),
+                amount: txn.amount.clone(),
+                currency: txn.currency.clone(),
+                paid_by: txn.paid_by.clone(),
+                name: txn.name.clone(),
+                date: txn.date.clone(),
+                updated_at: txn.updated_at.clone(),
+            },
+        );
+
+        txn_split_map
+            .entry(txn.id.clone())
+            .or_insert(vec![])
+            .push(Split {
+                tx_id: txn.id.clone(),
+                user: txn.user.clone(),
+                share: txn.share.clone(),
+            });
+    });
+
+    txn_map
+        .keys()
+        .map(|key| {
+            Ok(TransactionWithSplits {
+                transaction: match txn_map.get(key) {
+                    Some(transaction) => transaction.clone(),
+                    None => return Err(anyhow!("Shouldn't happen")),
+                },
+                splits: match txn_split_map.get(key) {
+                    Some(splits) => splits.clone(),
+                    None => return Err(anyhow!("Shouldn't happen")),
+                },
+            })
+        })
+        .collect()
 }

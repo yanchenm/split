@@ -3,9 +3,9 @@ use crate::db::groups;
 use crate::db::memberships;
 use crate::db::transactions;
 use crate::models::membership::MembershipStatus;
-use crate::models::transaction::DbTransaction;
-use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
+use crate::models::transaction::{DbTransaction, TransactionWithSplits};
 use crate::utils::transaction_helpers::string_to_decimal;
+use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
 use anyhow::{anyhow, Error};
 use rocket::http::Status;
@@ -16,7 +16,6 @@ use sqlx::MySqlPool;
 use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Transaction {
@@ -49,8 +48,8 @@ pub async fn create_transaction<'r>(
             return StringResponseWithStatus {
                 status: Status::BadRequest,
                 message: "transaction request invalid".to_string(),
-            }
-        },
+            };
+        }
     }
 
     match validate_total(&new_transaction.total, &new_transaction.splits) {
@@ -60,8 +59,8 @@ pub async fn create_transaction<'r>(
             return StringResponseWithStatus {
                 status: Status::BadRequest,
                 message: "transaction request invalid".to_string(),
-            }
-        },
+            };
+        }
     }
 
     // Check if the group exists
@@ -246,14 +245,9 @@ pub async fn delete_transaction<'r>(
     tx_id: &str,
     authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
-
     // Check if transaction belongs to user
-    match transactions::get_transaction_by_id_and_paid_by(
-        pool,
-        tx_id,
-        authed_user.address.as_str(),
-    )
-    .await
+    match transactions::get_transaction_by_id_and_paid_by(pool, tx_id, authed_user.address.as_str())
+        .await
     {
         Ok(Some(_)) => (),
         Ok(None) => {
@@ -335,20 +329,68 @@ pub async fn get_transactions_by_group<'r>(
     }
 }
 
+#[get("/withsplits/group/<group_id>")]
+pub async fn get_transactions_by_group_with_splits<'r>(
+    pool: &State<MySqlPool>,
+    group_id: &str,
+    authed_user: AuthedDBUser<'r>,
+) -> Result<Json<Vec<TransactionWithSplits>>, StringResponseWithStatus> {
+    // Check if user is in the group
+    match memberships::get_membership_by_group_and_user(
+        pool,
+        group_id,
+        authed_user.address.as_str(),
+    )
+    .await
+    {
+        Ok(Some(membership)) => match membership {
+            MembershipStatus::OWNER | MembershipStatus::ACTIVE => (),
+            _ => {
+                return Err(StringResponseWithStatus {
+                    status: Status::BadRequest,
+                    message: "authed user is not a member of the group".to_string(),
+                });
+            }
+        },
+        Ok(None) => {
+            return Err(StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "authed user is not a member of the group".to_string(),
+            });
+        }
+        Err(e) => {
+            error!("error getting membership in db: {}", e);
+            return Err(StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "failed to get membership in db".to_string(),
+            });
+        }
+    }
+
+    match transactions::get_transactions_by_group_with_splits(pool, group_id).await {
+        Ok(txns) => Ok(Json(txns)),
+        Err(_) => Err(StringResponseWithStatus {
+            status: Status::BadRequest,
+            message: "Failed to get transactions for group due to error".to_string(),
+        }),
+    }
+}
+
 fn validate_string_is_valid_decimal<'v>(maybe_decimal: &str) -> Result<(), Error> {
     for c in maybe_decimal.chars() {
-        if !c.is_numeric() && c != '.'{
+        if !c.is_numeric() && c != '.' {
             Err(anyhow!("invalid decimal string"))?;
         }
     }
 
-    let whole_number_len = maybe_decimal.find('.').unwrap_or_else(|| maybe_decimal.chars().count());
+    let whole_number_len = maybe_decimal
+        .find('.')
+        .unwrap_or_else(|| maybe_decimal.chars().count());
     if whole_number_len > DECIMAL_SIZE {
         Err(anyhow!("invalid decimal string"))?;
     }
     Ok(())
 }
-
 
 fn validate_splits<'v>(_splits: &Vec<Split>) -> Result<(), Error> {
     let mut split_addresses_set = HashSet::new();
