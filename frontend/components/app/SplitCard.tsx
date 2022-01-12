@@ -1,6 +1,6 @@
 import { CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/outline';
 
-import AppButton from '../UI/AppButton';
+import AppButton from '../ui/AppButton';
 import React from 'react';
 import { useRouter } from 'next/router';
 import ReactLoading from 'react-loading';

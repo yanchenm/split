@@ -1,8 +1,8 @@
 import { DarkmodeContext, W3Context } from '../../_app';
-import ExpenseList from '../../../components/DetailView/ExpensesList';
-import GroupStats from '../../../components/DetailView/GroupStats';
+import ExpenseList from '../../../components/detailview/ExpensesList';
+import GroupStats from '../../../components/detailview/GroupStats';
 import type { NextPage } from 'next/types';
-import Sidebar from '../../../components/App/Sidebar';
+import Sidebar from '../../../components/app/Sidebar';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import { Group, getGroup } from '../../../utils/routes/group';

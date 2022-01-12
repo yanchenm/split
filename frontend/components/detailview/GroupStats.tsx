@@ -3,7 +3,7 @@ import { ProvidedWeb3 } from '../../pages/_app';
 import { Group } from '../../utils/routes/group';
 import { Settlement } from '../../utils/routes/settle';
 
-import AppButton from '../UI/AppButton';
+import AppButton from '../ui/AppButton';
 
 type StatProps = {
   providedWeb3: ProvidedWeb3 | null;
