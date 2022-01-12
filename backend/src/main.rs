@@ -7,6 +7,8 @@ mod utils;
 #[macro_use]
 extern crate rocket;
 
+use rocket_cors::AllowedOrigins;
+
 use crate::controllers::currency::{
     get_supported_currencies, refresh_currency_conversions, refresh_harmony_price,
 };
@@ -50,6 +52,17 @@ async fn rocket() -> _ {
     .await
     .expect("Failed to initialize database");
 
+    let cors = rocket_cors::CorsOptions {
+        allowed_origins: AllowedOrigins::some_exact(&[
+            "http://localhost:3000",
+            "https://wheresmymoney.one",
+        ]),
+        allow_credentials: true,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("failed to create CORS");
+
     rocket::build()
         .mount("/user", routes![create_user, get_authed_user])
         .mount(
@@ -81,5 +94,6 @@ async fn rocket() -> _ {
             ],
         )
         .mount("/settle", routes![get_settlement_by_group])
+        .attach(cors)
         .manage(pool)
 }
