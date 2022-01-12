@@ -4,7 +4,7 @@ import Button from '../components/ui/Button';
 import React, { useState } from 'react';
 import { W3Context, DarkmodeContext } from './_app';
 import ToggleButton from '../components/ui/ToggleButton';
-import {displayAddress} from '../utils/address';
+import { displayAddress } from '../utils/address';
 
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import Input from '../components/ui/Input';
@@ -27,21 +27,20 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
   const [error, setError] = useState('');
   const formMethods = useForm<NewUserFormValues>();
   const formErrors = formMethods.formState.errors;
- 
+
   type NewUserFormValues = {
-    address: string,
+    address: string;
     username: string;
     email: string;
   };
-  
+
   useEffect(() => {
-    ( async () => {
+    (async () => {
       try {
         const userResponse = await getUser();
         if (userResponse.status === 200 && userResponse.data) {
           setIsRegistered(true);
-        } 
-        else {
+        } else {
           setIsRegistered(false);
         }
       } catch (e) {
@@ -49,7 +48,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
         setIsRegistered(false);
       }
     })();
-  }, [])
+  }, []);
 
   function closeModal() {
     setIsRegistered(true);
@@ -82,7 +81,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               buttonArea = (
                 <div>
                   <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold ">
-                    {consumerProps.account ? displayAddress(consumerProps.account) : ""}
+                    {consumerProps.account ? displayAddress(consumerProps.account) : ''}
                   </p>
                 </div>
               );
@@ -119,13 +118,19 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                 </Button>
               );
             }
-            
-            let isNotRegisteredAndConnected = !isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected || false;
 
-            return (              
+            let isNotRegisteredAndConnected =
+              (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
+
+            return (
               <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
                 <div>
-                  <Modal isOpen={isNotRegisteredAndConnected} title="Enter User Details" closeHandler={closeModal} openHandler={() => {}}>
+                  <Modal
+                    isOpen={isNotRegisteredAndConnected}
+                    title="Enter User Details"
+                    closeHandler={closeModal}
+                    openHandler={() => {}}
+                  >
                     <FormProvider {...formMethods}>
                       <form onSubmit={formMethods.handleSubmit(onSubmit)}>
                         <div className="grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
@@ -149,6 +154,10 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                               formRegisterOptions={{
                                 required: { value: false, message: 'Please enter a email.' },
                                 maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
+                                pattern: {
+                                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                  message: 'Email address format is invalid',
+                                },
                               }}
                             />
                             <div className="text-sm text-red-500 mt-1">{formErrors.email?.message}</div>
@@ -161,8 +170,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                       </form>
                     </FormProvider>
                   </Modal>
-                  </div>
-
+                </div>
 
                 <div className="bg-gray-300 dark:bg-slate-800 h-screen">
                   <div className="flex justify-between p-10">
