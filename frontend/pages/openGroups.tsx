@@ -2,7 +2,7 @@ import { DarkmodeContext } from './_app';
 import type { NextPage } from 'next';
 import Sidebar from '../components/App/Sidebar';
 
-const Dashboard: NextPage = () => {
+const OpenGroups: NextPage = () => {
   return (
     <DarkmodeContext.Consumer>
       {(darkmodeProps) => {
@@ -24,4 +24,4 @@ const Dashboard: NextPage = () => {
   );
 };
 
-export default Dashboard;
+export default OpenGroups;
