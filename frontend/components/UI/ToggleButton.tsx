@@ -12,12 +12,12 @@ const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => 
 
   return (
     <div className="flex">
-      <SunIcon className={`${toggleState ? 'text-slate-200' : 'text-black-200'} 'font-semibold rounded-lg h-7 w-7`} />
+      <SunIcon className={`${toggleState ? 'text-slate-200' : 'text-black-200'} 'font-semibold rounded-lg h-7 w-7 mr-1 pb-1`} />
       <Switch
         checked={toggleState}
         onChange={typedToggler}
         className={`${
-          toggleState ? 'bg-slate-600' : 'bg-gray-400'
+          toggleState ? 'bg-violet-600' : 'bg-gray-400'
         } relative inline-flex items-center h-6 rounded-full w-11`}
       >
         <span
@@ -26,7 +26,7 @@ const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => 
           } inline-block w-4 h-4 transform bg-gray-300 rounded-full`}
         />
       </Switch>
-      <MoonIcon className={`${toggleState ? 'text-slate-200' : 'text-black-200'} 'font-semibold rounded-lg h-7 w-7`} />
+      <MoonIcon className={`${toggleState ? 'text-slate-200' : 'text-black-200'} 'font-semibold rounded-lg h-7 w-7 ml-1 pb-1`} />
     </div>
   );
 };
