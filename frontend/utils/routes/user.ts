@@ -4,7 +4,6 @@ import { url } from '../constants';
 import { StringResponseWithStatus } from '../responses';
 
 export type User = {
-    address: string,
     username: string,
     email: string | null,
 }

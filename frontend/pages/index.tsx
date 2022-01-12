@@ -144,7 +144,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                                 maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
                               }}
                             />
-                            <div className="text-sm text-red-500 mt-1">{formErrors.name?.message}</div>
+                            <div className="text-sm text-red-500 mt-1">{formErrors.username?.message}</div>
                           </div>
                           <div className="col-span-2">
                             <label className="text-sm">Email (optional)</label>
@@ -156,7 +156,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                                 maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
                               }}
                             />
-                            <div className="text-sm text-red-500 mt-1">{formErrors.description?.message}</div>
+                            <div className="text-sm text-red-500 mt-1">{formErrors.email?.message}</div>
                           </div>
                         </div>
                         <div className="mt-6">
