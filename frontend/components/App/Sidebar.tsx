@@ -31,8 +31,8 @@ const Sidebar: React.FC = () => {
           <div className="font-default bg-gray-100 dark:bg-slate-900 text-neutral-800 dark:text-slate-300 w-64 space-y-6 px-4 py-7 transition duration-200 flex flex-col justify-between">
             {/* Logo */}
             <div>
-              <a className="flex items-center space-x-2 px-2 mb-10">
-                <span className="text-2xl font-extrabold">WheresMyMoney bitch</span>
+              <a className="flex items-center justify-center space-x-2 px-2 mb-10 mt-10">
+                <span className="text-2xl font-extrabold">WMM</span>
               </a>
 
               {/* Navbar */}
@@ -46,7 +46,7 @@ const Sidebar: React.FC = () => {
                 </div>
                 <div
                   className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex cursor-pointer"
-                  onClick={() => router.push('/app/openGroups')}
+                  onClick={() => router.push('/app')}
                 >
                   <DocumentSearchIcon className="h-7 w-7" />
                   <button className="pl-4 text-left font-medium">View Open Groups</button>
@@ -61,7 +61,7 @@ const Sidebar: React.FC = () => {
               </nav>
             </div>
             {/* Dark mode toggle button */}
-            <div className="fixed inset-x-10 bottom-10">
+            <div className="w-full flex justify-center">
               <ToggleButton toggleHandler={darkmodeProps.toggleDarkmode} toggleState={darkmodeProps.isDarkmode} />
             </div>
 
