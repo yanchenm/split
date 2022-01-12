@@ -12,6 +12,8 @@ type ButtonProps = {
 };
 
 const Sidebar: React.FC = () => {
+  const router = useRouter();
+
   return (
     <DarkmodeContext.Consumer>
       {(darkmodeProps) => {
@@ -25,24 +27,18 @@ const Sidebar: React.FC = () => {
 
               {/* Navbar */}
               <nav>
-                <Link href="/newGroup">
-                  <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
-                    <DocumentAddIcon className="h-7 w-7" />
-                    <button className="pl-4 text-left font-medium">New Group</button>
-                  </div>
-                </Link>
-                <Link href="/openGroups">
-                  <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
-                    <DocumentSearchIcon className="h-7 w-7" />
-                    <button className="pl-4 text-left font-medium">View Open Groups</button>
-                  </div>
-                </Link>
-                <Link href="/pastGroups">
-                  <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
-                    <DocumentDuplicateIcon className="h-7 w-7" />
-                    <button className="pl-4 text-left font-medium">View Past Groups</button>
-                  </div>
-                </Link>
+                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                  <DocumentAddIcon className="h-7 w-7" />
+                  <button className="pl-4 text-left font-medium" onClick={() => router.push('/app/newGroup')}>New Group</button>
+                </div>
+                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                  <DocumentSearchIcon className="h-7 w-7" />
+                  <button className="pl-4 text-left font-medium" onClick={() => router.push('/app/openGroups')}>View Open Groups</button>
+                </div>
+                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                  <DocumentDuplicateIcon className="h-7 w-7" />
+                  <button className="pl-4 text-left font-medium" onClick={() => router.push('/app/pastGroups')}>View Past Groups</button>
+                </div>
               </nav>
             </div>
             {/* Dark mode toggle button */}
