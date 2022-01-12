@@ -28,6 +28,11 @@ export type DbTransaction = {
     updated_at: string,
 }
 
+export type TransactionWithSplits = {
+    transaction: DbTransaction,
+    splits: Array<Split>
+}
+
 export const createTransaction = (transaction: Transaction): Promise<AxiosResponse<StringResponseWithStatus>> => {
     return axios.post(`${url}/transaction`, transaction);
 }
@@ -39,4 +44,8 @@ export const updateTransaction = (transaction: Transaction, tx_id: string): Prom
 
 export const getTransactionsByGroup = (groupId: string): Promise<AxiosResponse<Array<DbTransaction>>> => {
     return axios.get(`${url}/transaction/group/${groupId}`);
+}
+
+export const getTransactionsByGroupWithSplits = (groupId: string): Promise<AxiosResponse<Array<TransactionWithSplits>>> => {
+    return axios.get(`${url}/transaction/withsplits/group/${groupId}`);
 }
