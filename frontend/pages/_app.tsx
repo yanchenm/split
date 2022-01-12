@@ -5,16 +5,16 @@ import Web3 from 'web3';
 import axios from 'axios';
 
 type ProvidedWeb3 = {
-  w3: Web3,
-  account: string | null,
-  isHarmony: boolean,
-  isConnected: boolean
-}
+  w3: Web3;
+  account: string | null;
+  isHarmony: boolean;
+  isConnected: boolean;
+};
 
 type ProvidedDarkmode = {
   isDarkmode: boolean;
   toggleDarkmode?: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
 
 // Set axios to intercept requests and add auth header on all of them.
 axios.interceptors.request.use(async (request) => {
@@ -45,21 +45,20 @@ const tryUpdateToken = async () => {
     // Check if current token doesn't exist or is expired (Older than 14 days).
     if (!currentToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
       // Shifting by 0 forces the float to integer
-      let epoch = String(new Date().getTime() / 1000 >> 0)
-      let msg = w3.utils.toHex("Split app login: " + epoch);
+      let epoch = String((new Date().getTime() / 1000) >> 0);
+      let msg = w3.utils.toHex('Split app login: ' + epoch);
       let from = accounts[0];
       const signature = await anyWindow.ethereum.request({ method: 'personal_sign', params: [msg, from] });
       localStorage.setItem('token', signature);
       localStorage.setItem('tokenEpochTime', epoch);
     }
   }
-}
+};
 
 export const W3Context = React.createContext<ProvidedWeb3 | null>(null); // Web3 Context
-export const DarkmodeContext = React.createContext<ProvidedDarkmode>({isDarkmode: false, toggleDarkmode:undefined}); // Darkmode context
+export const DarkmodeContext = React.createContext<ProvidedDarkmode>({ isDarkmode: false, toggleDarkmode: undefined }); // Darkmode context
 
 function MyApp({ Component, pageProps }: AppProps) {
-
   let [providedWeb3, setProvidedWeb3] = useState<ProvidedWeb3 | null>(null);
   let [isDarkmode, setIsDarkMode] = useState(false);
 
@@ -85,10 +84,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           setProvidedWeb3({
             w3: new Web3(anyWindow.ethereum),
             account: newAccounts[0],
-            isHarmony: chain === "0x63564c40",
+            isHarmony: chain === '0x63564c40',
             isConnected,
           });
-        })
+        });
 
         // Add event handler callback on ethereum window for user changing network
         anyWindow.ethereum.on('chainChanged', async (chainId: string) => {
@@ -96,17 +95,17 @@ function MyApp({ Component, pageProps }: AppProps) {
           setProvidedWeb3({
             w3: new Web3(anyWindow.ethereum),
             account: accounts[0],
-            isHarmony: chainId === "0x63564c40",
-            isConnected
+            isHarmony: chainId === '0x63564c40',
+            isConnected,
           });
           anyWindow.location.reload();
-        })
+        });
 
         setProvidedWeb3({
           w3,
           account: accounts[0],
-          isHarmony: chain === "0x63564c40",
-          isConnected
+          isHarmony: chain === '0x63564c40',
+          isConnected,
         });
       } catch (error) {
         // Error happened, reset web3 login state to not logged in
@@ -114,12 +113,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         setProvidedWeb3(null);
       }
     }
-  }
+  };
 
   // Dark mode toggleHandler
   const darkModeToggleHandler = () => {
-    setIsDarkMode(!isDarkmode)
-  }
+    setIsDarkMode(!isDarkmode);
+  };
 
   // Function to check if a user's wallet is already connected via metamask without triggering popup
 
@@ -145,12 +144,12 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
 
     tryConnect();
-  }, [])
+  }, []);
 
   return (
     <W3Context.Provider value={providedWeb3}>
-      <DarkmodeContext.Provider value={{isDarkmode: isDarkmode, toggleDarkmode:darkModeToggleHandler}}>
-        <Component {...pageProps} web3Connect={web3Connect}/>
+      <DarkmodeContext.Provider value={{ isDarkmode: isDarkmode, toggleDarkmode: darkModeToggleHandler }}>
+        <Component {...pageProps} web3Connect={web3Connect} />
       </DarkmodeContext.Provider>
     </W3Context.Provider>
   );

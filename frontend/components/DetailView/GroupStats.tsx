@@ -1,5 +1,5 @@
 import React from 'react';
-import { DocumentTextIcon , CurrencyDollarIcon, ChartPieIcon } from '@heroicons/react/outline';
+import { DocumentTextIcon, CurrencyDollarIcon, ChartPieIcon } from '@heroicons/react/outline';
 
 import AppButton from '../UI/AppButton';
 
@@ -7,18 +7,16 @@ type StatProps = {
   totalExpenses: number;
   numTxns: number;
   userBalance: number;
-}
+};
 
 const GroupStats: React.FC<StatProps> = ({ totalExpenses, numTxns, userBalance }) => {
-
   const hello = () => {
-    console.log("hello");
-  }
+    console.log('hello');
+  };
 
   return (
     <div className="max-w-5xl h-24 ml-9 mt-10 border-solid border-2 border-neutral-300 dark:border-slate-700 rounded-xl">
       <div className="grid grid-cols-5 items-center">
-
         <div className="flex flex-col col-span-1 mt-2 ml-4">
           <h3 className="ml-3 text-lg font-medium text-gray-500 dark:text-slate-400 text-left">
             {userBalance < 0 ? 'You owe' : 'You are owed'}
@@ -45,10 +43,12 @@ const GroupStats: React.FC<StatProps> = ({ totalExpenses, numTxns, userBalance }
           </span>
         </div>
 
-        <AppButton className="text-slate-100 font-medium col-start-5 mr-9 mt-2" clickHandler={hello}>Settle Up</AppButton>
+        <AppButton className="text-slate-100 font-medium col-start-5 mr-9 mt-2" clickHandler={hello}>
+          Settle Up
+        </AppButton>
       </div>
     </div>
-  )
+  );
 };
 
 export default GroupStats;
