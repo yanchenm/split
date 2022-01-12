@@ -37,23 +37,26 @@ const Sidebar: React.FC = () => {
 
               {/* Navbar */}
               <nav>
-                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                <div
+                  className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded transition duration-200 flex cursor-pointer"
+                  onClick={openNewGroupModal}
+                >
                   <DocumentAddIcon className="h-7 w-7" />
-                  <button className="pl-4 text-left font-medium" onClick={openNewGroupModal}>
-                    New Group
-                  </button>
+                  <button className="pl-4 text-left font-medium">New Group</button>
                 </div>
-                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                <div
+                  className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex cursor-pointer"
+                  onClick={() => router.push('/app/openGroups')}
+                >
                   <DocumentSearchIcon className="h-7 w-7" />
-                  <button className="pl-4 text-left font-medium" onClick={() => router.push('/app/openGroups')}>
-                    View Open Groups
-                  </button>
+                  <button className="pl-4 text-left font-medium">View Open Groups</button>
                 </div>
-                <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
+                <div
+                  className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex cursor-pointer"
+                  onClick={() => router.push('/app/pastGroups')}
+                >
                   <DocumentDuplicateIcon className="h-7 w-7" />
-                  <button className="pl-4 text-left font-medium" onClick={() => router.push('/app/pastGroups')}>
-                    View Past Groups
-                  </button>
+                  <button className="pl-4 text-left font-medium">View Past Groups</button>
                 </div>
               </nav>
             </div>

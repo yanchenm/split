@@ -1,11 +1,12 @@
 import { Controller, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 
 import ButtonWithLoading from '../../components/UI/ButtonWithLoading';
 import CurrencySelector from '../../components/UI/CurrencySelector';
 import Input from '../../components/UI/Input';
 import Modal from '../UI/Modal';
 import { createGroup } from '../../utils/routes/group';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 type NewGroupFormValues = {
   name: string;
@@ -22,18 +23,31 @@ type NewGroupModalProps = {
 const currencies = ['CAD', 'USD', 'EUR'];
 
 const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openModal }) => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const formMethods = useForm<NewGroupFormValues>();
   const formErrors = formMethods.formState.errors;
 
+  useEffect(() => {
+    if (!isOpen) {
+      formMethods.reset();
+      setError('');
+    }
+  }, [isOpen]);
+
   const onSubmit: SubmitHandler<NewGroupFormValues> = ({ name, currency, description }) => {
     setIsLoading(true);
     createGroup({ name, currency, description })
+      .then((response) => {
+        let groupId = response.data;
+        router.push(`/app/group/${groupId}`);
+        closeModal();
+      })
       .catch((error) => {
-        console.log('Error creating group: ' + error);
-        setError(error);
+        console.log('Error creating group: ' + error.message);
+        setError('Failed to create group. Please try again.');
       })
       .finally(() => {
         setIsLoading(false);
@@ -81,6 +95,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openM
             </div>
           </div>
           <div className="mt-6">
+            <div className={'text-red-600 text-center mb-3'}>{error}</div>
             <ButtonWithLoading buttonText="Submit" loading={isLoading} />
           </div>
         </form>
