@@ -4,7 +4,6 @@ import Button from '../components/UI/Button';
 import React from 'react';
 import { W3Context, DarkmodeContext } from './_app';
 import ToggleButton from '../components/UI/ToggleButton';
-import axios from 'axios';
 
 type PageProps = {
   web3Connect: () => Promise<void>;

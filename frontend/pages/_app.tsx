@@ -21,14 +21,16 @@ axios.interceptors.request.use(async (request) => {
   if (request) {
     // First check that token exists and isn't expired, try to update otherwise
     let authToken = localStorage.getItem('token');
-    const currentExpiry = localStorage.getItem('tokenEpochTime');
+    let currentExpiry = localStorage.getItem('tokenEpochTime');
     if (!authToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
       await tryUpdateToken();
       // Grab the new auth token this method created
       authToken = localStorage.getItem('token');
+      currentExpiry = localStorage.getItem('tokenEpochTime');
     }
-    if (request.headers && request.headers && authToken) {
+    if (request.headers && request.headers && authToken && currentExpiry) {
       request.headers.Authorization = authToken;
+      request.headers.epoch_signed_time = currentExpiry;
     }
     return request;
   }
