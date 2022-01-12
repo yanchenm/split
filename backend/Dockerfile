@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly as builder
+FROM rust:1.57 as builder
 
 RUN mkdir /build
 WORKDIR /build
