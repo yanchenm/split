@@ -6,6 +6,7 @@ import ButtonWithLoading from '../../components/UI/ButtonWithLoading';
 import CurrencySelector from '../../components/UI/CurrencySelector';
 import Input from '../../components/UI/Input';
 import type { NextPage } from 'next';
+import { createGroup } from '../../utils/routes/group';
 
 type NewGroupFormValues = {
   name: string;
@@ -17,7 +18,8 @@ const currencies = ['CAD', 'USD', 'EUR'];
 
 const NewGroup: NextPage = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const [selected, setSelected] = useState('Select Currency');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const formMethods = useForm<NewGroupFormValues>();
   const formErrors = formMethods.formState.errors;
@@ -30,8 +32,16 @@ const NewGroup: NextPage = () => {
     setIsOpen(true);
   };
 
-  const onSubmit: SubmitHandler<NewGroupFormValues> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<NewGroupFormValues> = ({ name, currency, description }) => {
+    setIsLoading(true);
+    createGroup({ name, currency, description })
+      .catch((error) => {
+        console.log('Error creating group: ' + error);
+        setError(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -75,7 +85,7 @@ const NewGroup: NextPage = () => {
               leaveTo="opacity-0 scale-95"
             >
               <div className="inline-block w-full max-w-xl p-6 my-8 text-left align-middle transition-all transform bg-gray-100 shadow-2xl rounded-2xl">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
                   Create Group
                 </Dialog.Title>
                 <div className="mt-3">
@@ -118,7 +128,7 @@ const NewGroup: NextPage = () => {
                         </div>
                       </div>
                       <div className="mt-6">
-                        <ButtonWithLoading buttonText="Submit" loading={false} />
+                        <ButtonWithLoading buttonText="Submit" loading={isLoading} />
                       </div>
                     </form>
                   </FormProvider>
