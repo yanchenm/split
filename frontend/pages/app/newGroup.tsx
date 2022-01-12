@@ -1,7 +1,8 @@
+import { Controller, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { Fragment, useState } from 'react';
 
+import ButtonWithLoading from '../../components/UI/ButtonWithLoading';
 import CurrencySelector from '../../components/UI/CurrencySelector';
 import Input from '../../components/UI/Input';
 import type { NextPage } from 'next';
@@ -21,10 +22,6 @@ const NewGroup: NextPage = () => {
   const formMethods = useForm<NewGroupFormValues>();
   const formErrors = formMethods.formState.errors;
 
-  const [nameErrorMessage, setNameErrorMessage] = useState('');
-  const [currencyErrorMessage, setCurrencyErrorMessage] = useState('');
-  const [descriptionErrorMessage, setDescriptionErrorMessage] = useState('');
-
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -33,7 +30,9 @@ const NewGroup: NextPage = () => {
     setIsOpen(true);
   };
 
-  const onSubmit: SubmitHandler<NewGroupFormValues> = (data) => {};
+  const onSubmit: SubmitHandler<NewGroupFormValues> = (data) => {
+    console.log(data);
+  };
 
   return (
     <>
@@ -85,29 +84,44 @@ const NewGroup: NextPage = () => {
                       <div className="grid grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
                         <div>
                           <label className="text-sm">Name</label>
-                          <Input id="name" formFieldName="name" formRegisterOptions={{ required: true }} />
+                          <Input
+                            id="name"
+                            formFieldName="name"
+                            formRegisterOptions={{
+                              required: { value: true, message: 'Please enter a group name.' },
+                              maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
+                            }}
+                          />
+                          <div className="text-sm text-red-500 mt-1">{formErrors.name?.message}</div>
                         </div>
                         <div>
                           <label className="text-sm">Currency</label>
-                          <CurrencySelector selected={selected} onChange={setSelected} options={currencies} />
+                          <Controller
+                            control={formMethods.control}
+                            name="currency"
+                            render={({ field: { onChange, value } }) => (
+                              <CurrencySelector selected={value} onChange={onChange} options={currencies} />
+                            )}
+                            rules={{ required: { value: true, message: 'Please select a currency.' } }}
+                          />
+                          <div className="text-sm text-red-500 mt-1">{formErrors.currency?.message}</div>
                         </div>
                         <div className="col-span-2">
                           <label className="text-sm">Description (optional)</label>
-                          <textarea className="bg-white appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-200 placeholder-gray-500 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:z-10" />
+                          <textarea
+                            className="bg-white appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-200 placeholder-gray-500 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:z-10"
+                            {...formMethods.register('description', {
+                              maxLength: { value: 512, message: 'Description must be less than 512 characters.' },
+                            })}
+                          />
+                          <div className="text-sm text-red-500 mt-1">{formErrors.description?.message}</div>
                         </div>
+                      </div>
+                      <div className="mt-6">
+                        <ButtonWithLoading buttonText="Submit" loading={false} />
                       </div>
                     </form>
                   </FormProvider>
-                </div>
-
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-violet-600 border border-transparent rounded-md hover:bg-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-violet-500"
-                    onClick={closeModal}
-                  >
-                    Submit
-                  </button>
                 </div>
               </div>
             </Transition.Child>
