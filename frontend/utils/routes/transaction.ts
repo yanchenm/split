@@ -4,7 +4,8 @@ import { url } from '../constants';
 import { StringResponseWithStatus } from '../responses';
 
 export type Split = {
-    address: string,
+    tx_id: string,
+    user: string,
     share: string,
 }
 
@@ -20,7 +21,7 @@ export type Transaction = {
 export type DbTransaction = {
     id: string,
     group: string,
-    amount: number,
+    amount: string,
     currency: string,
     paid_by: string,
     name: string,
