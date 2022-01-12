@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 
 import ExpenseList from '../../../components/DetailView/ExpensesList';
 import GroupStats from '../../../components/DetailView/GroupStats';
+import NewTransactionModal from '../../../components/DetailView/NewTransactionModal';
 import type { NextPage } from 'next/types';
 import Sidebar from '../../../components/App/Sidebar';
 import { useRouter } from 'next/router';
@@ -18,6 +19,15 @@ const DetailView: NextPage = () => {
   const [group, setGroup] = useState<Group | null>(null);
   const [settle, setSettle] = useState<Settlement | null>(null);
   const [txns, setTxns] = useState<Array<TransactionWithSplits> | null>(null);
+  const [isNewTxnModalOpen, setIsNewTxnModalOpen] = useState(false);
+
+  const openNewTxnModal = () => {
+    setIsNewTxnModalOpen(true);
+  };
+
+  const closeNewTxnModal = () => {
+    setIsNewTxnModalOpen(false);
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -65,6 +75,11 @@ const DetailView: NextPage = () => {
                         </div>
                         <GroupStats providedWeb3={consumerProps} group={group} settle={settle} />
                         <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} />
+                        <NewTransactionModal
+                          isOpen={isNewTxnModalOpen}
+                          closeModal={closeNewTxnModal}
+                          openModal={openNewTxnModal}
+                        />
                       </div>
                     </div>
                   </div>

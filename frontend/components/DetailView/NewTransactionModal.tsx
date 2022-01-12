@@ -3,18 +3,20 @@ import { useEffect, useState } from 'react';
 
 import ButtonWithLoading from '../../components/UI/ButtonWithLoading';
 import CurrencySelector from '../../components/UI/CurrencySelector';
+import CustomDatePicker from '../UI/DatePicker';
 import Input from '../../components/UI/Input';
 import Modal from '../UI/Modal';
-import { createGroup } from '../../utils/routes/group';
 import { useRouter } from 'next/router';
 
-type NewGroupFormValues = {
+type NewTransactionFormValues = {
   name: string;
+  amount: number;
   currency: string;
+  date: Date;
   description: string;
 };
 
-type NewGroupModalProps = {
+type NewTransactionModalProps = {
   isOpen: boolean;
   closeModal: () => void;
   openModal: () => void;
@@ -22,12 +24,12 @@ type NewGroupModalProps = {
 
 const currencies = ['CAD', 'USD', 'EUR'];
 
-const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openModal }) => {
+const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, closeModal, openModal }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const formMethods = useForm<NewGroupFormValues>();
+  const formMethods = useForm<NewTransactionFormValues>();
   const formErrors = formMethods.formState.errors;
 
   useEffect(() => {
@@ -37,25 +39,12 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openM
     }
   }, [formMethods, isOpen]);
 
-  const onSubmit: SubmitHandler<NewGroupFormValues> = ({ name, currency, description }) => {
-    setIsLoading(true);
-    createGroup({ name, currency, description })
-      .then((response) => {
-        let groupId = response.data;
-        router.push(`/app/group/${groupId}`);
-        closeModal();
-      })
-      .catch((error) => {
-        console.log('Error creating group: ' + error.message);
-        setError('Failed to create group. Please try again.');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+  const onSubmit: SubmitHandler<NewTransactionFormValues> = (data) => {
+    console.log(data);
   };
 
   return (
-    <Modal isOpen={isOpen} title="Create Group" closeHandler={closeModal} openHandler={openModal}>
+    <Modal isOpen={isOpen} title="Add New Transaction" closeHandler={closeModal} openHandler={openModal}>
       <FormProvider {...formMethods}>
         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
@@ -70,6 +59,28 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openM
                 }}
               />
               <div className="text-sm text-red-500 mt-1">{formErrors.name?.message}</div>
+            </div>
+            <div>
+              <label className="text-sm">Date</label>
+              <Controller
+                control={formMethods.control}
+                name="date"
+                render={({ field: { onChange, value } }) => <CustomDatePicker onChange={onChange} selected={value} />}
+                rules={{ required: { value: true, message: 'Please select a date.' } }}
+              />
+              <div className="text-sm text-red-500 mt-1">{formErrors.date?.message}</div>
+            </div>
+            <div>
+              <label className="text-sm">Amount</label>
+              <Input
+                id="amount"
+                formFieldName="amount"
+                formRegisterOptions={{
+                  required: { value: true, message: 'Please enter a transaction amount.' },
+                  valueAsNumber: true,
+                }}
+              />
+              <div className="text-sm text-red-500 mt-1">{formErrors.amount?.message}</div>
             </div>
             <div>
               <label className="text-sm">Currency</label>
@@ -104,4 +115,4 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openM
   );
 };
 
-export default NewGroupModal;
+export default NewTransactionModal;
