@@ -7,11 +7,12 @@ type ExpenseProps = {
   name: string;
   paidBy: string;
   total: number;
+  yourShare: number;
   date: string;
   participants: any;
 };
 
-const Expense: React.FC<ExpenseProps> = ({ name, paidBy, participants, total, date }) => {
+const Expense: React.FC<ExpenseProps> = ({ name, paidBy, participants, total, yourShare, date }) => {
   console.log(address_to_avatar('asdfasfds'));
   return (
     <div className="grid grid-cols-12 text-start font-normal text-gray-700 dark:text-slate-200 hover:bg-gray-200 py-3 px-4 rounded-lg">
@@ -30,7 +31,7 @@ const Expense: React.FC<ExpenseProps> = ({ name, paidBy, participants, total, da
         })}
       </div>
       <h3 className="col-span-2 text-base font-medium">{total}</h3>
-      <h3 className="col-span-2 text-base font-medium">{total}</h3>
+      <h3 className="col-span-2 text-base font-medium">{yourShare.toFixed(2)}</h3>
       <h3 className="col-span-2 text-base font-medium">{date}</h3>
       <h3 className="col-span-1 font-medium flex items-center space-x-5">
         <PencilIcon className="pl-1 h-5 w-5 text-gray-400 hover:text-gray-800 cursor-pointer" />

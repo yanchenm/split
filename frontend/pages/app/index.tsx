@@ -81,7 +81,10 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
       if (mounted) {
         setSplitGroups(res.data);
       }
-    });
+    })
+    return () => {
+      mounted = false
+    };
   }, []);
 
   useEffect(() => {
@@ -114,6 +117,9 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
         );
       }
     });
+    return () => {
+      mounted = false
+    };
   }, [splitGroups, providedWeb3]);
 
   console.log({ splitGroupsWithBalance });

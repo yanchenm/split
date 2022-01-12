@@ -4,6 +4,7 @@ import Button from '../components/UI/Button';
 import React, { useState } from 'react';
 import { W3Context, DarkmodeContext } from './_app';
 import ToggleButton from '../components/UI/ToggleButton';
+import {displayAddress} from '../utils/address';
 
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import Input from '../components/UI/Input';
@@ -80,7 +81,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               buttonArea = (
                 <div>
                   <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold ">
-                    {consumerProps.account?.substring(0, 6) + '...' + consumerProps.account?.substring(38)}
+                    {consumerProps.account ? displayAddress(consumerProps.account) : ""}
                   </p>
                   <Button
                     classNames={'bg-violet-800 hover:bg-blue-500'}

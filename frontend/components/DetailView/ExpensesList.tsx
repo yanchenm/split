@@ -1,152 +1,59 @@
 import Expense from './Expense';
 import React from 'react';
+import { Group } from '../../utils/routes/group';
+import { TransactionWithSplits } from '../../utils/routes/transaction';
+import {displayAddress} from '../../utils/address';
+import { ProvidedWeb3 } from '../../pages/_app';
 
-const ExpenseList: React.FC = () => {
-  const dummyExpenses = [
-    {
-      _id: 'a',
-      name: 'Mcdonalds',
-      paidBy: 'bob',
-      participants: [
-        { name: 'bob', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-01',
-    },
-    {
-      _id: 'b',
-      name: 'Canoe',
-      paidBy: 'john',
-      participants: [
-        { name: 'john', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-02',
-    },
-    {
-      _id: 'c',
-      name: 'Rouge',
-      paidBy: 'greg',
-      participants: [
-        { name: 'greg', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-03',
-    },
-    {
-      _id: 'd',
-      name: 'Wendys',
-      paidBy: 'mary',
-      participants: [
-        { name: 'mary', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-04',
-    },
-    {
-      _id: 'e',
-      name: 'Hayden Block',
-      paidBy: 'jon',
-      participants: [
-        { name: 'jon', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-05',
-    },
-    {
-      _id: 'f',
-      name: 'Rouge',
-      paidBy: 'andy',
-      participants: [
-        { name: 'andy', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-06',
-    },
-    {
-      _id: 'g',
-      name: 'Rouge',
-      paidBy: 'andy',
-      participants: [
-        { name: 'andy', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-06',
-    },
-    {
-      _id: 'h',
-      name: 'Rouge',
-      paidBy: 'andy',
-      participants: [
-        { name: 'andy', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-06',
-    },
-    {
-      _id: 'i',
-      name: 'Rouge',
-      paidBy: 'andy',
-      participants: [
-        { name: 'andy', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-06',
-    },
-    {
-      _id: 'j',
-      name: 'Rouge',
-      paidBy: 'andy',
-      participants: [
-        { name: 'andy', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-06',
-    },
-    {
-      _id: 'k',
-      name: 'Rouge',
-      paidBy: 'andy',
-      participants: [
-        { name: 'andy', portion: 0.1 },
-        { name: 'a', portion: 0.2 },
-        { name: 'b', portion: 0.4 },
-        { name: 'c', portion: 0.3 },
-      ],
-      total: 12345.12,
-      date: '2022-01-06',
-    },
-  ];
+type StatProps = {
+  group: Group | null;
+  txns: Array<TransactionWithSplits> | null;
+  providedWeb3: ProvidedWeb3 | null;
+};
+
+const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
+  const realExpenses = []
+  if (group && txns && providedWeb3) {
+    for (let txn of txns) {
+      const participants: any = [];
+      let yourShare = 0;
+      txn.splits.forEach((split) => {
+        if (split.user === providedWeb3.account) {
+          yourShare = Number(split.share);
+        }
+        participants.push({
+          name: displayAddress(split.user),
+          portion: Number(split.share)
+        });
+      })
+      realExpenses.push({
+        _id: txn.transaction.id,
+        name: txn.transaction.name,
+        paidBy: displayAddress(txn.transaction.paid_by),
+        participants,
+        total: Number(txn.transaction.amount),
+        yourShare,
+        date: txn.transaction.date.split("T")[0]
+      })
+    }
+  }
+
+  // Sample expense
+  /*
+  {
+    _id: 'a',
+    name: 'Mcdonalds',
+    paidBy: 'bob',
+    participants: [
+      { name: 'bob', portion: 0.1 },
+      { name: 'a', portion: 0.2 },
+      { name: 'b', portion: 0.4 },
+      { name: 'c', portion: 0.3 },
+    ],
+    total: 12345.12,
+    date: '2022-01-01',
+  }
+  */
 
   return (
     <div className="flex flex-col w-full pb-8">
@@ -161,7 +68,7 @@ const ExpenseList: React.FC = () => {
         <h1 className="col-span-1">Actions</h1>
       </div>
       <div className="overflow-y-auto dark:shadow-slate-900">
-        {dummyExpenses.map((expense) => {
+        {realExpenses.map((expense) => {
           return (
             <Expense
               key={expense._id}
@@ -169,6 +76,7 @@ const ExpenseList: React.FC = () => {
               paidBy={expense.paidBy}
               participants={expense.participants}
               total={expense.total}
+              yourShare={expense.yourShare}
               date={expense.date}
             />
           );
