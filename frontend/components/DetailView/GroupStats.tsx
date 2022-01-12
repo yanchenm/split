@@ -14,7 +14,7 @@ const GroupStats: React.FC<StatProps> = ({ totalExpenses, numTxns, userBalance }
   };
 
   return (
-    <div className="w-full h-24 border-solid border-2 border-neutral-300 dark:border-slate-700 rounded-xl">
+    <div className="w-full border-solid border-2 border-neutral-300 dark:border-slate-700 rounded-xl py-4">
       <div className="grid grid-cols-5 items-center">
         <div className="flex flex-col col-span-1 mt-2 ml-4">
           <h3 className="ml-3 text-md font-medium text-gray-500 dark:text-slate-400 text-left">
@@ -22,7 +22,7 @@ const GroupStats: React.FC<StatProps> = ({ totalExpenses, numTxns, userBalance }
           </h3>
           <span className="flex flex-row ml-3 my-2 space-x-2 items-center">
             <ChartPieIcon className={`h-6 w-6  ${userBalance < 0 ? 'text-red-500' : 'text-green-600'}`} />
-            <h3 className="text-2xl text-gray-800 dark:text-slate-200 font-semibold">{userBalance}</h3>
+            <h3 className="text-2xl text-gray-800 dark:text-slate-200 font-semibold">{userBalance} USD</h3>
           </span>
         </div>
 

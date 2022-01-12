@@ -151,7 +151,7 @@ const ExpenseList: React.FC = () => {
   return (
     <div className="flex flex-col w-full pb-8">
       {/* Column names */}
-      <div className="grid grid-cols-12 text-gray-500 dark:text-slate-300 font-medium text-md mb-2 p-3">
+      <div className="grid grid-cols-12 text-gray-500 dark:text-slate-300 font-medium text-md p-3">
         <h1 className="col-span-2">Expense</h1>
         <h1 className="col-span-1">Paid by</h1>
         <h1 className="col-span-2">Participants</h1>
