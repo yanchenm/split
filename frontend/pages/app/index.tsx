@@ -1,11 +1,9 @@
 import type { NextPage } from 'next';
-import { Switch } from '@headlessui/react';
 import { DarkmodeContext } from '../_app';
 
 import SplitCard from '../../components/App/SplitCard';
 import NewCard from '../../components/App/NewCard';
 import Sidebar from '../../components/App/Sidebar';
-import { useRouter } from 'next/router';
 
 const splitGroups = [
   {
@@ -61,8 +59,6 @@ const splitGroups = [
 
 const Dashboard: NextPage = () => {
 
-  const router = useRouter();
-
   return (
     <DarkmodeContext.Consumer>
       {(darkmodeProps) => {
@@ -72,7 +68,7 @@ const Dashboard: NextPage = () => {
             <Sidebar />
 
             {/* Content */}
-            <div className="bg-gray-100 text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen">
+            <div className="bg-gray-100 text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen transition duration-200">
               Current Splits
               <div className="bg-gray-200 dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap overflow-y-auto overflow-hidden h-5/6 shadow-xl rounded-xl content-start">
                 {

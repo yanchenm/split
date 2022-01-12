@@ -99,15 +99,14 @@ const ExpenseList: React.FC = () => {
   return (
     <div className="flex flex-col mt-10 pl-0 max-w-5xl h-3/4 pb-8">
       {/* Column names */}
-      <div className="pl-5 grid grid-cols-12 text-slate-300 font-normal text-lg">
+      <div className="pl-5 grid grid-cols-12 text-gray-500 dark:text-slate-300 font-medium text-lg">
         <h1 className="col-span-2">Expense</h1>
         <h1 className="col-span-1">Paid by</h1>
         <h1 className="col-span-5 ml-4">Participants</h1>
         <h1 className="col-span-1 col-start-10">Total</h1>
         <h1>Date</h1>
       </div>
-      <hr className="my-2 w-full" />
-      <div className="pl-5 divide-y divide-slate-500 overflow-y-auto shadow-xl shadow-slate-900 rounded-xl">
+      <div className="pl-5 divide-y divide-gray-300 dark:divide-slate-500 overflow-y-auto shadow-xl dark:shadow-slate-900 rounded-xl">
         {dummyExpenses.map((expense) => {
           return (
             <Expense

@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Button from '../components/UI/Button';
-import React, { useState } from 'react';
+import React from 'react';
 import { W3Context, DarkmodeContext } from './_app';
 import ToggleButton from '../components/UI/ToggleButton';
 import axios from 'axios'
