@@ -156,7 +156,7 @@ const ExpenseList: React.FC = () => {
         <h1 className="col-span-1">Paid by</h1>
         <h1 className="col-span-2">Participants</h1>
         <h1 className="col-span-2">Total</h1>
-        <h1 className="col-span-2">Your Share</h1>
+        <h1 className="col-span-2 -ml-1">Your Share</h1>
         <h1 className="col-span-2">Date</h1>
         <h1 className="col-span-1">Actions</h1>
       </div>
