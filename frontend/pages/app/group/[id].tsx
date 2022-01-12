@@ -70,7 +70,10 @@ const DetailView: NextPage = () => {
                           <h3 className="text-3xl font-semibold mt-9">{'Test Trip'}</h3>
                           <div className="flex flex-row mt-9 space-x-3 items-center">
                             <ShareIcon className="h-8 w-8 hover:text-violet-600 cursor-pointer" />
-                            <PlusIcon className="h-10 w-10 hover:text-violet-600 cursor-pointer" />
+                            <PlusIcon
+                              className="h-10 w-10 hover:text-violet-600 cursor-pointer"
+                              onClick={openNewTxnModal}
+                            />
                           </div>
                         </div>
                         <GroupStats providedWeb3={consumerProps} group={group} settle={settle} />
