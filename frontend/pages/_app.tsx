@@ -21,14 +21,16 @@ axios.interceptors.request.use(async (request) => {
   if (request) {
     // First check that token exists and isn't expired, try to update otherwise
     let authToken = localStorage.getItem('token');
-    const currentExpiry = localStorage.getItem('tokenEpochTime');
+    let currentExpiry = localStorage.getItem('tokenEpochTime');
     if (!authToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
       await tryUpdateToken();
       // Grab the new auth token this method created
       authToken = localStorage.getItem('token');
+      currentExpiry = localStorage.getItem('tokenEpochTime');
     }
-    if (request.headers && request.headers && authToken) {
+    if (request.headers && request.headers && authToken && currentExpiry) {
       request.headers.Authorization = authToken;
+      request.headers.epoch_signed_time = currentExpiry;
     }
     return request;
   }
@@ -56,7 +58,7 @@ const tryUpdateToken = async () => {
 }
 
 export const W3Context = React.createContext<ProvidedWeb3 | null>(null); // Web3 Context
-export const DarkmodeContext = React.createContext<ProvidedDarkmode>({isDarkmode: false, toggleDarkmode:undefined}); // Darkmode context
+export const DarkmodeContext = React.createContext<ProvidedDarkmode>({ isDarkmode: false, toggleDarkmode: undefined }); // Darkmode context
 
 function MyApp({ Component, pageProps }: AppProps) {
 
@@ -149,8 +151,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <W3Context.Provider value={providedWeb3}>
-      <DarkmodeContext.Provider value={{isDarkmode: isDarkmode, toggleDarkmode:darkModeToggleHandler}}>
-        <Component {...pageProps} web3Connect={web3Connect}/>
+      <DarkmodeContext.Provider value={{ isDarkmode: isDarkmode, toggleDarkmode: darkModeToggleHandler }}>
+        <Component {...pageProps} web3Connect={web3Connect} />
       </DarkmodeContext.Provider>
     </W3Context.Provider>
   );
