@@ -9,6 +9,9 @@ module.exports = {
       fontFamily: {
         default: ['Inter'],
       },
+      spacing: {
+        '54': '13.5rem',
+      }
     },
   },
   plugins: [],

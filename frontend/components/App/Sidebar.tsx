@@ -28,12 +28,15 @@ const Sidebar: React.FC = () => {
     <DarkmodeContext.Consumer>
       {(darkmodeProps) => {
         return (
-          <div className="font-default bg-gray-100 dark:bg-slate-900 text-neutral-800 dark:text-slate-300 w-64 space-y-6 px-4 py-7 transition duration-200 flex flex-col justify-between">
+          <div className="font-default bg-gray-100 dark:bg-slate-900 text-neutral-800 dark:text-slate-300 w-54 space-y-6 px-4 py-7 transition duration-200 flex flex-none flex-col justify-between">
             {/* Logo */}
             <div>
-              <a className="flex items-center justify-center space-x-2 px-2 mb-10 mt-10">
+              <div
+                className="flex items-center justify-center space-x-2 px-2 mb-10 mt-10 cursor-pointer"
+                onClick={() => router.push('/app')}
+              >
                 <span className="text-2xl font-extrabold">WMM</span>
-              </a>
+              </div>
 
               {/* Navbar */}
               <nav>
@@ -49,14 +52,14 @@ const Sidebar: React.FC = () => {
                   onClick={() => router.push('/app')}
                 >
                   <DocumentSearchIcon className="h-7 w-7" />
-                  <button className="pl-4 text-left font-medium">View Open Groups</button>
+                  <button className="pl-4 text-left font-medium">Open Groups</button>
                 </div>
                 <div
                   className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex cursor-pointer"
                   onClick={() => router.push('/app/pastGroups')}
                 >
                   <DocumentDuplicateIcon className="h-7 w-7" />
-                  <button className="pl-4 text-left font-medium">View Past Groups</button>
+                  <button className="pl-4 text-left font-medium">Past Groups</button>
                 </div>
               </nav>
             </div>
