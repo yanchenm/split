@@ -73,6 +73,30 @@ pub async fn create_new_split(
     Ok(())
 }
 
+pub async fn delete_transaction(
+    pool: &MySqlPool,
+    tx_id: &str,
+) -> Result<()> {
+
+    let mut tx = pool.begin().await?;
+    sqlx::query!(
+        "DELETE FROM Split WHERE tx_id = ?;",
+        tx_id
+    )
+    .execute(&mut tx)
+    .await?;
+
+    sqlx::query!(
+        "DELETE FROM Transaction WHERE id = ?;",
+        tx_id
+    )
+    .execute(&mut tx)
+    .await?;
+
+    tx.commit().await?;
+    Ok(())
+}
+
 pub async fn delete_tx_splits(pool: &MySqlPool, tx_id: &str) -> Result<()> {
     sqlx::query!("DELETE FROM Split WHERE tx_id = ?;", tx_id)
         .execute(pool)
@@ -156,6 +180,23 @@ pub async fn get_transactions_by_group(
         group_id
     )
     .fetch_all(pool)
+    .await?;
+    Ok(transactions)
+}
+
+pub async fn get_transaction_by_id_and_paid_by(
+    pool: &MySqlPool,
+    id: &str,
+    paid_by_id: &str,
+) -> Result<Option<DbTransaction>> {
+    let transactions = sqlx::query_as!(
+        DbTransaction,
+        "SELECT * FROM Transaction t
+        WHERE t.id = ? AND t.paid_by = ?;",
+        id,
+        paid_by_id
+    )
+    .fetch_optional(pool)
     .await?;
     Ok(transactions)
 }

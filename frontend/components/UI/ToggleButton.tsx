@@ -4,10 +4,9 @@ import { Switch } from '@headlessui/react';
 type ToggleProps = {
   toggleHandler?: React.Dispatch<React.SetStateAction<boolean>>;
   toggleState: boolean;
-}
+};
 
 const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => {
-
   const typedToggler = toggleHandler as React.Dispatch<React.SetStateAction<boolean>>;
 
   return (
@@ -24,7 +23,7 @@ const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => 
         } inline-block w-4 h-4 transform bg-gray-300 rounded-full`}
       />
     </Switch>
-  )
+  );
 };
 
 export default ToggleButton;

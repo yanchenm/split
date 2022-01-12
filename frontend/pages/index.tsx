@@ -31,7 +31,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
             } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
               buttonArea = (
                 <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">
-                  Wrong chain! Please connect to Harmony Network
+                  Please connect to Harmony Network
                 </p>
               );
             } else if (consumerProps && consumerProps.account) {
