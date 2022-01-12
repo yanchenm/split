@@ -1,8 +1,8 @@
 import { DarkmodeContext, ProvidedWeb3 } from '../_app';
-import NewCard from '../../components/App/NewCard';
+import NewCard from '../../components/app/NewCard';
 import type { NextPage } from 'next';
-import Sidebar from '../../components/App/Sidebar';
-import SplitCard from '../../components/App/SplitCard';
+import Sidebar from '../../components/app/Sidebar';
+import SplitCard from '../../components/app/SplitCard';
 import { getGroupsByUser } from '../../utils/routes/group';
 import { getSettlementsForGroup } from '../../utils/routes/settle';
 import type { Group } from '../../utils/routes/group';

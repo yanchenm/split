@@ -1,18 +1,18 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import Button from '../components/UI/Button';
+import Button from '../components/ui/Button';
 import React, { useState } from 'react';
 import { W3Context, DarkmodeContext } from './_app';
-import ToggleButton from '../components/UI/ToggleButton';
+import ToggleButton from '../components/ui/ToggleButton';
 import {displayAddress} from '../utils/address';
 
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import Input from '../components/UI/Input';
+import Input from '../components/ui/Input';
 import { useEffect } from 'react';
 import ReactLoading from 'react-loading';
-import ButtonWithLoading from '../components/UI/ButtonWithLoading';
+import ButtonWithLoading from '../components/ui/ButtonWithLoading';
 import { getUser, createUser } from '../utils/routes/user';
-import Modal from '../components/UI/Modal';
+import Modal from '../components/ui/Modal';
 
 type PageProps = {
   web3Connect: () => Promise<void>;
