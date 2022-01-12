@@ -1,8 +1,8 @@
 import { DocumentAddIcon, DocumentDuplicateIcon, DocumentSearchIcon } from '@heroicons/react/outline';
+import React, { useState } from 'react';
 
 import { DarkmodeContext } from '../../pages/_app';
-import React from 'react';
-import Link from 'next/link';
+import NewGroupModal from './NewGroupModal';
 import ToggleButton from '../UI/ToggleButton';
 import { useRouter } from 'next/router';
 
@@ -13,6 +13,16 @@ type ButtonProps = {
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
+
+  const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
+
+  const openNewGroupModal = () => {
+    setIsNewGroupModalOpen(true);
+  };
+
+  const closeNewGroupModal = () => {
+    setIsNewGroupModalOpen(false);
+  };
 
   return (
     <DarkmodeContext.Consumer>
@@ -29,7 +39,7 @@ const Sidebar: React.FC = () => {
               <nav>
                 <div className="hover:bg-gray-200 dark:hover:bg-slate-800 py-4 px-4 rounded  transition duration-200 flex">
                   <DocumentAddIcon className="h-7 w-7" />
-                  <button className="pl-4 text-left font-medium" onClick={() => router.push('/app/newGroup')}>
+                  <button className="pl-4 text-left font-medium" onClick={openNewGroupModal}>
                     New Group
                   </button>
                 </div>
@@ -51,6 +61,9 @@ const Sidebar: React.FC = () => {
             <div className="fixed inset-x-10 bottom-10">
               <ToggleButton toggleHandler={darkmodeProps.toggleDarkmode} toggleState={darkmodeProps.isDarkmode} />
             </div>
+
+            {/* New group modal */}
+            <NewGroupModal isOpen={isNewGroupModalOpen} closeModal={closeNewGroupModal} openModal={openNewGroupModal} />
           </div>
         );
       }}
