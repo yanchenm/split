@@ -78,7 +78,9 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, close
                 formRegisterOptions={{
                   required: { value: true, message: 'Please enter a transaction amount.' },
                   valueAsNumber: true,
+                  validate: (value) => value >= 0 || 'Amount must be greater than 0.',
                 }}
+                type="number"
               />
               <div className="text-sm text-red-500 mt-1">{formErrors.amount?.message}</div>
             </div>
