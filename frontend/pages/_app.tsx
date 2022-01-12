@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import axios from 'axios';
 
-type ProvidedWeb3 = {
+export type ProvidedWeb3 = {
   w3: Web3;
   account: string | null;
   isHarmony: boolean;
@@ -85,7 +85,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           const isConnected = await anyWindow.ethereum.isConnected();
           setProvidedWeb3({
             w3: new Web3(anyWindow.ethereum),
-            account: newAccounts[0],
+            account: newAccounts[0].toLowerCase(),
             isHarmony: chain === '0x63564c40',
             isConnected,
           });
@@ -96,7 +96,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           const isConnected = await anyWindow.ethereum.isConnected();
           setProvidedWeb3({
             w3: new Web3(anyWindow.ethereum),
-            account: accounts[0],
+            account: accounts[0].toLowerCase(),
             isHarmony: chainId === '0x63564c40',
             isConnected,
           });
@@ -105,7 +105,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
         setProvidedWeb3({
           w3,
-          account: accounts[0],
+          account: accounts[0].toLowerCase(),
           isHarmony: chain === '0x63564c40',
           isConnected,
         });
@@ -151,7 +151,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <W3Context.Provider value={providedWeb3}>
       <DarkmodeContext.Provider value={{ isDarkmode: isDarkmode, toggleDarkmode: darkModeToggleHandler }}>
-        <Component {...pageProps} web3Connect={web3Connect} />
+        <Component {...pageProps} web3Connect={web3Connect} providedWeb3={providedWeb3} />
       </DarkmodeContext.Provider>
     </W3Context.Provider>
   );
