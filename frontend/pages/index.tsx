@@ -135,7 +135,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                       <form onSubmit={formMethods.handleSubmit(onSubmit)}>
                         <div className="grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
                           <div>
-                            <label className="text-sm">Name</label>
+                            <label className="dark:text-gray-300 text-sm">Name</label>
                             <Input
                               id="username"
                               formFieldName="username"
@@ -147,7 +147,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                             <div className="text-sm text-red-500 mt-1">{formErrors.username?.message}</div>
                           </div>
                           <div className="col-span-2">
-                            <label className="text-sm">Email (optional)</label>
+                            <label className="dark:text-gray-300 text-sm">Email (optional)</label>
                             <Input
                               id="email"
                               formFieldName="email"
