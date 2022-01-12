@@ -14,7 +14,7 @@ const Sidebar: React.FC = () => {
     <DarkmodeContext.Consumer>
       {(darkmodeProps) => {
         return (
-          <div className="bg-gray-100 dark:bg-slate-900 text-neutral-800 dark:text-slate-300 w-64 space-y-6 px-4 py-7 transition duration-200 flex flex-col justify-between">
+          <div className="font-default bg-gray-100 dark:bg-slate-900 text-neutral-800 dark:text-slate-300 w-64 space-y-6 px-4 py-7 transition duration-200 flex flex-col justify-between">
             {/* Logo */}
             <div>
               <a className="flex items-center space-x-2 px-2 mb-10">

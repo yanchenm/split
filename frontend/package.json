@@ -8,6 +8,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dicebear/avatars": "^4.10.2",
+    "@dicebear/avatars-identicon-sprites": "^4.10.2",
     "@headlessui/react": "^1.4.2",
     "@heroicons/react": "^1.0.5",
     "axios": "^0.24.0",

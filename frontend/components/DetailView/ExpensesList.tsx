@@ -1,6 +1,5 @@
-import React from 'react';
-
 import Expense from './Expense';
+import React from 'react';
 
 const ExpenseList: React.FC = () => {
   const dummyExpenses = [
@@ -150,16 +149,18 @@ const ExpenseList: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col mt-10 pl-0 max-w-5xl h-3/4 pb-8">
+    <div className="flex flex-col w-full pb-8">
       {/* Column names */}
-      <div className="pl-5 grid grid-cols-12 text-gray-500 dark:text-slate-300 font-medium text-lg">
+      <div className="grid grid-cols-12 text-gray-500 dark:text-slate-300 font-medium text-md mb-2 p-3">
         <h1 className="col-span-2">Expense</h1>
         <h1 className="col-span-1">Paid by</h1>
-        <h1 className="col-span-5 ml-4">Participants</h1>
-        <h1 className="col-span-1 col-start-10">Total</h1>
-        <h1>Date</h1>
+        <h1 className="col-span-2">Participants</h1>
+        <h1 className="col-span-2">Total</h1>
+        <h1 className="col-span-2">Your Share</h1>
+        <h1 className="col-span-2">Date</h1>
+        <h1 className="col-span-1">Actions</h1>
       </div>
-      <div className="pl-5 divide-y divide-gray-300 dark:divide-slate-500 overflow-y-auto shadow-xl dark:shadow-slate-900 rounded-xl">
+      <div className="overflow-y-auto dark:shadow-slate-900">
         {dummyExpenses.map((expense) => {
           return (
             <Expense
