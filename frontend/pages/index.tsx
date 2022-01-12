@@ -1,10 +1,18 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Button from '../components/UI/Button';
-import React from 'react';
+import React, { useState } from 'react';
 import { W3Context, DarkmodeContext } from './_app';
 import ToggleButton from '../components/UI/ToggleButton';
 import {displayAddress} from '../utils/address';
+
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import Input from '../components/UI/Input';
+import { useEffect } from 'react';
+import ReactLoading from 'react-loading';
+import ButtonWithLoading from '../components/UI/ButtonWithLoading';
+import { getUser, createUser } from '../utils/routes/user';
+import Modal from '../components/UI/Modal';
 
 type PageProps = {
   web3Connect: () => Promise<void>;
@@ -13,6 +21,54 @@ type PageProps = {
 const Home: NextPage<PageProps> = ({ ...props }) => {
   const router = useRouter();
   const { web3Connect } = props;
+
+  const [isRegistered, setIsRegistered] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const formMethods = useForm<NewUserFormValues>();
+  const formErrors = formMethods.formState.errors;
+ 
+  type NewUserFormValues = {
+    address: string,
+    username: string;
+    email: string;
+  };
+  
+  useEffect(() => {
+    ( async () => {
+      try {
+        const userResponse = await getUser();
+        if (userResponse.status === 200 && userResponse.data) {
+          setIsRegistered(true);
+        } 
+        else {
+          setIsRegistered(false);
+        }
+      } catch (e) {
+        console.log(e);
+        setIsRegistered(false);
+      }
+    })();
+  }, [])
+
+  function closeModal() {
+    setIsRegistered(true);
+  }
+
+  const onSubmit: SubmitHandler<NewUserFormValues> = ({ username, email }) => {
+    setIsLoading(true);
+    createUser({ username, email })
+      .then((response) => {
+        closeModal();
+      })
+      .catch((error) => {
+        console.log('Error registering: ' + error.message);
+        setError('Failed to register. Please try again.');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   return (
     <W3Context.Consumer>
@@ -68,9 +124,51 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                 </Button>
               );
             }
+            
+            let isNotRegisteredAndConnected = !isRegistered && consumerProps?.isConnected || false;
 
-            return (
+            return (              
               <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
+                <div>
+                  <Modal isOpen={isNotRegisteredAndConnected} title="Enter User Details" closeHandler={closeModal} openHandler={() => {}}>
+                    <FormProvider {...formMethods}>
+                      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+                        <div className="grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
+                          <div>
+                            <label className="text-sm">Name</label>
+                            <Input
+                              id="username"
+                              formFieldName="username"
+                              formRegisterOptions={{
+                                required: { value: true, message: 'Please enter a user name.' },
+                                maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
+                              }}
+                            />
+                            <div className="text-sm text-red-500 mt-1">{formErrors.name?.message}</div>
+                          </div>
+                          <div className="col-span-2">
+                            <label className="text-sm">Email (optional)</label>
+                            <Input
+                              id="email"
+                              formFieldName="email"
+                              formRegisterOptions={{
+                                required: { value: false, message: 'Please enter a email.' },
+                                maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
+                              }}
+                            />
+                            <div className="text-sm text-red-500 mt-1">{formErrors.description?.message}</div>
+                          </div>
+                        </div>
+                        <div className="mt-6">
+                          <div className={'text-red-600 text-center mb-3'}>{error}</div>
+                          <ButtonWithLoading buttonText="Submit" loading={isLoading} />
+                        </div>
+                      </form>
+                    </FormProvider>
+                  </Modal>
+                  </div>
+
+
                 <div className="bg-gray-300 dark:bg-slate-800 h-screen">
                   <div className="flex justify-between p-10">
                     <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>

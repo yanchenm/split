@@ -151,6 +151,83 @@
       "nullable": []
     }
   },
+  "1ed0d92bb506a940ad2b6cd9408d12ff22cb4b803f7d7636e2d54a326302a61b": {
+    "query": "SELECT g.*\n        FROM `Group` g\n        JOIN Membership\n        ON g.id = Membership.group\n        AND Membership.user = ?\n        ORDER BY updated_at DESC;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "id",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 128
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "name",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 256
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "description",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 0
+            },
+            "char_set": 45,
+            "max_size": 2048
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "currency",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 12
+          }
+        },
+        {
+          "ordinal": 4,
+          "name": "updated_at",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 9345
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ]
+    }
+  },
   "2ef89538ffbe4497a63477dd5f5d16ffe1e44ad8abae7cdf6730cd165820919c": {
     "query": "SELECT * FROM Transaction t\n        WHERE t.group = ?;",
     "describe": {
@@ -772,83 +849,6 @@
       "nullable": [
         false,
         false,
-        false,
-        false
-      ]
-    }
-  },
-  "c2f653e6cbf65632e5f1a18e136476a740a2b5b004394c0366d85e07452925f5": {
-    "query": "SELECT g.*\n        FROM `Group` g\n        JOIN Membership\n        ON g.id = Membership.group\n        AND Membership.user = ?;",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "id",
-          "type_info": {
-            "type": "String",
-            "flags": {
-              "bits": 4099
-            },
-            "char_set": 45,
-            "max_size": 128
-          }
-        },
-        {
-          "ordinal": 1,
-          "name": "name",
-          "type_info": {
-            "type": "VarString",
-            "flags": {
-              "bits": 4097
-            },
-            "char_set": 45,
-            "max_size": 256
-          }
-        },
-        {
-          "ordinal": 2,
-          "name": "description",
-          "type_info": {
-            "type": "VarString",
-            "flags": {
-              "bits": 0
-            },
-            "char_set": 45,
-            "max_size": 2048
-          }
-        },
-        {
-          "ordinal": 3,
-          "name": "currency",
-          "type_info": {
-            "type": "String",
-            "flags": {
-              "bits": 4097
-            },
-            "char_set": 45,
-            "max_size": 12
-          }
-        },
-        {
-          "ordinal": 4,
-          "name": "updated_at",
-          "type_info": {
-            "type": "Timestamp",
-            "flags": {
-              "bits": 9345
-            },
-            "char_set": 63,
-            "max_size": 19
-          }
-        }
-      ],
-      "parameters": {
-        "Right": 1
-      },
-      "nullable": [
-        false,
-        false,
-        true,
         false,
         false
       ]
