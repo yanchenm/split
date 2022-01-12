@@ -1,5 +1,7 @@
 import { ChartPieIcon, CurrencyDollarIcon, DocumentTextIcon } from '@heroicons/react/outline';
 
+import AppButton from '../UI/AppButton';
+
 type StatProps = {
   totalExpenses: number;
   numTxns: number;
