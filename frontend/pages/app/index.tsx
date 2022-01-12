@@ -14,58 +14,6 @@ type GroupWithBalance = {
   userBalance: number;
 };
 
-const splitGroups = [
-  {
-    groupId: 'a',
-    name: 'Seattle trip',
-    userBalance: 1,
-    currency: 'USD',
-    lastUpdate: 'Jan 1, 2022',
-  },
-  {
-    groupId: 'b',
-    name: 'Whistler trip',
-    userBalance: -2,
-    currency: 'CAD',
-    lastUpdate: 'Jan 2, 2022',
-  },
-  {
-    groupId: 'c',
-    name: 'Sydney trip',
-    userBalance: 3,
-    currency: 'AUD',
-    lastUpdate: 'Jan 3, 2022',
-  },
-  {
-    groupId: 'd',
-    name: 'Alabama trip',
-    userBalance: -4,
-    currency: 'USD',
-    lastUpdate: 'Jan 4, 2022',
-  },
-  {
-    groupId: 'e',
-    name: 'Quebec trip',
-    userBalance: 5,
-    currency: 'CAD',
-    lastUpdate: 'Jan 5, 2022',
-  },
-  {
-    groupId: 'f',
-    name: 'Lisbon trip',
-    userBalance: -6,
-    currency: 'USD',
-    lastUpdate: 'Jan 6, 2022',
-  },
-  {
-    groupId: 'g',
-    name: 'Calgary trip',
-    userBalance: 7,
-    currency: 'CAD',
-    lastUpdate: 'Jan 7, 2022',
-  },
-];
-
 type PageProps = {
   providedWeb3: ProvidedWeb3 | null;
 };
