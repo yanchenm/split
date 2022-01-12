@@ -60,6 +60,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
     createUser({ username, email })
       .then((response) => {
         closeModal();
+        router.push('/app');
       })
       .catch((error) => {
         console.log('Error registering: ' + error.message);
@@ -83,12 +84,6 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                   <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold ">
                     {consumerProps.account ? displayAddress(consumerProps.account) : ""}
                   </p>
-                  <Button
-                    classNames={'bg-violet-800 hover:bg-blue-500'}
-                    clickHandler={() => router.push({ pathname: '/app' })}
-                  >
-                    Launch App
-                  </Button>
                 </div>
               );
               startButtonArea = (
