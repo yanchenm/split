@@ -240,6 +240,54 @@ pub async fn update_transaction<'r>(
     };
 }
 
+#[delete("/<tx_id>")]
+pub async fn delete_transaction<'r>(
+    pool: &State<MySqlPool>,
+    tx_id: &str,
+    authed_user: AuthedDBUser<'r>,
+) -> StringResponseWithStatus {
+
+    // Check if transaction belongs to user
+    match transactions::get_transaction_by_id_and_paid_by(
+        pool,
+        tx_id,
+        authed_user.address.as_str(),
+    )
+    .await
+    {
+        Ok(Some(_)) => (),
+        Ok(None) => {
+            return StringResponseWithStatus {
+                status: Status::BadRequest,
+                message: "transaction does not belong to user".to_string(),
+            }
+        }
+        Err(e) => {
+            error!("error checking membership: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error while checking transaction ownership".to_string(),
+            };
+        }
+    };
+
+    match transactions::delete_transaction(pool, tx_id).await {
+        Ok(()) => {
+            return StringResponseWithStatus {
+                status: Status::Accepted,
+                message: "transaction and splits deleted".to_string(),
+            }
+        }
+        Err(e) => {
+            error!("error deleting transaction in db: {}", e);
+            return StringResponseWithStatus {
+                status: Status::InternalServerError,
+                message: "error deleting transaction".to_string(),
+            };
+        }
+    };
+}
+
 #[get("/group/<group_id>")]
 pub async fn get_transactions_by_group<'r>(
     pool: &State<MySqlPool>,
