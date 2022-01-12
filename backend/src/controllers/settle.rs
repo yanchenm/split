@@ -24,6 +24,12 @@ pub struct Debt {
     net_owed_ones: Decimal,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+struct Settlement {
+    group_id: String,
+    debts: Vec<Debt>,
+}
+
 #[derive(Clone)]
 pub struct NetOwed {
     address: String,
@@ -56,7 +62,7 @@ pub async fn get_settlement_by_group<'r>(
     pool: &State<MySqlPool>,
     group_id: &str,
     authed_user: AuthedDBUser<'r>,
-) -> Result<Json<Vec<Debt>>, StringResponseWithStatus> {
+) -> Result<Json<Settlement>, StringResponseWithStatus> {
     // Check if user is in the group
     match memberships::get_membership_by_group_and_user(
         pool,
@@ -229,11 +235,10 @@ pub async fn get_settlement_by_group<'r>(
     let mut ret = vec![];
 
     if owed_amts.len() < 1 {
-        error!("error calculating settle amounts: empty net owed array");
-        return Err(StringResponseWithStatus {
-            status: Status::BadRequest,
-            message: "error when calculating settle amounts".to_string(),
-        });
+        return Ok(Json(Settlement {
+            group_id: group_id.to_string(),
+            debts: vec![],
+        }));
     }
 
     let zero = Decimal::ZERO;
@@ -330,5 +335,8 @@ pub async fn get_settlement_by_group<'r>(
         }
     }
 
-    Ok(Json(ret))
+    Ok(Json(Settlement {
+        group_id: group_id.to_string(),
+        debts: ret,
+    }))
 }

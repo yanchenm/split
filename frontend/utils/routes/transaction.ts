@@ -37,7 +37,6 @@ export const createTransaction = (transaction: Transaction): Promise<AxiosRespon
     return axios.post(`${url}/transaction`, transaction);
 }
 
-
 export const updateTransaction = (transaction: Transaction, tx_id: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
     return axios.put(`${url}/transaction/${tx_id}`, transaction);
 }

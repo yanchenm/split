@@ -9,6 +9,11 @@ export type Debt = {
     net_owed_ones: number, // Amount owed in ONE
 }
 
-export const getSettlementsForGroup = (groupId: string): Promise<AxiosResponse<Array<Debt>>> => {
+export type Settlement = {
+    group_id: string,
+    debts: Array<Debt>
+}
+
+export const getSettlementsForGroup = (groupId: string): Promise<AxiosResponse<Settlement>> => {
     return axios.get(`${url}/settle/${groupId}`);
 }
