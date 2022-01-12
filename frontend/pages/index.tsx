@@ -172,7 +172,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                   </Modal>
                 </div>
 
-                <div className="bg-gray-300 dark:bg-slate-800 h-screen">
+                <div className="bg-white dark:bg-slate-800 h-screen">
                   <div className="flex justify-between p-10">
                     <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
                     {buttonArea}
