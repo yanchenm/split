@@ -7,29 +7,25 @@ use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
 use sqlx::MySqlPool;
+use serde::{Deserialize, Serialize};
 
-use crate::models::user::User;
+use crate::models::user::UserDb;
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct CreateUserRequest {
+    pub username: String,
+    pub email: Option<String>,
+}
+
 
 #[post("/", format = "json", data = "<new_user>")]
 pub async fn create_user<'r>(
-    new_user: Json<User>,
+    new_user: Json<CreateUserRequest>,
     pool: &State<MySqlPool>,
     authed_user: AuthedUser<'r>,
 ) -> StringResponseWithStatus {
-    if authed_user.address != new_user.address.to_lowercase().as_str() {
-        error!(
-            "authed user {} tried to create new user {}",
-            authed_user.address,
-            new_user.address.to_lowercase()
-        );
-        return StringResponseWithStatus {
-            status: Status::BadRequest,
-            message: "User provided does not match authentication provided.".to_string(),
-        };
-    }
-
     // Check if the user already exists
-    match users::get_user_by_address(pool, new_user.address.as_str()).await {
+    match users::get_user_by_address(pool, authed_user.address.as_str()).await {
         Ok(Some(_)) => {
             return StringResponseWithStatus {
                 status: Status::Conflict,
@@ -48,7 +44,7 @@ pub async fn create_user<'r>(
 
     match users::create_new_user(
         pool,
-        new_user.address.as_str(),
+        authed_user.address.as_str(),
         new_user.username.as_str(),
         new_user.email.as_ref().map(|s| s.as_str()),
     )
@@ -72,7 +68,7 @@ pub async fn create_user<'r>(
 pub async fn get_authed_user<'r>(
     pool: &State<MySqlPool>,
     authed_user: AuthedDBUser<'r>,
-) -> Result<Json<User>, StringResponseWithStatus> {
+) -> Result<Json<UserDb>, StringResponseWithStatus> {
     match users::get_user_by_address(pool, authed_user.address.as_str()).await {
         Ok(Some(user)) => Ok(Json(user)),
         Ok(None) => Err(StringResponseWithStatus {

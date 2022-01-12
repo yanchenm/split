@@ -1,7 +1,7 @@
 use anyhow::Result;
 use sqlx::MySqlPool;
 
-use crate::models::user::User;
+use crate::models::user::UserDb;
 
 pub async fn create_new_user(
     pool: &MySqlPool,
@@ -20,9 +20,9 @@ pub async fn create_new_user(
     Ok(())
 }
 
-pub async fn get_user_by_address(pool: &MySqlPool, address: &str) -> Result<Option<User>> {
+pub async fn get_user_by_address(pool: &MySqlPool, address: &str) -> Result<Option<UserDb>> {
     let user = sqlx::query_as!(
-        User,
+        UserDb,
         "SELECT * FROM User WHERE address = ?;",
         address.to_lowercase()
     )
