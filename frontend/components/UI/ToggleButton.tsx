@@ -2,16 +2,18 @@ import React, { useState } from 'react';
 import { Switch } from '@headlessui/react';
 
 type ToggleProps = {
-  toggleHandler: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleHandler?: React.Dispatch<React.SetStateAction<boolean>>;
   toggleState: boolean;
 }
 
 const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => {
 
+  const typedToggler = toggleHandler as React.Dispatch<React.SetStateAction<boolean>>;
+
   return (
     <Switch
       checked={toggleState}
-      onChange={toggleHandler}
+      onChange={typedToggler}
       className={`${
         toggleState ? 'bg-slate-600' : 'bg-gray-400'
       } relative inline-flex items-center h-6 rounded-full w-11`}

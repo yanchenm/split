@@ -11,6 +11,11 @@ type ProvidedWeb3 = {
   isConnected: boolean
 }
 
+type ProvidedDarkmode = {
+  isDarkmode: boolean;
+  toggleDarkmode?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 // Set axios to intercept requests and add auth header on all of them.
 axios.interceptors.request.use(async (request) => {
   if (request) {
@@ -50,10 +55,13 @@ const tryUpdateToken = async () => {
   }
 }
 
-export const W3Context = React.createContext<ProvidedWeb3 | null>(null);
+export const W3Context = React.createContext<ProvidedWeb3 | null>(null); // Web3 Context
+export const DarkmodeContext = React.createContext<ProvidedDarkmode>({isDarkmode: false, toggleDarkmode:undefined}); // Darkmode context
+
 function MyApp({ Component, pageProps }: AppProps) {
 
   let [providedWeb3, setProvidedWeb3] = useState<ProvidedWeb3 | null>(null);
+  let [isDarkmode, setIsDarkMode] = useState(false);
 
   // Attempts to connect an injected wallet (like metamask).
   // Makes a metamask popup to connect if wallet not previously connected.
@@ -108,6 +116,11 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }
 
+  // Dark mode toggleHandler
+  const darkModeToggleHandler = () => {
+    setIsDarkMode(!isDarkmode)
+  }
+
   // Function to check if a user's wallet is already connected via metamask without triggering popup
 
   useEffect(() => {
@@ -136,7 +149,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <W3Context.Provider value={providedWeb3}>
-      <Component {...pageProps} web3Connect={web3Connect} />
+      <DarkmodeContext.Provider value={{isDarkmode: isDarkmode, toggleDarkmode:darkModeToggleHandler}}>
+        <Component {...pageProps} web3Connect={web3Connect}/>
+      </DarkmodeContext.Provider>
     </W3Context.Provider>
   );
 }

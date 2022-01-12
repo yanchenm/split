@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
-import { useState, useEffect } from 'react';
 import { Switch } from '@headlessui/react';
+import { DarkmodeContext } from '../_app';
 
 import SplitCard from '../../components/App/SplitCard';
 import NewCard from '../../components/App/NewCard';
@@ -62,39 +62,40 @@ const splitGroups = [
 const Dashboard: NextPage = () => {
 
   const router = useRouter();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    setIsDarkMode(router.query.isDark === 'true');
-  })
 
   return (
-    <div className={`min-h-screen flex ${isDarkMode ? 'dark' : ''}`}>
-      {isDarkMode}
-      <Sidebar />
+    <DarkmodeContext.Consumer>
+      {(darkmodeProps) => {
+        return (
+          <div className={`min-h-screen flex ${darkmodeProps.isDarkmode ? 'dark' : ''}`}>
 
-      {/* Content */}
-      <div className="bg-gray-100 text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen">
-        Current Splits
-        <div className="bg-gray-200 dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap overflow-y-auto overflow-hidden h-5/6 shadow-xl rounded-xl content-start">
-          {
-            splitGroups.map((split) => {
-              return (
-                <SplitCard
-                  key={split.groupId}
-                  groupId={split.groupId}
-                  name={split.name}
-                  currency={split.currency}
-                  userBalance={split.userBalance}
-                  lastUpdate={split.lastUpdate}
-                />
-              )
-            })
-          }
-          <NewCard />
-        </div>
-      </div>
-    </div>
+            <Sidebar />
+
+            {/* Content */}
+            <div className="bg-gray-100 text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen">
+              Current Splits
+              <div className="bg-gray-200 dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap overflow-y-auto overflow-hidden h-5/6 shadow-xl rounded-xl content-start">
+                {
+                  splitGroups.map((split) => {
+                    return (
+                      <SplitCard
+                        key={split.groupId}
+                        groupId={split.groupId}
+                        name={split.name}
+                        currency={split.currency}
+                        userBalance={split.userBalance}
+                        lastUpdate={split.lastUpdate}
+                      />
+                    )
+                  })
+                }
+                <NewCard />
+              </div>
+            </div>
+          </div>
+        )}
+      }
+    </DarkmodeContext.Consumer>
   )
 };
 

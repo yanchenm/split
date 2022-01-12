@@ -30,7 +30,9 @@ const SplitCard: React.FC<CardProps> = ({ name, userBalance, currency, lastUpdat
   const router = useRouter();
 
   const viewHandler = () => {
-    router.push(`/app/group/${groupId}`)
+    router.push({
+      pathname: `/app/group/${groupId}`,
+    })
   }
 
   return (
