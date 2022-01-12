@@ -19,6 +19,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
         <DarkmodeContext.Consumer>
           {(darkmodeProps) => {
             let buttonArea = <></>;
+            let startButtonArea = <></>;
             if (consumerProps && consumerProps.account && consumerProps.isConnected && consumerProps.isHarmony) {
               buttonArea = (
                 <div>
@@ -32,6 +33,14 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                     Launch App
                   </Button>
                 </div>
+              );
+              startButtonArea = (
+                <Button
+                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6'}
+                  clickHandler={() => router.push({ pathname: '/app' })}
+                >
+                  Get Started
+                </Button>
               );
             } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
               buttonArea = (
@@ -49,6 +58,14 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                   Connect Wallet
                 </Button>
               );
+              startButtonArea = (
+                <Button
+                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6'}
+                  clickHandler={web3Connect}
+                >
+                  Get Started
+                </Button>
+              );
             }
 
             return (
@@ -56,19 +73,16 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                 <div className="bg-gray-300 dark:bg-slate-800 h-screen">
                   <div className="flex justify-between p-10">
                     <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
-                    <ToggleButton toggleState={darkmodeProps.isDarkmode} toggleHandler={darkmodeProps.toggleDarkmode} />
                     {buttonArea}
                   </div>
                   <div className="flex flex-col h-40 justify-between items-center mt-40">
-                    <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-cyan-500 to-violet-600">
+                    <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600">
                       Find Your Money on the <br /> BLOCK CHAIN
                     </h1>
-                    <Button
-                      classNames={'bg-gradient-to-r from-cyan-500 to-violet-600 margin-top mt-6'}
-                      clickHandler={web3Connect}
-                    >
-                      Get Started
-                    </Button>
+                    {startButtonArea}
+                  </div>
+                  <div className="fixed inset-x-10 bottom-10">
+                    <ToggleButton toggleState={darkmodeProps.isDarkmode} toggleHandler={darkmodeProps.toggleDarkmode} />
                   </div>
                 </div>
               </div>
