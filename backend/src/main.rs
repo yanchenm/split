@@ -15,7 +15,8 @@ use crate::controllers::groups::{
 };
 use crate::controllers::settle::get_settlement_by_group;
 use crate::controllers::transactions::{
-    create_transaction, get_transactions_by_group, update_transaction, delete_transaction
+    create_transaction, delete_transaction, get_transactions_by_group,
+    get_transactions_by_group_with_splits, update_transaction,
 };
 use crate::controllers::users::{create_user, get_authed_user};
 use std::env;
@@ -75,6 +76,7 @@ async fn rocket() -> _ {
                 create_transaction,
                 update_transaction,
                 get_transactions_by_group,
+                get_transactions_by_group_with_splits,
                 delete_transaction
             ],
         )
