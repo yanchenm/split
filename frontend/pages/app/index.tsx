@@ -38,9 +38,9 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
       if (mounted) {
         setSplitGroups(res.data);
       }
-    })
+    });
     return () => {
-      mounted = false
+      mounted = false;
     };
   }, []);
 
@@ -75,7 +75,7 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
       }
     });
     return () => {
-      mounted = false
+      mounted = false;
     };
   }, [splitGroups, providedWeb3]);
 
@@ -120,7 +120,7 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
                     );
                   })
                 )}
-                <NewCard clickHandler={openNewGroupModal}/>
+                <NewCard clickHandler={openNewGroupModal} />
               </div>
             </div>
             <NewGroupModal isOpen={isNewGroupModalOpen} closeModal={closeNewGroupModal} openModal={openNewGroupModal} />
