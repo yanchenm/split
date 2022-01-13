@@ -1,15 +1,21 @@
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
+import { Fragment, useEffect, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 
-import { Fragment } from 'react';
+import { getSupportedCurrencies } from '../../utils/routes/currency';
 
 type CurrencySelectorProps = {
   selected: string;
   onChange: (value: string) => void;
-  options: string[];
 };
 
-const CurrencySelector: React.FC<CurrencySelectorProps> = ({ selected, onChange, options }) => {
+const CurrencySelector: React.FC<CurrencySelectorProps> = ({ selected, onChange }) => {
+  const [currencyList, setCurrencyList] = useState<string[]>([]);
+
+  useEffect(() => {
+    getSupportedCurrencies().then((res) => setCurrencyList(res.data));
+  }, []);
+
   return (
     <Listbox value={selected} onChange={onChange}>
       <div className="relative">
@@ -21,9 +27,9 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({ selected, onChange,
         </Listbox.Button>
         <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
           <Listbox.Options className="absolute w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20">
-            {options.map((option, personIdx) => (
+            {currencyList.map((option) => (
               <Listbox.Option
-                key={personIdx}
+                key={option}
                 className={({ active }) =>
                   `${active ? 'text-violet-900 bg-violet-100' : 'text-gray-900'}
                           cursor-default select-none relative py-2 pl-10 pr-4`
