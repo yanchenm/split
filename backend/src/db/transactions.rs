@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use anyhow::anyhow;
 use anyhow::Result;
 use chrono::NaiveDate;
-use chrono::Utc;
 use rocket::serde::json::Json;
 use rust_decimal::Decimal;
 use sqlx::MySqlPool;
@@ -132,7 +131,6 @@ pub async fn batch_create_transaction_splits(
     new_transaction: Json<Transaction>,
     user_address: &str,
 ) -> Result<()> {
-    let current_date = Utc::now().date().naive_utc();
     let total_amount = string_to_decimal(new_transaction.total.as_str());
 
     let id = Uuid::new_v4();
@@ -150,7 +148,7 @@ pub async fn batch_create_transaction_splits(
         new_transaction.currency.as_str(),
         user_address,
         new_transaction.name.as_str(),
-        &current_date,
+        &new_transaction.date,
     )
     .await?;
 

@@ -23,6 +23,7 @@ pub struct Transaction {
     pub group: String,
     pub total: String,
     pub currency: String,
+    pub date: chrono::NaiveDate,
     pub image: Option<String>,
     pub splits: Vec<Split>,
 }

@@ -11,6 +11,7 @@ use crate::db::groups;
 use crate::db::memberships;
 use crate::models::group::Group;
 use crate::models::membership::MembershipStatus;
+use crate::models::user::UserDb;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
 #[derive(Debug, Deserialize)]
@@ -280,6 +281,21 @@ pub async fn get_groups_by_user<'r>(
         Err(_) => Err(StringResponseWithStatus {
             status: Status::InternalServerError,
             message: "Failed to get groups due to server error".to_string(),
+        }),
+    }
+}
+
+#[get("/<group_id>/users")]
+pub async fn get_users_in_group<'r>(
+    pool: &State<MySqlPool>,
+    group_id: &str,
+    authed_user: AuthedDBUser<'r>,
+) -> Result<Json<Vec<UserDb>>, StringResponseWithStatus> {
+    match groups::get_users_in_group(pool, group_id).await {
+        Ok(users) => Ok(Json(users)),
+        Err(_) => Err(StringResponseWithStatus {
+            status: Status::InternalServerError,
+            message: "Failed to get users due to server error".to_string(),
         }),
     }
 }
