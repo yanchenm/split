@@ -35,7 +35,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openM
       formMethods.reset();
       setError('');
     }
-  }, [isOpen]);
+  }, [formMethods, isOpen]);
 
   const onSubmit: SubmitHandler<NewGroupFormValues> = ({ name, currency, description }) => {
     setIsLoading(true);

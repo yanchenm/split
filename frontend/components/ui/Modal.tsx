@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react';
+
 import { DarkmodeContext } from '../../pages/_app';
 
 type ModalProps = {
@@ -26,7 +27,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, closeHandler, openHandler, title,
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Dialog.Overlay className="fixed inset-0 backdrop-filter backdrop-blur-sm" />
+                  <Dialog.Overlay className="fixed inset-0 backdrop-filter backdrop-blur-sm backdrop-brightness-50" />
                 </Transition.Child>
 
                 {/* This element is to trick the browser into centering the modal contents. */}
@@ -42,7 +43,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, closeHandler, openHandler, title,
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <div className="dark:bg-slate-900 inline-block w-full max-w-xl p-6 my-8 text-left align-middle transition-all transform bg-gray-100 shadow-2xl rounded-2xl">
+                  <div className="dark:bg-slate-900 inline-block w-full max-w-xl p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
                     <Dialog.Title as="h3" className="dark:text-gray-100 text-lg font-semibold leading-6 text-gray-900">
                       {title}
                     </Dialog.Title>
@@ -52,7 +53,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, closeHandler, openHandler, title,
               </div>
             </Dialog>
           </Transition>
-        )
+        );
       }}
     </DarkmodeContext.Consumer>
   );
