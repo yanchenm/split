@@ -1,18 +1,20 @@
 import { ChartPieIcon, CurrencyDollarIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import { ProvidedWeb3 } from '../../pages/_app';
 import { Group } from '../../utils/routes/group';
-import { Settlement } from '../../utils/routes/settle';
+import { Settlement, resolveSettle } from '../../utils/routes/settle';
 import { TransactionWithSplits } from '../../utils/routes/transaction';
 import { AbiItem } from 'web3-utils';
-import { createTransaction, Transaction, Split } from '../../utils/routes/transaction';
 
 import AppButton from '../ui/AppButton';
+import { Dispatch, SetStateAction } from 'react';
 
 type StatProps = {
   providedWeb3: ProvidedWeb3 | null;
   group: Group | null;
   settle: Settlement | null;
   txns: Array<TransactionWithSplits> | null;
+  setForceRerender: Dispatch<SetStateAction<boolean>>;
+  forceRerender: boolean;
 };
 
 type HarmonyTxn = {
@@ -43,11 +45,10 @@ const contractAbi: AbiItem[] = [
 
 const contractAddr = '0xc70db95c991562f73fedaf0303f6e6a59da04a94';
 
-
-const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns }) => {
+const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, forceRerender, setForceRerender }) => {
   const settleUp = () => {
     const toSendTxns: Array<HarmonyTxn> = [];
-    if (providedWeb3 && settle && providedWeb3.account) {
+    if (providedWeb3 && settle && providedWeb3.account && group) {
       const web3 = providedWeb3.w3;
       for (let debt of settle.debts) {
         if (debt.debtor === providedWeb3.account) {
@@ -69,7 +70,15 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns }) 
             value: web3.utils.toWei(toSendTxns[0].amountInOne, 'ether'),
           })
           .on('confirmation', (confirmationNumber: number, receipt: object) => {
-            // TODO: Write settlement txn to backend
+            resolveSettle(group.id).then((res) => {
+              if (res.status === 200) {
+                setForceRerender(!forceRerender)
+              } else {
+                alert("Error when updating group transactions");
+              }
+            }).catch((err) => {
+              alert("Error when updating group transactions");
+            });
             console.log({ receipt, confirmationNumber });
           })
           .on('error', (error: Error) => {
@@ -85,7 +94,15 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns }) 
           .multiTransfer(addrs, amounts)
           .send({ from: myAddrChecksum, value: amounts.reduce((acc, amount) => acc.add(amount)) })
           .on('confirmation', (confirmationNumber: number, receipt: object) => {
-            // TODO: Write settlement txn to backend
+            resolveSettle(group.id).then((res) => {
+              if (res.status === 200) {
+                setForceRerender(!forceRerender)
+              } else {
+                alert("Error when updating group transactions");
+              }
+            }).catch((err) => {
+              alert("Error when updating group transactions");
+            });
             console.log({ receipt, confirmationNumber });
           })
           .on('error', (error: Error) => {
@@ -96,9 +113,7 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns }) 
   };
 
   let userBalance = 0;
-  let numTxns = 0;
   if (settle !== null && providedWeb3 !== null) {
-    numTxns = settle.debts.length;
     for (let debt of settle.debts) {
       let amt = Number(debt.net_owed);
       if (debt.creditor === providedWeb3.account) {
@@ -110,8 +125,10 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns }) 
     }
   }
 
+  let numTxns = 0;
   let totalExpenses = 0;
   if (txns !== null && providedWeb3 !== null) {
+    numTxns = txns.length;
     for (let txn of txns) {
       for (let split of txn.splits) {
         if (split.user === providedWeb3.account) {

@@ -15,7 +15,7 @@ use crate::controllers::currency::{
 use crate::controllers::groups::{
     accept_invite_to_group, create_group, get_group, get_groups_by_user, invite_to_group,
 };
-use crate::controllers::settle::get_settlement_by_group;
+use crate::controllers::settle::{get_settlement_by_group, resolve_settlement};
 use crate::controllers::transactions::{
     create_transaction, delete_transaction, get_transactions_by_group,
     get_transactions_by_group_with_splits, update_transaction,
@@ -93,7 +93,10 @@ async fn rocket() -> _ {
                 delete_transaction
             ],
         )
-        .mount("/settle", routes![get_settlement_by_group])
+        .mount(
+            "/settle",
+            routes![get_settlement_by_group, resolve_settlement],
+        )
         .attach(cors)
         .manage(pool)
 }
