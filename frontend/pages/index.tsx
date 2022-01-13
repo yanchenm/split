@@ -88,7 +88,9 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               );
               startButtonArea = (
                 <Button
-                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'}
+                  classNames={
+                    'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'
+                  }
                   clickHandler={() => router.push({ pathname: '/app' })}
                 >
                   Get Started
@@ -112,7 +114,9 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               );
               startButtonArea = (
                 <Button
-                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'}
+                  classNames={
+                    'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'
+                  }
                   clickHandler={web3Connect}
                 >
                   Get Started
@@ -122,8 +126,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
 
             let isNotRegisteredAndConnected = () => {
               return (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
-            }
-              
+            };
 
             return (
               <>
@@ -185,8 +188,8 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                       {buttonArea}
                     </div>
                     <div className="flex flex-col justify-between items-center">
-                      <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600">
-                        Find Your Money on the <br /> BLOCK CHAIN
+                      <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600 py-3">
+                        Record. Settle. Recieve. <br /> On Harmony One
                       </h1>
                       {startButtonArea}
                     </div>
