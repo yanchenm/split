@@ -65,26 +65,18 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, 
         });
       }
 
+      txnExpenses.sort((a, b) => {
+        if (a.date > b.date) {
+          return -1;
+        } else if (a.date < b.date) {
+          return 1;
+        }
+        return 0;
+      })
+
       setRealExpense(txnExpenses);
     }
   }, [txns, group]);
-
-  // Sample expense
-  /*
-  {
-    _id: 'a',
-    name: 'Mcdonalds',
-    paidBy: 'bob',
-    participants: [
-      { name: 'bob', portion: 0.1 },
-      { name: 'a', portion: 0.2 },
-      { name: 'b', portion: 0.4 },
-      { name: 'c', portion: 0.3 },
-    ],
-    total: 12345.12,
-    date: '2022-01-01',
-  }
-  */
 
   const deleteExpenseHandler = (id: string) => {
     deleteTransaction(id).then(() => {
