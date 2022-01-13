@@ -76,9 +76,7 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openM
               <Controller
                 control={formMethods.control}
                 name="currency"
-                render={({ field: { onChange, value } }) => (
-                  <CurrencySelector selected={value} onChange={onChange} options={currencies} />
-                )}
+                render={({ field: { onChange, value } }) => <CurrencySelector selected={value} onChange={onChange} />}
                 rules={{ required: { value: true, message: 'Please select a currency.' } }}
               />
               <div className="text-sm text-red-500 mt-1">{formErrors.currency?.message}</div>

@@ -24,6 +24,7 @@ type NewTransactionFormValues = {
 type NewTransactionModalProps = {
   groupId: string;
   isOpen: boolean;
+  currency: string;
   closeModal: () => void;
   openModal: () => void;
   onDone: () => void;
@@ -36,11 +37,10 @@ export type ParticipantState = {
   isCustom: boolean;
 };
 
-const currencies = ['CAD', 'USD', 'EUR'];
-
 const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   groupId,
   isOpen,
+  currency,
   closeModal,
   openModal,
   onDone,
@@ -176,10 +176,9 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
               <Controller
                 control={formMethods.control}
                 name="currency"
-                render={({ field: { onChange, value } }) => (
-                  <CurrencySelector selected={value} onChange={onChange} options={currencies} />
-                )}
+                render={({ field: { onChange, value } }) => <CurrencySelector selected={value} onChange={onChange} />}
                 rules={{ required: { value: true, message: 'Please select a currency.' } }}
+                defaultValue={currency}
               />
               <div className="text-sm text-red-500 mt-1">{formErrors.currency?.message}</div>
             </div>

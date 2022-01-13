@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 
 import ExpenseList from '../../../components/detailview/ExpensesList';
 import GroupStats from '../../../components/detailview/GroupStats';
-import NewTransactionModal from '../../../components/detailview/NewTransactionModal';
 import NewInviteModal from '../../../components/detailview/NewInviteModal';
+import NewTransactionModal from '../../../components/detailview/NewTransactionModal';
 import type { NextPage } from 'next/types';
 import Sidebar from '../../../components/app/Sidebar';
 import { useRouter } from 'next/router';
@@ -129,6 +129,7 @@ const DetailView: NextPage = () => {
                             closeModal={closeNewTxnModal}
                             openModal={openNewTxnModal}
                             onDone={forceRerenderPage}
+                            currency={group?.currency}
                           />
                         )}
                         {group && (
