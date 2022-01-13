@@ -4,15 +4,17 @@ import React from 'react';
 import { address_to_avatar } from '../../utils/avatar';
 
 type ExpenseProps = {
+  id: string,
   name: string;
   paidBy: string;
   total: number;
   yourShare: number;
   date: string;
   participants: any;
+  deleteExpenseHandler: (id: string) => void;
 };
 
-const Expense: React.FC<ExpenseProps> = ({ name, paidBy, participants, total, yourShare, date }) => {
+const Expense: React.FC<ExpenseProps> = ({ id, name, paidBy, participants, total, yourShare, date, deleteExpenseHandler }) => {
   console.log(address_to_avatar('asdfasfds'));
   return (
     <div className="grid grid-cols-12 text-start font-normal text-gray-700 dark:text-slate-200 hover:bg-gray-200 py-3 px-4 rounded-lg">
@@ -35,7 +37,7 @@ const Expense: React.FC<ExpenseProps> = ({ name, paidBy, participants, total, yo
       <h3 className="col-span-2 text-base font-medium">{date}</h3>
       <h3 className="col-span-1 font-medium flex items-center space-x-5">
         <PencilIcon className="pl-1 h-5 w-5 text-gray-400 hover:text-gray-800 cursor-pointer" />
-        <TrashIcon className="h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer" />
+        <TrashIcon className="h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer" onClick={() => {deleteExpenseHandler(id)}}/>
       </h3>
     </div>
   );

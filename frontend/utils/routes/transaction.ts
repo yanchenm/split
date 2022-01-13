@@ -42,6 +42,10 @@ export const updateTransaction = (transaction: Transaction, tx_id: string): Prom
     return axios.put(`${url}/transaction/${tx_id}`, transaction);
 }
 
+export const deleteTransaction = (tx_id: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
+    return axios.delete(`${url}/transaction/${tx_id}`);
+}
+
 export const getTransactionsByGroup = (groupId: string): Promise<AxiosResponse<Array<DbTransaction>>> => {
     return axios.get(`${url}/transaction/group/${groupId}`);
 }

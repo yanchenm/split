@@ -4,6 +4,9 @@ import { Group } from '../../utils/routes/group';
 import { TransactionWithSplits } from '../../utils/routes/transaction';
 import {displayAddress} from '../../utils/address';
 import { ProvidedWeb3 } from '../../pages/_app';
+import { deleteTransaction } from '../../utils/routes/transaction';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 type StatProps = {
   group: Group | null;
@@ -11,32 +14,54 @@ type StatProps = {
   providedWeb3: ProvidedWeb3 | null;
 };
 
+type ParticipantType = {
+  name: string,
+  portion: Number
+};
+
+type ExpenseType = {
+  _id: string,
+  name: string,
+  paidBy: string,
+  participants: ParticipantType[],
+  total: number,
+  yourShare: number,
+  date: string
+};
+
+
 const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
-  const realExpenses = []
-  if (group && txns && providedWeb3) {
-    for (let txn of txns) {
-      const participants: any = [];
-      let yourShare = 0;
-      txn.splits.forEach((split) => {
-        if (split.user === providedWeb3.account) {
-          yourShare = Number(split.share);
-        }
-        participants.push({
-          name: displayAddress(split.user),
-          portion: Number(split.share)
-        });
-      })
-      realExpenses.push({
-        _id: txn.transaction.id,
-        name: txn.transaction.name,
-        paidBy: displayAddress(txn.transaction.paid_by),
-        participants,
-        total: Number(txn.transaction.amount),
-        yourShare,
-        date: txn.transaction.date.split("T")[0]
-      })
+  const [realExpenses, setRealExpense] = useState<ExpenseType[]>([]);
+  const txnExpenses: ExpenseType[] = []
+
+  useEffect(() => {
+    if (group && txns && providedWeb3) {
+      for (let txn of txns) {
+        const _participants: ParticipantType[] = [];
+        let yourShare = 0;
+        txn.splits.forEach((split) => {
+          if (split.user === providedWeb3.account) {
+            yourShare = Number(split.share);
+          }
+          _participants.push({
+            name: displayAddress(split.user),
+            portion: Number(split.share)
+          });
+        })
+        txnExpenses.push({
+          _id: txn.transaction.id,
+          name: txn.transaction.name,
+          paidBy: displayAddress(txn.transaction.paid_by),
+          participants: _participants,
+          total: Number(txn.transaction.amount),
+          yourShare,
+          date: txn.transaction.date.split("T")[0]
+        })
+      }
+  
+      setRealExpense(txnExpenses);
     }
-  }
+  }, [txns, group])
 
   // Sample expense
   /*
@@ -55,6 +80,21 @@ const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
   }
   */
 
+  const deleteExpenseHandler = (id: string) => {
+    deleteTransaction(id).then(() => {
+      let filtered = realExpenses.filter((expense) => {
+        return expense._id != id;
+      });
+
+      console.log(filtered)
+      setRealExpense(filtered)
+
+      // setRealExpense(realExpenses.filter((expense) => {
+      //   return expense._id != id;
+      // }))
+    })
+  };
+
   return (
     <div className="flex flex-col w-full pb-8">
       {/* Column names */}
@@ -72,12 +112,14 @@ const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
           return (
             <Expense
               key={expense._id}
+              id={expense._id}
               name={expense.name}
               paidBy={expense.paidBy}
               participants={expense.participants}
               total={expense.total}
               yourShare={expense.yourShare}
               date={expense.date}
+              deleteExpenseHandler={deleteExpenseHandler}
             />
           );
         })}
