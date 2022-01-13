@@ -5,11 +5,11 @@ import { Settlement, getSettlementsForGroup } from '../../../utils/routes/settle
 import { TransactionWithSplits, getTransactionsByGroupWithSplits } from '../../../utils/routes/transaction';
 import { useEffect, useState } from 'react';
 
-import ExpenseList from '../../../components/DetailView/ExpensesList';
-import GroupStats from '../../../components/DetailView/GroupStats';
-import NewTransactionModal from '../../../components/DetailView/NewTransactionModal';
+import ExpenseList from '../../../components/detailview/ExpensesList';
+import GroupStats from '../../../components/detailview/GroupStats';
+import NewTransactionModal from '../../../components/detailview/NewTransactionModal';
 import type { NextPage } from 'next/types';
-import Sidebar from '../../../components/App/Sidebar';
+import Sidebar from '../../../components/app/Sidebar';
 import { useRouter } from 'next/router';
 
 const DetailView: NextPage = () => {
@@ -19,6 +19,7 @@ const DetailView: NextPage = () => {
   const [group, setGroup] = useState<Group | null>(null);
   const [settle, setSettle] = useState<Settlement | null>(null);
   const [txns, setTxns] = useState<Array<TransactionWithSplits> | null>(null);
+  const [forceRerender, setForceRerender] = useState<boolean>(false);
   const [isNewTxnModalOpen, setIsNewTxnModalOpen] = useState(false);
 
   const openNewTxnModal = () => {
@@ -52,7 +53,7 @@ const DetailView: NextPage = () => {
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [id, forceRerender]);
 
   return (
     <W3Context.Consumer>
@@ -67,7 +68,7 @@ const DetailView: NextPage = () => {
                     <div className="flex flex-row w-full justify-center overflow-y-auto">
                       <div className="flex flex-col space-y-10 w-11/12 items-center">
                         <div className="flex flex-row justify-between w-full">
-                          <h3 className="text-3xl font-semibold mt-9">{'Test Trip'}</h3>
+                          <h3 className="text-3xl font-semibold mt-9 w-full">{group?.name}</h3>
                           <div className="flex flex-row mt-9 space-x-3 items-center">
                             <ShareIcon className="h-8 w-8 hover:text-violet-600 cursor-pointer" />
                             <PlusIcon
@@ -76,7 +77,14 @@ const DetailView: NextPage = () => {
                             />
                           </div>
                         </div>
-                        <GroupStats providedWeb3={consumerProps} group={group} settle={settle} />
+                        <GroupStats
+                          providedWeb3={consumerProps}
+                          group={group}
+                          settle={settle}
+                          txns={txns}
+                          setForceRerender={setForceRerender}
+                          forceRerender={forceRerender}
+                        />
                         <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} />
                         <NewTransactionModal
                           isOpen={isNewTxnModalOpen}

@@ -7,4 +7,5 @@ pub struct Split {
     pub tx_id: String,
     pub user: String,
     pub share: Decimal,
+    pub resolved: bool,
 }

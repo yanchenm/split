@@ -1,6 +1,6 @@
 import { DarkmodeContext } from '../_app';
 import type { NextPage } from 'next';
-import Sidebar from '../../components/App/Sidebar';
+import Sidebar from '../../components/app/Sidebar';
 
 const PastGroups: NextPage = () => {
   return (

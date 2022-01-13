@@ -1,70 +1,19 @@
 import { DarkmodeContext, ProvidedWeb3 } from '../_app';
-import NewCard from '../../components/App/NewCard';
+import NewCard from '../../components/app/NewCard';
 import type { NextPage } from 'next';
-import Sidebar from '../../components/App/Sidebar';
-import SplitCard from '../../components/App/SplitCard';
+import Sidebar from '../../components/app/Sidebar';
+import SplitCard from '../../components/app/SplitCard';
 import { getGroupsByUser } from '../../utils/routes/group';
 import { getSettlementsForGroup } from '../../utils/routes/settle';
 import type { Group } from '../../utils/routes/group';
 import { useEffect, useState } from 'react';
 import ReactLoading from 'react-loading';
+import NewGroupModal from '../../components/app/NewGroupModal';
 
 type GroupWithBalance = {
   group: Group;
   userBalance: number;
 };
-
-const splitGroups = [
-  {
-    groupId: 'a',
-    name: 'Seattle trip',
-    userBalance: 1,
-    currency: 'USD',
-    lastUpdate: 'Jan 1, 2022',
-  },
-  {
-    groupId: 'b',
-    name: 'Whistler trip',
-    userBalance: -2,
-    currency: 'CAD',
-    lastUpdate: 'Jan 2, 2022',
-  },
-  {
-    groupId: 'c',
-    name: 'Sydney trip',
-    userBalance: 3,
-    currency: 'AUD',
-    lastUpdate: 'Jan 3, 2022',
-  },
-  {
-    groupId: 'd',
-    name: 'Alabama trip',
-    userBalance: -4,
-    currency: 'USD',
-    lastUpdate: 'Jan 4, 2022',
-  },
-  {
-    groupId: 'e',
-    name: 'Quebec trip',
-    userBalance: 5,
-    currency: 'CAD',
-    lastUpdate: 'Jan 5, 2022',
-  },
-  {
-    groupId: 'f',
-    name: 'Lisbon trip',
-    userBalance: -6,
-    currency: 'USD',
-    lastUpdate: 'Jan 6, 2022',
-  },
-  {
-    groupId: 'g',
-    name: 'Calgary trip',
-    userBalance: 7,
-    currency: 'CAD',
-    lastUpdate: 'Jan 7, 2022',
-  },
-];
 
 type PageProps = {
   providedWeb3: ProvidedWeb3 | null;
@@ -74,6 +23,14 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
   const { providedWeb3 } = props;
   const [splitGroups, setSplitGroups] = useState<Array<Group>>([]);
   const [splitGroupsWithBalance, setSplitGroupsWithBalance] = useState<Array<GroupWithBalance>>([]);
+  const [isNewGroupModalOpen, setIsNewGroupModalOpen] = useState(false);
+
+  const openNewGroupModal = () => {
+    setIsNewGroupModalOpen(true);
+  };
+  const closeNewGroupModal = () => {
+    setIsNewGroupModalOpen(false);
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -163,9 +120,10 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
                     );
                   })
                 )}
-                <NewCard />
+                <NewCard clickHandler={openNewGroupModal}/>
               </div>
             </div>
+            <NewGroupModal isOpen={isNewGroupModalOpen} closeModal={closeNewGroupModal} openModal={openNewGroupModal} />
           </div>
         );
       }}

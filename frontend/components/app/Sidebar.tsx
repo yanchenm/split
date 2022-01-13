@@ -3,13 +3,9 @@ import React, { useState } from 'react';
 
 import { DarkmodeContext } from '../../pages/_app';
 import NewGroupModal from './NewGroupModal';
-import ToggleButton from '../UI/ToggleButton';
+import ToggleButton from '../ui/ToggleButton';
 import { useRouter } from 'next/router';
 
-type ButtonProps = {
-  buttonText: string;
-  svgSrc: string;
-};
 
 const Sidebar: React.FC = () => {
   const router = useRouter();

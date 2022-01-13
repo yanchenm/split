@@ -233,6 +233,7 @@ pub async fn get_transactions_by_group_with_splits(
                 tx_id: txn.id.clone(),
                 user: txn.user.clone(),
                 share: txn.share.clone(),
+                resolved: txn.resolved.clone() == 1,
             });
     });
 

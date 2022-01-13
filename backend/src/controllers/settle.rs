@@ -8,7 +8,7 @@ use rocket::serde::json::Json;
 use rocket::State;
 use sqlx::MySqlPool;
 
-use crate::db::{groups, memberships, splits, transactions};
+use crate::db::{groups, memberships, split::resolve_splits_for_user, transactions};
 use crate::models::membership::MembershipStatus;
 use crate::utils::currency::get_currency_conversion_rate;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
@@ -25,7 +25,7 @@ pub struct Debt {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct Settlement {
+pub struct Settlement {
     group_id: String,
     debts: Vec<Debt>,
 }
@@ -118,43 +118,24 @@ pub async fn get_settlement_by_group<'r>(
             }
         };
 
-    // Get Transactions for group
-    let transactions = match transactions::get_transactions_by_group(pool, group_id).await {
-        Ok(txns) => txns,
-        Err(_) => {
-            return {
-                Err(StringResponseWithStatus {
-                    status: Status::BadRequest,
-                    message: "Failed to get transactions for group due to error".to_string(),
-                })
-            };
-        }
-    };
-
-    // Get splits for each transaction
-    let split_reqs = transactions.iter().map(|transaction| {
-        splits::get_splits_with_currency_by_txn(
-            pool,
-            transaction.id.as_str(),
-            transaction.currency.as_str(),
-        )
-    });
-
-    let all_splits = match try_join_all(split_reqs).await {
-        Ok(splits) => splits,
-        Err(_) => {
-            return Err(StringResponseWithStatus {
-                status: Status::BadRequest,
-                message: "Failed to get transactions for group due to error".to_string(),
-            })
-        }
-    };
+    let transactions_with_splits =
+        match transactions::get_transactions_by_group_with_splits(pool, group_id).await {
+            Ok(txns) => txns,
+            Err(_) => {
+                return {
+                    Err(StringResponseWithStatus {
+                        status: Status::BadRequest,
+                        message: "Failed to get transactions for group due to error".to_string(),
+                    })
+                };
+            }
+        };
 
     // Get distinct currencies to convert from
-    let distinct_currencies_reqs = transactions
+    let distinct_currencies_reqs = transactions_with_splits
         .iter()
-        .filter(|txn| txn.currency != group.currency)
-        .map(|txn| txn.currency.clone())
+        .filter(|txn| txn.transaction.currency != group.currency)
+        .map(|txn| txn.transaction.currency.clone())
         .collect::<HashSet<String>>()
         .into_iter()
         .map(|currency| get_currency_conversion_rate(pool, currency, group.currency.clone()));
@@ -177,11 +158,10 @@ pub async fn get_settlement_by_group<'r>(
 
     let mut net_owed = HashMap::new();
 
-    // Add txn credits to net_owed
-    for txn in transactions {
-        let owed = net_owed
-            .entry(txn.paid_by.clone())
-            .or_insert(Decimal::new(0, 2));
+    // Add txn credits to net_owed and splits
+    for transaction_with_splits in transactions_with_splits {
+        let txn = transaction_with_splits.transaction;
+        let splits = transaction_with_splits.splits;
         let mut final_amount = txn.amount.clone();
 
         if txn.currency != group.currency {
@@ -196,20 +176,17 @@ pub async fn get_settlement_by_group<'r>(
             };
             final_amount *= conversion_rate;
         }
-
-        *owed += final_amount;
-    }
-
-    // Add split debt to net_owed
-    for splits in all_splits {
-        for split_with_currency in splits {
-            let owed = net_owed
-                .entry(split_with_currency.split.user.clone())
+        {
+            let txn_owed = net_owed
+                .entry(txn.paid_by.clone())
                 .or_insert(Decimal::new(0, 2));
-            let mut final_share = split_with_currency.split.share.clone();
+            *txn_owed += final_amount;
+        }
 
-            if split_with_currency.currency != group.currency {
-                let conversion_rate = match conversion_rates.get(&split_with_currency.currency) {
+        for split in splits {
+            let mut final_share = split.share.clone();
+            if txn.currency != group.currency {
+                let conversion_rate = match conversion_rates.get(&txn.currency) {
                     Some(rate) => rate,
                     None => {
                         return Err(StringResponseWithStatus {
@@ -220,8 +197,19 @@ pub async fn get_settlement_by_group<'r>(
                 };
                 final_share *= conversion_rate;
             }
-
-            *owed -= final_share;
+            if split.resolved {
+                // We have added the total value of the txn to the txn creator's net_owed.
+                // If this split portion of the txn was already resolved, remove it from the txn creator's net_allowed
+                let txn_owed = net_owed
+                    .entry(txn.paid_by.clone())
+                    .or_insert(Decimal::new(0, 2));
+                *txn_owed -= final_share;
+            } else {
+                let split_owed = net_owed
+                    .entry(split.user.clone())
+                    .or_insert(Decimal::new(0, 2));
+                *split_owed -= final_share;
+            }
         }
     }
 
@@ -339,4 +327,22 @@ pub async fn get_settlement_by_group<'r>(
         group_id: group_id.to_string(),
         debts: ret,
     }))
+}
+
+#[put("/resolve/<group_id>")]
+pub async fn resolve_settlement<'r>(
+    pool: &State<MySqlPool>,
+    group_id: &str,
+    authed_user: AuthedDBUser<'r>,
+) -> StringResponseWithStatus {
+    match resolve_splits_for_user(pool, group_id, authed_user.address.as_str()).await {
+        Ok(_) => StringResponseWithStatus {
+            status: Status::Ok,
+            message: "Resolved splits.".to_string(),
+        },
+        Err(_) => StringResponseWithStatus {
+            status: Status::InternalServerError,
+            message: "Could not resolve splits due to error.".to_string(),
+        },
+    }
 }

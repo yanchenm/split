@@ -17,13 +17,13 @@ const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => 
         checked={toggleState}
         onChange={typedToggler}
         className={`${
-          toggleState ? 'bg-violet-600' : 'bg-gray-400'
+          toggleState ? 'bg-gradient-to-r from-purple-500 to-violet-600' : 'bg-slate-300'
         } relative inline-flex items-center h-6 rounded-full w-11`}
       >
         <span
           className={`${
             toggleState ? 'translate-x-6' : 'translate-x-1'
-          } inline-block w-4 h-4 transform bg-gray-300 rounded-full`}
+          } inline-block w-4 h-4 transform bg-white rounded-full`}
         />
       </Switch>
       <MoonIcon className={`${toggleState ? 'text-slate-200' : 'text-black-200'} 'font-semibold rounded-lg h-7 w-7 ml-1 pb-1`} />
