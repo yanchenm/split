@@ -3,13 +3,18 @@ import { StringResponseWithStatus } from '../responses';
 import axios from 'axios';
 import { url } from '../constants';
 
+export type RequestUser = {
+    username: string,
+    email: string | null,
+}
+
 export type User = {
     address: string,
     username: string,
     email: string | null,
 }
 
-export const createUser = (user: User): Promise<AxiosResponse<StringResponseWithStatus>> => {
+export const createUser = (user: RequestUser): Promise<AxiosResponse<StringResponseWithStatus>> => {
     return axios.post(`${url}/user`, user);
 }
 
