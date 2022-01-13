@@ -1,7 +1,7 @@
-import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import { url } from '../constants';
 import { StringResponseWithStatus } from '../responses';
+import axios from 'axios';
+import { url } from '../constants';
 
 export type Split = {
     tx_id: string,
@@ -9,12 +9,25 @@ export type Split = {
     share: string,
 }
 
+export type RequestSplit = {
+    address: string,
+    share: string,
+}
+
+export type RequestTransaction = {
+    name: string,
+    group: string,
+    total: string,
+    currency: string,
+    splits: Array<RequestSplit> 
+}
+
 export type Transaction = {
     name: string,
     group: string,
     total: string,
     currency: string,
-    image: string | null,
+    image?: string,
     splits: Array<Split>
 }
 
@@ -34,7 +47,7 @@ export type TransactionWithSplits = {
     splits: Array<Split>
 }
 
-export const createTransaction = (transaction: Transaction): Promise<AxiosResponse<StringResponseWithStatus>> => {
+export const createTransaction = (transaction: RequestTransaction): Promise<AxiosResponse<StringResponseWithStatus>> => {
     return axios.post(`${url}/transaction`, transaction);
 }
 

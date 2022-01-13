@@ -1,7 +1,8 @@
-import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import { url } from '../constants';
 import { StringResponseWithStatus } from '../responses';
+import { User } from './user';
+import axios from 'axios';
+import { url } from '../constants';
 
 export type CreateGroupRequest = {
     name: string,
@@ -39,4 +40,8 @@ export const getGroup = (groupId: string): Promise<AxiosResponse<Group>> => {
 
 export const getGroupsByUser = (): Promise<AxiosResponse<Array<Group>>> => {
     return axios.get(`${url}/group/`);
+}
+
+export const getUsersInGroup = (groupId: string): Promise<AxiosResponse<Array<User>>> => {
+    return axios.get(`${url}/group/${groupId}/users`);
 }

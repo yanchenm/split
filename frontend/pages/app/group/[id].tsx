@@ -87,6 +87,7 @@ const DetailView: NextPage = () => {
                         />
                         <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} />
                         <NewTransactionModal
+                          groupId={group?.id}
                           isOpen={isNewTxnModalOpen}
                           closeModal={closeNewTxnModal}
                           openModal={openNewTxnModal}
