@@ -133,7 +133,7 @@ pub async fn accept_invite_to_group<'r>(
     {
         Ok(_) => StringResponseWithStatus {
             status: Status::Ok,
-            message: "Successfully joined group!".to_string(),
+            message: invite.group_id,
         },
         Err(e) => {
             error!("error creating membership in db: {}", e);
