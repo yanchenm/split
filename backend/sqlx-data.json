@@ -448,16 +448,6 @@
       "nullable": []
     }
   },
-  "68bee0ff4a861c8ab7eb93b537ee0b157b460c685cafa9928dee22d25d858fca": {
-    "query": "UPDATE Membership SET status = ? WHERE `group` = ? AND user = ?;",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Right": 3
-      },
-      "nullable": []
-    }
-  },
   "6f82109ed9dc2d01ff8947e9fda0dec340d3991256090074d2932fd79792e2ce": {
     "query": "SELECT * FROM Split s\n        JOIN Transaction t ON t.group = ? AND s.tx_id = t.id \n        ORDER BY t.date DESC, t.updated_at DESC;",
     "describe": {
@@ -912,6 +902,16 @@
       "nullable": []
     }
   },
+  "dde67867637274196acdcdfdbb6d2d40280b3e57ef85143d3c6133438a257f52": {
+    "query": "INSERT INTO `Invite` (group_id, invite_code, isActive, created_by) VALUES (?, ?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 4
+      },
+      "nullable": []
+    }
+  },
   "e0e61fc69b4205c310821226239abc90429fa5c8f259523b8c69dceadf058530": {
     "query": "INSERT INTO `Group` (id, name, currency, description) VALUES (?, ?, ?, ?);",
     "describe": {
@@ -1095,6 +1095,83 @@
         false,
         false,
         true
+      ]
+    }
+  },
+  "f9b22659fa9d5c3fed989b175db7e723a2f70ff883e31d464b81f1c78427addf": {
+    "query": "SELECT * FROM `Invite` WHERE invite_code = ?;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "group_id",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 128
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "invite_code",
+          "type_info": {
+            "type": "String",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 128
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "created_by",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 168
+          }
+        },
+        {
+          "ordinal": 3,
+          "name": "created_at",
+          "type_info": {
+            "type": "Timestamp",
+            "flags": {
+              "bits": 1153
+            },
+            "char_set": 63,
+            "max_size": 19
+          }
+        },
+        {
+          "ordinal": 4,
+          "name": "isActive",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false
       ]
     }
   }
