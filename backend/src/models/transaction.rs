@@ -28,6 +28,7 @@ pub struct DbTransactionWithSplits {
     pub tx_id: String,
     pub user: String,
     pub share: Decimal,
+    pub resolved: i8,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

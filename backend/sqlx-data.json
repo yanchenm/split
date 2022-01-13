@@ -151,6 +151,16 @@
       "nullable": []
     }
   },
+  "1e2d4438a2b2a50c8b2e101d7dcf8efc6549016b0028b79401c8e23d0c8fb333": {
+    "query": "UPDATE Split s\n        JOIN Transaction t ON s.tx_id = t.id AND t.group = ?\n        SET s.resolved = '1'\n        WHERE s.user = ?;",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": []
+    }
+  },
   "1ed0d92bb506a940ad2b6cd9408d12ff22cb4b803f7d7636e2d54a326302a61b": {
     "query": "SELECT g.*\n        FROM `Group` g\n        JOIN Membership\n        ON g.id = Membership.group\n        AND Membership.user = ?\n        ORDER BY updated_at DESC;",
     "describe": {
@@ -490,6 +500,18 @@
         },
         {
           "ordinal": 3,
+          "name": "resolved",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 32769
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
+        },
+        {
+          "ordinal": 4,
           "name": "id",
           "type_info": {
             "type": "String",
@@ -501,7 +523,7 @@
           }
         },
         {
-          "ordinal": 4,
+          "ordinal": 5,
           "name": "group",
           "type_info": {
             "type": "String",
@@ -513,7 +535,7 @@
           }
         },
         {
-          "ordinal": 5,
+          "ordinal": 6,
           "name": "amount",
           "type_info": {
             "type": "NewDecimal",
@@ -525,7 +547,7 @@
           }
         },
         {
-          "ordinal": 6,
+          "ordinal": 7,
           "name": "currency",
           "type_info": {
             "type": "String",
@@ -537,7 +559,7 @@
           }
         },
         {
-          "ordinal": 7,
+          "ordinal": 8,
           "name": "paid_by",
           "type_info": {
             "type": "VarString",
@@ -549,7 +571,7 @@
           }
         },
         {
-          "ordinal": 8,
+          "ordinal": 9,
           "name": "name",
           "type_info": {
             "type": "VarString",
@@ -561,7 +583,7 @@
           }
         },
         {
-          "ordinal": 9,
+          "ordinal": 10,
           "name": "date",
           "type_info": {
             "type": "Date",
@@ -573,7 +595,7 @@
           }
         },
         {
-          "ordinal": 10,
+          "ordinal": 11,
           "name": "updated_at",
           "type_info": {
             "type": "Timestamp",
@@ -589,6 +611,7 @@
         "Right": 1
       },
       "nullable": [
+        false,
         false,
         false,
         false,
@@ -737,57 +760,6 @@
         "Right": 3
       },
       "nullable": []
-    }
-  },
-  "9abb2b6726b7e7ddeea78fbcd49ae6a5379a6d79a05f543c948e19c331ba7f10": {
-    "query": "SELECT * FROM Split s\n        WHERE s.tx_id = ?;",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "tx_id",
-          "type_info": {
-            "type": "String",
-            "flags": {
-              "bits": 4107
-            },
-            "char_set": 45,
-            "max_size": 128
-          }
-        },
-        {
-          "ordinal": 1,
-          "name": "user",
-          "type_info": {
-            "type": "VarString",
-            "flags": {
-              "bits": 4107
-            },
-            "char_set": 45,
-            "max_size": 168
-          }
-        },
-        {
-          "ordinal": 2,
-          "name": "share",
-          "type_info": {
-            "type": "NewDecimal",
-            "flags": {
-              "bits": 36865
-            },
-            "char_set": 63,
-            "max_size": 20
-          }
-        }
-      ],
-      "parameters": {
-        "Right": 1
-      },
-      "nullable": [
-        false,
-        false,
-        false
-      ]
     }
   },
   "c0bf7852a5cbd2f23481455ac9214a35bd9a42beed0ab50d2fb4911d3d2d7eb6": {

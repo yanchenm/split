@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import { url } from '../constants';
+import { StringResponseWithStatus } from '../responses';
 
 export type Debt = {
     debtor: string, // Person who owes money
@@ -16,4 +17,8 @@ export type Settlement = {
 
 export const getSettlementsForGroup = (groupId: string): Promise<AxiosResponse<Settlement>> => {
     return axios.get(`${url}/settle/${groupId}`);
+}
+
+export const resolveSettle = (groupId: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
+    return axios.put(`${url}/settle/resolve/${groupId}`);
 }
