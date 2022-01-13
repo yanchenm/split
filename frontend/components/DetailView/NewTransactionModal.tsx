@@ -6,6 +6,8 @@ import CurrencySelector from '../../components/UI/CurrencySelector';
 import CustomDatePicker from '../UI/DatePicker';
 import Input from '../../components/UI/Input';
 import Modal from '../UI/Modal';
+import NumberFormat from 'react-number-format';
+import SplitParticipants from '../UI/SplitParticipants';
 import { useRouter } from 'next/router';
 
 type NewTransactionFormValues = {
@@ -13,13 +15,33 @@ type NewTransactionFormValues = {
   amount: number;
   currency: string;
   date: Date;
-  description: string;
+  participants: Record<string, ParticipantState>;
 };
 
 type NewTransactionModalProps = {
   isOpen: boolean;
   closeModal: () => void;
   openModal: () => void;
+};
+
+export type ParticipantState = {
+  selected: boolean;
+  share: number;
+};
+
+const testState = {
+  Alice: {
+    selected: false,
+    share: 0,
+  },
+  Bob: {
+    selected: false,
+    share: 0,
+  },
+  Charlie: {
+    selected: false,
+    share: 0,
+  },
 };
 
 const currencies = ['CAD', 'USD', 'EUR'];
@@ -72,15 +94,20 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, close
             </div>
             <div>
               <label className="text-sm">Amount</label>
-              <Input
-                id="amount"
-                formFieldName="amount"
-                formRegisterOptions={{
-                  required: { value: true, message: 'Please enter a transaction amount.' },
-                  valueAsNumber: true,
-                  validate: (value) => value >= 0 || 'Amount must be greater than 0.',
-                }}
-                type="number"
+              <Controller
+                control={formMethods.control}
+                name="amount"
+                render={({ field: { onChange, value } }) => (
+                  <NumberFormat
+                    className="bg-white appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-200 placeholder-gray-500 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:z-10"
+                    value={value}
+                    onValueChange={(v) => onChange(v.floatValue)}
+                    inputMode="numeric"
+                    decimalScale={2}
+                    allowNegative={false}
+                  />
+                )}
+                rules={{ required: { value: true, message: 'Please enter an amount.' } }}
               />
               <div className="text-sm text-red-500 mt-1">{formErrors.amount?.message}</div>
             </div>
@@ -97,14 +124,19 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, close
               <div className="text-sm text-red-500 mt-1">{formErrors.currency?.message}</div>
             </div>
             <div className="col-span-2">
-              <label className="text-sm">Description (optional)</label>
-              <textarea
-                className="bg-white appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-200 placeholder-gray-500 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:z-10"
-                {...formMethods.register('description', {
-                  maxLength: { value: 512, message: 'Description must be less than 512 characters.' },
-                })}
+              <Controller
+                control={formMethods.control}
+                name="participants"
+                defaultValue={testState}
+                render={({ field: { onChange, value } }) => (
+                  <SplitParticipants
+                    participants={value}
+                    total={formMethods.watch('amount') || 0}
+                    onValueChange={(v) => onChange(v)}
+                  />
+                )}
               />
-              <div className="text-sm text-red-500 mt-1">{formErrors.description?.message}</div>
+              <div className="text-sm text-red-500 mt-1">{formErrors.participants?.message}</div>
             </div>
           </div>
           <div className="mt-6">

@@ -71,9 +71,9 @@ const DateButtonInput = forwardRef(({ value, onClick }, ref) => (
     // @ts-ignore
     ref={ref}
     type="button"
-    className="justify-start w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-500"
+    className="justify-start text-left w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-500"
   >
-    {value ? format(new Date(value), 'd MMM yyyy') : 'Start Date'}
+    {value ? format(new Date(value), 'd MMM yyyy') : 'Select Date'}
   </button>
 ));
 DateButtonInput.displayName = 'DateButtonInput';
