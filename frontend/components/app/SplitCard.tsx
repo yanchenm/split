@@ -53,7 +53,7 @@ const SplitCard: React.FC<CardProps> = ({ name, userBalance, currency, lastUpdat
           <CurrencyDollarIcon className={`h-7 w-7 font-light ${userBalance < 0 ? 'text-red-500' : 'text-green-600'}`} />
           <div className="font-medium text-xl mb-1 pl-5">
             <h3 className="dark:text-slate-400 text-sm">{userBalance < 0 ? 'You owe' : 'You are owed'}</h3>
-            {userBalance.toFixed(2)} {currency}
+            {Math.abs(userBalance).toFixed(2)} {currency}
           </div>
         </span>
       )}

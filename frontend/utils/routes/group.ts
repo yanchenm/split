@@ -25,14 +25,6 @@ export const createGroup = (group: CreateGroupRequest): Promise<AxiosResponse<St
     return axios.post(`${url}/group`, group);
 }
 
-export const inviteToGroup = (groupId: string, invite: InviteToGroupRequest): Promise<AxiosResponse<StringResponseWithStatus>> => {
-    return axios.post(`${url}/group/${groupId}/invite`, invite);
-}
-
-export const acceptInviteToGroup = (groupId: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
-    return axios.post(`${url}/group/${groupId}/accept`);
-}
-
 export const getGroup = (groupId: string): Promise<AxiosResponse<Group>> => {
     return axios.get(`${url}/group/${groupId}`);
 }
