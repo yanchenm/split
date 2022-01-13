@@ -140,7 +140,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                         <form onSubmit={formMethods.handleSubmit(onSubmit)}>
                           <div className="grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
                             <div>
-                              <label className="dark:text-gray-300 text-sm">Name</label>
+                              <label className="dark:text-gray-300 text-sm">Username</label>
                               <Input
                                 id="username"
                                 formFieldName="username"
@@ -170,7 +170,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                           </div>
                           <div className="mt-6">
                             <div className={'text-red-600 text-center mb-3'}>{error}</div>
-                            <ButtonWithLoading buttonText="Submit" loading={isLoading} />
+                            <ButtonWithLoading buttonText="Register" loading={isLoading} />
                           </div>
                         </form>
                       </FormProvider>
