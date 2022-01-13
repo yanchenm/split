@@ -13,7 +13,7 @@ pub async fn create_new_invite(pool: &MySqlPool, group_id: &str, address: &str) 
         .to_string();
 
     sqlx::query!(
-        "INSERT INTO `Invite` (group_id, invite_code, status, created_by) VALUES (?, ?, ?, ?);",
+        "INSERT INTO `Invite` (group_id, invite_code, isActive, created_by) VALUES (?, ?, ?, ?);",
         group_id,
         code,
         1,

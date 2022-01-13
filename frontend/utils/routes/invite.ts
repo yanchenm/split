@@ -3,10 +3,10 @@ import type { AxiosResponse } from 'axios';
 import { url } from '../constants';
 import { StringResponseWithStatus } from '../responses';
 
-export const createInvite = (groupId: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
+export const createInvite = (groupId: string): Promise<AxiosResponse<string>> => {
     return axios.post(`${url}/invite/${groupId}`);
 }
 
-export const acceptInviteToGroup = (invite_code: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
+export const acceptInviteToGroup = (invite_code: string): Promise<AxiosResponse<string>> => {
     return axios.post(`${url}/invite/${invite_code}/accept`);
 }

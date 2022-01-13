@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import ExpenseList from '../../../components/detailview/ExpensesList';
 import GroupStats from '../../../components/detailview/GroupStats';
 import NewTransactionModal from '../../../components/detailview/NewTransactionModal';
+import NewInviteModal from '../../../components/detailview/NewInviteModal';
 import type { NextPage } from 'next/types';
 import Sidebar from '../../../components/app/Sidebar';
 import { useRouter } from 'next/router';
@@ -21,6 +22,15 @@ const DetailView: NextPage = () => {
   const [txns, setTxns] = useState<Array<TransactionWithSplits> | null>(null);
   const [forceRerender, setForceRerender] = useState<boolean>(false);
   const [isNewTxnModalOpen, setIsNewTxnModalOpen] = useState(false);
+  const [isNewInviteModalOpen, setIsNewInviteModalOpen] = useState(false);
+
+  const openNewInviteModal = () => {
+    setIsNewInviteModalOpen(true);
+  };
+
+  const closeNewInviteModal = () => {
+    setIsNewInviteModalOpen(false);
+  };
 
   const openNewTxnModal = () => {
     setIsNewTxnModalOpen(true);
@@ -70,7 +80,10 @@ const DetailView: NextPage = () => {
                         <div className="flex flex-row justify-between w-full">
                           <h3 className="text-3xl font-semibold mt-9 w-full">{group?.name}</h3>
                           <div className="flex flex-row mt-9 space-x-3 items-center">
-                            <ShareIcon className="h-8 w-8 hover:text-violet-600 cursor-pointer" />
+                            <ShareIcon
+                              className="h-8 w-8 hover:text-violet-600 cursor-pointer"
+                              onClick={openNewInviteModal}
+                            />
                             <PlusIcon
                               className="h-10 w-10 hover:text-violet-600 cursor-pointer"
                               onClick={openNewTxnModal}
@@ -92,6 +105,14 @@ const DetailView: NextPage = () => {
                             isOpen={isNewTxnModalOpen}
                             closeModal={closeNewTxnModal}
                             openModal={openNewTxnModal}
+                          />
+                        )}
+                        {group && (
+                          <NewInviteModal
+                            groupId={group.id}
+                            isOpen={isNewInviteModalOpen}
+                            closeModal={closeNewInviteModal}
+                            openModal={openNewInviteModal}
                           />
                         )}
                       </div>

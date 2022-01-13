@@ -15,7 +15,7 @@ pub struct CreateGroupRequest {
     pub description: Option<String>,
 }
 
-#[post("/<group_id>", format = "json")]
+#[post("/<group_id>")]
 pub async fn create_invite<'r>(
     group_id: String,
     pool: &State<MySqlPool>,
