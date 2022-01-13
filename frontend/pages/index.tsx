@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import Button from '../components/ui/Button';
 import React, { useState } from 'react';
 import { W3Context, DarkmodeContext } from './_app';
@@ -123,71 +124,79 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
 
             return (
-              <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
-                <div>
-                  <Modal
-                    isOpen={isNotRegisteredAndConnected}
-                    title="Enter User Details"
-                    closeHandler={closeModal}
-                    openHandler={() => {}}
-                  >
-                    <FormProvider {...formMethods}>
-                      <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                        <div className="grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
-                          <div>
-                            <label className="dark:text-gray-300 text-sm">Name</label>
-                            <Input
-                              id="username"
-                              formFieldName="username"
-                              formRegisterOptions={{
-                                required: { value: true, message: 'Please enter a user name.' },
-                                maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
-                              }}
-                            />
-                            <div className="text-sm text-red-500 mt-1">{formErrors.username?.message}</div>
+              <>
+                <Head>
+                  <title>WheresMyMoney</title>
+                </Head>
+                <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
+                  <div>
+                    <Modal
+                      isOpen={isNotRegisteredAndConnected}
+                      title="Enter User Details"
+                      closeHandler={closeModal}
+                      openHandler={() => {}}
+                    >
+                      <FormProvider {...formMethods}>
+                        <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+                          <div className="grid-cols-2 gap-x-3 gap-y-4 items-start justify-center max-w-full">
+                            <div>
+                              <label className="dark:text-gray-300 text-sm">Name</label>
+                              <Input
+                                id="username"
+                                formFieldName="username"
+                                formRegisterOptions={{
+                                  required: { value: true, message: 'Please enter a user name.' },
+                                  maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
+                                }}
+                              />
+                              <div className="text-sm text-red-500 mt-1">{formErrors.username?.message}</div>
+                            </div>
+                            <div className="col-span-2">
+                              <label className="dark:text-gray-300 text-sm">Email (optional)</label>
+                              <Input
+                                id="email"
+                                formFieldName="email"
+                                formRegisterOptions={{
+                                  required: { value: false, message: 'Please enter a email.' },
+                                  maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
+                                  pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                    message: 'Email address format is invalid',
+                                  },
+                                }}
+                              />
+                              <div className="text-sm text-red-500 mt-1">{formErrors.email?.message}</div>
+                            </div>
                           </div>
-                          <div className="col-span-2">
-                            <label className="dark:text-gray-300 text-sm">Email (optional)</label>
-                            <Input
-                              id="email"
-                              formFieldName="email"
-                              formRegisterOptions={{
-                                required: { value: false, message: 'Please enter a email.' },
-                                maxLength: { value: 64, message: 'Group name must be less than 64 characters.' },
-                                pattern: {
-                                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                  message: 'Email address format is invalid',
-                                },
-                              }}
-                            />
-                            <div className="text-sm text-red-500 mt-1">{formErrors.email?.message}</div>
+                          <div className="mt-6">
+                            <div className={'text-red-600 text-center mb-3'}>{error}</div>
+                            <ButtonWithLoading buttonText="Submit" loading={isLoading} />
                           </div>
-                        </div>
-                        <div className="mt-6">
-                          <div className={'text-red-600 text-center mb-3'}>{error}</div>
-                          <ButtonWithLoading buttonText="Submit" loading={isLoading} />
-                        </div>
-                      </form>
-                    </FormProvider>
-                  </Modal>
-                </div>
+                        </form>
+                      </FormProvider>
+                    </Modal>
+                  </div>
 
-                <div className="bg-white dark:bg-slate-800 h-screen">
-                  <div className="flex justify-between p-10">
-                    <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
-                    {buttonArea}
-                  </div>
-                  <div className="flex flex-col h-40 justify-between items-center mt-40">
-                    <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600">
-                      Find Your Money on the <br /> BLOCK CHAIN
-                    </h1>
-                    {startButtonArea}
-                  </div>
-                  <div className="fixed inset-x-10 bottom-10">
-                    <ToggleButton toggleState={darkmodeProps.isDarkmode} toggleHandler={darkmodeProps.toggleDarkmode} />
+                  <div className="bg-white dark:bg-slate-800 h-screen">
+                    <div className="flex justify-between p-10">
+                      <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
+                      {buttonArea}
+                    </div>
+                    <div className="flex flex-col h-40 justify-between items-center mt-40">
+                      <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600">
+                        Find Your Money on the <br /> BLOCK CHAIN
+                      </h1>
+                      {startButtonArea}
+                    </div>
+                    <div className="fixed inset-x-10 bottom-10">
+                      <ToggleButton
+                        toggleState={darkmodeProps.isDarkmode}
+                        toggleHandler={darkmodeProps.toggleDarkmode}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             );
           }}
         </DarkmodeContext.Consumer>
