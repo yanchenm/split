@@ -7,6 +7,7 @@ pub mod memberships;
 pub mod split;
 pub mod transactions;
 pub mod users;
+pub mod invite;
 
 const MAX_POOL_SIZE: u32 = 30;
 

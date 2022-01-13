@@ -42,20 +42,3 @@ pub async fn get_membership_by_group_and_user(
     };
     Ok(status)
 }
-
-pub async fn update_membership_status(
-    pool: &MySqlPool,
-    group: &str,
-    user: &str,
-    new_status: MembershipStatus,
-) -> Result<()> {
-    sqlx::query!(
-        "UPDATE Membership SET status = ? WHERE `group` = ? AND user = ?;",
-        new_status.to_string(),
-        group,
-        user
-    )
-    .execute(pool)
-    .await?;
-    Ok(())
-}

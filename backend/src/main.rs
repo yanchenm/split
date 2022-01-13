@@ -12,15 +12,15 @@ use rocket_cors::AllowedOrigins;
 use crate::controllers::currency::{
     get_supported_currencies, refresh_currency_conversions, refresh_harmony_price,
 };
-use crate::controllers::groups::{
-    accept_invite_to_group, create_group, get_group, get_groups_by_user, invite_to_group,
-};
+use crate::controllers::groups::{create_group, get_group, get_groups_by_user};
+use crate::controllers::invite::{accept_invite_to_group, create_invite};
 use crate::controllers::settle::{get_settlement_by_group, resolve_settlement};
 use crate::controllers::transactions::{
     create_transaction, delete_transaction, get_transactions_by_group,
     get_transactions_by_group_with_splits, update_transaction,
 };
 use crate::controllers::users::{create_user, get_authed_user};
+
 use std::env;
 
 #[launch]
@@ -67,13 +67,7 @@ async fn rocket() -> _ {
         .mount("/user", routes![create_user, get_authed_user])
         .mount(
             "/group",
-            routes![
-                create_group,
-                invite_to_group,
-                accept_invite_to_group,
-                get_group,
-                get_groups_by_user
-            ],
+            routes![create_group, get_group, get_groups_by_user],
         )
         .mount(
             "/currency",
@@ -97,6 +91,7 @@ async fn rocket() -> _ {
             "/settle",
             routes![get_settlement_by_group, resolve_settlement],
         )
+        .mount("/invite", routes![accept_invite_to_group, create_invite])
         .attach(cors)
         .manage(pool)
 }
