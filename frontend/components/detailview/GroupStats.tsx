@@ -149,8 +149,7 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
           <span className="flex flex-row ml-3 my-2 space-x-2 items-center">
             <ChartPieIcon className={`h-6 w-6  ${userBalance < 0 ? 'text-red-500' : 'text-green-600'}`} />
             <h3 className="text-2xl text-gray-800 dark:text-slate-200 font-semibold">
-              {userBalance < 0 ? (-1 * userBalance).toFixed(2) : userBalance.toFixed(2)} 
-              {group?.currency}
+              {userBalance < 0 ? (-1 * userBalance).toFixed(2) : userBalance.toFixed(2)} {group?.currency}
             </h3>
           </span>
         </div>
