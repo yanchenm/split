@@ -18,7 +18,7 @@ const AcceptInvite: NextPage = () => {
             setSuccess(true);
           } else {
             setSuccess(false);
-            setStatus(res.data.message);
+            setStatus(res.data);
           }
         })
         .catch((err) => {
