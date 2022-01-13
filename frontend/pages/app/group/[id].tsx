@@ -16,6 +16,7 @@ const DetailView: NextPage = () => {
   const [group, setGroup] = useState<Group | null>(null);
   const [settle, setSettle] = useState<Settlement | null>(null);
   const [txns, setTxns] = useState<Array<TransactionWithSplits> | null>(null);
+  const [forceRerender, setForceRerender] = useState<boolean>(false);
 
   useEffect(() => {
     let mounted = true;
@@ -40,7 +41,7 @@ const DetailView: NextPage = () => {
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [id, forceRerender]);
 
   return (
     <W3Context.Consumer>
@@ -55,7 +56,7 @@ const DetailView: NextPage = () => {
                     <div className="flex flex-row w-full justify-center overflow-y-auto">
                       <div className="flex flex-col space-y-10 w-11/12 items-center">
                         <h3 className="text-3xl font-semibold mt-9 w-full">{group?.name}</h3>
-                        <GroupStats providedWeb3={consumerProps} group={group} settle={settle} txns={txns} />
+                        <GroupStats providedWeb3={consumerProps} group={group} settle={settle} txns={txns} setForceRerender={setForceRerender} forceRerender={forceRerender}/>
                         <ExpenseList group={group} txns={txns} providedWeb3={consumerProps}/>
                       </div>
                     </div>
