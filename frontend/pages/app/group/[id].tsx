@@ -1,5 +1,5 @@
 import { DarkmodeContext, W3Context } from '../../_app';
-import { Group, getGroup } from '../../../utils/routes/group';
+import { Group, getGroup, getUsersInGroup } from '../../../utils/routes/group';
 import { PlusIcon, ShareIcon } from '@heroicons/react/outline';
 import { Settlement, getSettlementsForGroup } from '../../../utils/routes/settle';
 import { TransactionWithSplits, getTransactionsByGroupWithSplits } from '../../../utils/routes/transaction';
@@ -31,6 +31,7 @@ const DetailView: NextPage = () => {
   const closeNewInviteModal = () => {
     setIsNewInviteModalOpen(false);
   };
+  const [userMap, setUserMap] = useState<Record<string, string>>({});
 
   const openNewTxnModal = () => {
     setIsNewTxnModalOpen(true);
@@ -38,6 +39,10 @@ const DetailView: NextPage = () => {
 
   const closeNewTxnModal = () => {
     setIsNewTxnModalOpen(false);
+  };
+
+  const forceRerenderPage = () => {
+    setForceRerender(!forceRerender);
   };
 
   useEffect(() => {
@@ -58,6 +63,17 @@ const DetailView: NextPage = () => {
     getTransactionsByGroupWithSplits(id).then((res) => {
       if (mounted) {
         setTxns(res.data);
+      }
+    });
+    // @ts-ignore
+    getUsersInGroup(id).then((res) => {
+      if (mounted) {
+        // @ts-ignore
+        const users = res.data.reduce((map, user) => {
+          map[user.address] = user.username;
+          return map;
+        }, {} as Record<string, string>);
+        setUserMap(users);
       }
     });
     return () => {
@@ -98,13 +114,21 @@ const DetailView: NextPage = () => {
                           setForceRerender={setForceRerender}
                           forceRerender={forceRerender}
                         />
-                        <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} />
+                        <ExpenseList
+                          group={group}
+                          txns={txns}
+                          providedWeb3={consumerProps}
+                          userMap={userMap}
+                          forceRerender={forceRerender}
+                          setForceRerender={setForceRerender}
+                        />
                         {group && (
                           <NewTransactionModal
                             groupId={group?.id}
                             isOpen={isNewTxnModalOpen}
                             closeModal={closeNewTxnModal}
                             openModal={openNewTxnModal}
+                            onDone={forceRerenderPage}
                           />
                         )}
                         {group && (

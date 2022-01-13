@@ -458,8 +458,8 @@
       "nullable": []
     }
   },
-  "6a53bc90d5ce4636b10eba6cce516bc9e706b306938df7e3b2c26f333b5f7e6b": {
-    "query": "SELECT * FROM Split s\n        JOIN Transaction t ON t.group = ? AND s.tx_id = t.id;",
+  "6f82109ed9dc2d01ff8947e9fda0dec340d3991256090074d2932fd79792e2ce": {
+    "query": "SELECT * FROM Split s\n        JOIN Transaction t ON t.group = ? AND s.tx_id = t.id \n        ORDER BY t.date DESC, t.updated_at DESC;",
     "describe": {
       "columns": [
         {
