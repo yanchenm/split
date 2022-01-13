@@ -1,9 +1,10 @@
-import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import { url } from '../constants';
 import { StringResponseWithStatus } from '../responses';
+import axios from 'axios';
+import { url } from '../constants';
 
 export type User = {
+    address: string,
     username: string,
     email: string | null,
 }

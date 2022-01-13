@@ -8,6 +8,9 @@ import Input from '../ui/Input';
 import Modal from '../ui/Modal';
 import NumberFormat from 'react-number-format';
 import SplitParticipants from '../ui/SplitParticipants';
+import { User } from '../../utils/routes/user';
+import { createTransaction } from '../../utils/routes/transaction';
+import { getUsersInGroup } from '../../utils/routes/group';
 import { useRouter } from 'next/router';
 
 type NewTransactionFormValues = {
@@ -19,37 +22,27 @@ type NewTransactionFormValues = {
 };
 
 type NewTransactionModalProps = {
+  groupId: string;
   isOpen: boolean;
   closeModal: () => void;
   openModal: () => void;
 };
 
 export type ParticipantState = {
+  username: string;
   selected: boolean;
   share: number;
-};
-
-const testState = {
-  Alice: {
-    selected: false,
-    share: 0,
-  },
-  Bob: {
-    selected: false,
-    share: 0,
-  },
-  Charlie: {
-    selected: false,
-    share: 0,
-  },
+  isCustom: boolean;
 };
 
 const currencies = ['CAD', 'USD', 'EUR'];
 
-const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, closeModal, openModal }) => {
+const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ groupId, isOpen, closeModal, openModal }) => {
   const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [users, setUsers] = useState<User[]>([]);
 
   const formMethods = useForm<NewTransactionFormValues>();
   const formErrors = formMethods.formState.errors;
@@ -61,8 +54,67 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, close
     }
   }, [formMethods, isOpen]);
 
-  const onSubmit: SubmitHandler<NewTransactionFormValues> = (data) => {
-    console.log(data);
+  useEffect(() => {
+    if (groupId) {
+      getUsersInGroup(groupId)
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+    }
+  }, [groupId, isOpen]);
+
+  const [participantState, setParticipantState] = useState<Record<string, ParticipantState>>({});
+  useEffect(() => {
+    const participants = users.reduce((map, user) => {
+      map[user.address] = {
+        username: user.username,
+        selected: false,
+        share: 0,
+        isCustom: false,
+      };
+      return map;
+    }, {} as Record<string, ParticipantState>);
+    console.log(participants);
+    setParticipantState(participants);
+  }, [users]);
+
+  const onSubmit: SubmitHandler<NewTransactionFormValues> = ({ name, amount, currency, date, participants }) => {
+    setIsLoading(true);
+
+    let amountString = amount.toFixed(2);
+    let dateString = date.toISOString().split('T')[0];
+    let splits = Object.keys(participants)
+      .filter((address) => participants[address].selected)
+      .map((address) => {
+        return {
+          address,
+          share: participants[address].share.toFixed(2),
+        };
+      });
+
+    let transaction = {
+      name,
+      group: groupId,
+      total: amountString,
+      currency,
+      date: dateString,
+      splits,
+    };
+
+    createTransaction(transaction)
+      .then((response) => {
+        closeModal();
+      })
+      .catch((error) => {
+        console.log('Error creating transaction: ' + error.message);
+        setError('Failed to create transaction. Please try again.');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -127,7 +179,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ isOpen, close
               <Controller
                 control={formMethods.control}
                 name="participants"
-                defaultValue={testState}
+                defaultValue={participantState}
                 render={({ field: { onChange, value } }) => (
                   <SplitParticipants
                     participants={value}
