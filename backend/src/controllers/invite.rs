@@ -72,7 +72,7 @@ pub async fn accept_invite_to_group<'r>(
         Ok(Some(invite)) => {
             if invite.isActive == 0 {
                 return StringResponseWithStatus {
-                    status: Status::BadRequest,
+                    status: Status::Gone,
                     message: "Invite not active".to_string(),
                 };
             } else {
@@ -81,7 +81,7 @@ pub async fn accept_invite_to_group<'r>(
         }
         _ => {
             return StringResponseWithStatus {
-                status: Status::BadRequest,
+                status: Status::NotFound,
                 message: "Invite not found".to_string(),
             }
         }
@@ -92,7 +92,7 @@ pub async fn accept_invite_to_group<'r>(
         Ok(Some(_)) => (),
         _ => {
             return StringResponseWithStatus {
-                status: Status::BadRequest,
+                status: Status::Gone,
                 message: "group for invite does not exist".to_string(),
             };
         }

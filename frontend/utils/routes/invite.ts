@@ -8,5 +8,5 @@ export const createInvite = (groupId: string): Promise<AxiosResponse<StringRespo
 }
 
 export const acceptInviteToGroup = (invite_code: string): Promise<AxiosResponse<StringResponseWithStatus>> => {
-    return axios.post(`${url}/invite/accept${invite_code}`);
+    return axios.post(`${url}/invite/${invite_code}/accept`);
 }
