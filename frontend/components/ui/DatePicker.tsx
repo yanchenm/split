@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
+import { ChevronLeftIcon, ChevronRightIcon, SelectorIcon } from '@heroicons/react/solid';
 import React, { forwardRef } from 'react';
 
 import DatePicker from 'react-datepicker';
@@ -73,7 +73,10 @@ const DateButtonInput = forwardRef(({ value, onClick }, ref) => (
     type="button"
     className="justify-start text-left w-full px-4 py-2 text-sm text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-violet-500"
   >
-    {value ? format(new Date(value), 'd MMM yyyy') : 'Select Date'}
+    {value ? format(new Date(value), 'd MMM yyyy') : 'Select date'}
+    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+      <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
+    </span>
   </button>
 ));
 DateButtonInput.displayName = 'DateButtonInput';

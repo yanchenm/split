@@ -826,6 +826,57 @@
       ]
     }
   },
+  "ce0b5d5d94e351b1343548f2ac0550839ebe81c1039e525a72fcb36b95d2a0cb": {
+    "query": "SELECT User.* FROM `Group` \n        JOIN Membership \n        ON `Group`.id = Membership.`group`\n        AND `Group`.id = ?\n        JOIN User\n        ON Membership.user = User.address;",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "address",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4099
+            },
+            "char_set": 45,
+            "max_size": 168
+          }
+        },
+        {
+          "ordinal": 1,
+          "name": "username",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 4097
+            },
+            "char_set": 45,
+            "max_size": 144
+          }
+        },
+        {
+          "ordinal": 2,
+          "name": "email",
+          "type_info": {
+            "type": "VarString",
+            "flags": {
+              "bits": 0
+            },
+            "char_set": 45,
+            "max_size": 1280
+          }
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        true
+      ]
+    }
+  },
   "d5a452bd7b186a18716b0b0a6363fba611b0904ca263aace60d08ff7276ee255": {
     "query": "SELECT DISTINCT in_currency as currency FROM CurrencyPair ORDER BY in_currency;",
     "describe": {

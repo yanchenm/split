@@ -43,7 +43,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, closeHandler, openHandler, title,
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <div className="dark:bg-slate-900 inline-block w-full max-w-xl p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
+                  <div className="dark:bg-slate-900 inline-block w-full max-w-xl max-h-160 overflow-x-hidden overflow-y-auto p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl">
                     <Dialog.Title as="h3" className="dark:text-gray-100 text-lg font-semibold leading-6 text-gray-900">
                       {title}
                     </Dialog.Title>

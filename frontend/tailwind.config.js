@@ -9,6 +9,9 @@ module.exports = {
       fontFamily: {
         default: ['Inter'],
       },
+      maxWidth: {
+        'xl1': '38rem',
+      },
       spacing: {
         '54': '13.5rem',
         '180': '45rem',
