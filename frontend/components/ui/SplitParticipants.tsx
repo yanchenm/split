@@ -6,6 +6,7 @@ import { ParticipantState } from '../detailview/NewTransactionModal';
 type SplitParticipantsProps = {
   participants: Record<string, ParticipantState>;
   total: number;
+  toggleReset: boolean;
   onValueChange: (value: Record<string, ParticipantState>) => void;
 };
 
@@ -13,7 +14,7 @@ const splitEqually = (total: number, numParticipants: number): number => {
   return Number((total / numParticipants).toFixed(2));
 };
 
-const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, total, onValueChange }) => {
+const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, total, toggleReset, onValueChange }) => {
   const [participantState, setParticipantState] = useState<Record<string, ParticipantState>>(participants);
   const [currentChecked, setCurrentChecked] = useState<string[]>([]);
   const [allChecked, setAllChecked] = useState(false);
@@ -62,6 +63,20 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
       setAllChecked(false);
     }
   }, [currentChecked]);
+
+  useEffect(() => {
+    setCurrentChecked([]);
+    setAllChecked(false);
+    setAllowCustom(false);
+
+    const newState = { ...participantState };
+    for (const name of Object.keys(newState)) {
+      newState[name].selected = false;
+      newState[name].share = 0;
+      newState[name].isCustom = false;
+    }
+    setParticipantState(newState);
+  }, [toggleReset]);
 
   const onCheckAllChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (allChecked) {

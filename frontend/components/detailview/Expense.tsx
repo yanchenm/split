@@ -38,7 +38,7 @@ const Expense: React.FC<ExpenseProps> = ({
         <div className="w-1/2 font-medium pr-3 truncate">{paidBy}</div>
       </h3>
       <div className="col-span-2 flex flex-row space-x-1">
-        {participants.map((person: any) => {
+        {participants.slice(0, 3).map((person: any) => {
           return (
             <span className="text-start" key={person.name}>
               <img
@@ -48,6 +48,7 @@ const Expense: React.FC<ExpenseProps> = ({
             </span>
           );
         })}
+        <span>{participants.length > 3 && `+ ${participants.length - 3} more`}</span>
       </div>
       <h3 className="col-span-2 text-base font-medium">
         {total.toFixed(2)} {currency}

@@ -50,6 +50,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [users, setUsers] = useState<User[]>([]);
+  const [toggleReset, setToggleReset] = useState(false);
 
   const formMethods = useForm<NewTransactionFormValues>();
   const formErrors = formMethods.formState.errors;
@@ -57,6 +58,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   useEffect(() => {
     if (!isOpen) {
       formMethods.reset();
+      setToggleReset(!toggleReset);
       setError('');
     }
   }, [formMethods, isOpen]);
@@ -183,18 +185,21 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
               <div className="text-sm text-red-500 mt-1">{formErrors.currency?.message}</div>
             </div>
             <div className="col-span-2">
-              <Controller
-                control={formMethods.control}
-                name="participants"
-                defaultValue={participantState}
-                render={({ field: { onChange, value } }) => (
-                  <SplitParticipants
-                    participants={value}
-                    total={formMethods.watch('amount') || 0}
-                    onValueChange={(v) => onChange(v)}
-                  />
-                )}
-              />
+              {users.length > 0 && (
+                <Controller
+                  control={formMethods.control}
+                  name="participants"
+                  defaultValue={participantState}
+                  render={({ field: { onChange, value } }) => (
+                    <SplitParticipants
+                      participants={value}
+                      total={formMethods.watch('amount') || 0}
+                      toggleReset={toggleReset}
+                      onValueChange={(v) => onChange(v)}
+                    />
+                  )}
+                />
+              )}
               <div className="text-sm text-red-500 mt-1">{formErrors.participants?.message}</div>
             </div>
           </div>
