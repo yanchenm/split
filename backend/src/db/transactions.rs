@@ -200,7 +200,8 @@ pub async fn get_transactions_by_group_with_splits(
     let transactions_with_splits = sqlx::query_as!(
         DbTransactionWithSplits,
         "SELECT * FROM Split s
-        JOIN Transaction t ON t.group = ? AND s.tx_id = t.id;",
+        JOIN Transaction t ON t.group = ? AND s.tx_id = t.id 
+        ORDER BY t.date DESC, t.updated_at DESC;",
         group_id
     )
     .fetch_all(pool)

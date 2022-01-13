@@ -289,7 +289,7 @@ pub async fn get_groups_by_user<'r>(
 pub async fn get_users_in_group<'r>(
     pool: &State<MySqlPool>,
     group_id: &str,
-    authed_user: AuthedDBUser<'r>,
+    _authed_user: AuthedDBUser<'r>,
 ) -> Result<Json<Vec<UserDb>>, StringResponseWithStatus> {
     match groups::get_users_in_group(pool, group_id).await {
         Ok(users) => Ok(Json(users)),
