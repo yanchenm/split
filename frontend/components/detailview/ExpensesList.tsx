@@ -11,6 +11,8 @@ type StatProps = {
   txns: Array<TransactionWithSplits> | null;
   providedWeb3: ProvidedWeb3 | null;
   userMap: Record<string, string>;
+  // @ts-ignore
+  setForceRerender;
 };
 
 type ParticipantType = {
@@ -22,13 +24,14 @@ type ExpenseType = {
   _id: string;
   name: string;
   paidBy: string;
+  paidById: string;
   participants: ParticipantType[];
   total: number;
   yourShare: number;
   date: string;
 };
 
-const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap }) => {
+const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, setForceRerender }) => {
   const [realExpenses, setRealExpense] = useState<ExpenseType[]>([]);
   const txnExpenses: ExpenseType[] = [];
 
@@ -50,13 +53,14 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap }
           _id: txn.transaction.id,
           name: txn.transaction.name,
           paidBy: userMap[txn.transaction.paid_by],
+          paidById: txn.transaction.paid_by,
           participants: _participants,
           total: Number(txn.transaction.amount),
           yourShare,
           date: txn.transaction.date.split('T')[0],
         });
       }
-
+      
       setRealExpense(txnExpenses);
     }
   }, [txns, group]);
@@ -78,19 +82,17 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap }
   }
   */
 
+
+
   const deleteExpenseHandler = (id: string) => {
     deleteTransaction(id).then(() => {
       let filtered = realExpenses.filter((expense) => {
         return expense._id != id;
       });
-
-      console.log(filtered);
-      setRealExpense(filtered);
-
-      // setRealExpense(realExpenses.filter((expense) => {
-      //   return expense._id != id;
-      // }))
-    });
+     
+      setRealExpense(filtered)
+      setForceRerender();
+    })
   };
 
   return (
@@ -112,9 +114,12 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap }
           return (
             <Expense
               key={expense._id}
+              user_id={providedWeb3?.account}
               id={expense._id}
+              //@ts-ignore
               name={expense.name}
               paidBy={expense.paidBy}
+              paidById={expense.paidById}
               participants={expense.participants}
               total={expense.total}
               yourShare={expense.yourShare}

@@ -55,8 +55,10 @@ const DetailView: NextPage = () => {
         setTxns(res.data);
       }
     });
+    // @ts-ignore
     getUsersInGroup(id).then((res) => {
       if (mounted) {
+        // @ts-ignore
         const users = res.data.reduce((map, user) => {
           map[user.address] = user.username;
           return map;
@@ -99,7 +101,7 @@ const DetailView: NextPage = () => {
                           setForceRerender={setForceRerender}
                           forceRerender={forceRerender}
                         />
-                        <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} userMap={userMap} />
+                        <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} userMap={userMap} setForceRerender={setForceRerender} />
                         {group && (
                           <NewTransactionModal
                             groupId={group?.id}
