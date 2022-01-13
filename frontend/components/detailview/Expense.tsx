@@ -7,7 +7,7 @@ import { displayAddress } from '../../utils/address';
 type ExpenseProps = {
   id: string;
   user_id: string | null | undefined,
-  user_name: string;
+  name: string;
   paidBy: string;
   paidById: string;
   total: number;
@@ -52,7 +52,7 @@ const Expense: React.FC<ExpenseProps> = ({
       <h3 className="col-span-2 text-base font-medium">{yourShare.toFixed(2)}</h3>
       <h3 className="col-span-2 text-base font-medium">{date}</h3>
       <h3 className="col-span-1 font-medium flex items-center space-x-5">
-        <PencilIcon className="pl-1 h-5 w-5 text-gray-400 hover:text-gray-800 cursor-pointer" />
+        { paidById === user_id ? <PencilIcon className="pl-1 h-5 w-5 text-gray-400 hover:text-gray-800 cursor-pointer" /> : null }
         { paidById === user_id ? <TrashIcon className="h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer" onClick={() => {deleteExpenseHandler(id)}}/> : null }
       </h3>
     </div>

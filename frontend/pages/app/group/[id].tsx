@@ -101,7 +101,7 @@ const DetailView: NextPage = () => {
                           setForceRerender={setForceRerender}
                           forceRerender={forceRerender}
                         />
-                        <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} userMap={userMap} setForceRerender={setForceRerender} />
+                        <ExpenseList group={group} txns={txns} providedWeb3={consumerProps} userMap={userMap} forceRerender={forceRerender} setForceRerender={setForceRerender} />
                         {group && (
                           <NewTransactionModal
                             groupId={group?.id}

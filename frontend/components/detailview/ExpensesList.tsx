@@ -12,6 +12,8 @@ type StatProps = {
   providedWeb3: ProvidedWeb3 | null;
   userMap: Record<string, string>;
   // @ts-ignore
+  forceRerender;
+  // @ts-ignore
   setForceRerender;
 };
 
@@ -31,7 +33,7 @@ type ExpenseType = {
   date: string;
 };
 
-const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, setForceRerender }) => {
+const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, forceRerender, setForceRerender }) => {
   const [realExpenses, setRealExpense] = useState<ExpenseType[]>([]);
   const txnExpenses: ExpenseType[] = [];
 
@@ -91,7 +93,7 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, 
       });
      
       setRealExpense(filtered)
-      setForceRerender();
+      setForceRerender(!forceRerender);
     })
   };
 
