@@ -1,38 +1,36 @@
+import React, { useEffect, useState } from 'react';
+import { TransactionWithSplits, deleteTransaction } from '../../utils/routes/transaction';
+
 import Expense from './Expense';
-import React from 'react';
 import { Group } from '../../utils/routes/group';
-import { TransactionWithSplits } from '../../utils/routes/transaction';
-import {displayAddress} from '../../utils/address';
 import { ProvidedWeb3 } from '../../pages/_app';
-import { deleteTransaction } from '../../utils/routes/transaction';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { displayAddress } from '../../utils/address';
 
 type StatProps = {
   group: Group | null;
   txns: Array<TransactionWithSplits> | null;
   providedWeb3: ProvidedWeb3 | null;
+  userMap: Record<string, string>;
 };
 
 type ParticipantType = {
-  name: string,
-  portion: Number
+  name: string;
+  portion: Number;
 };
 
 type ExpenseType = {
-  _id: string,
-  name: string,
-  paidBy: string,
-  participants: ParticipantType[],
-  total: number,
-  yourShare: number,
-  date: string
+  _id: string;
+  name: string;
+  paidBy: string;
+  participants: ParticipantType[];
+  total: number;
+  yourShare: number;
+  date: string;
 };
 
-
-const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
+const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap }) => {
   const [realExpenses, setRealExpense] = useState<ExpenseType[]>([]);
-  const txnExpenses: ExpenseType[] = []
+  const txnExpenses: ExpenseType[] = [];
 
   useEffect(() => {
     if (group && txns && providedWeb3) {
@@ -45,23 +43,23 @@ const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
           }
           _participants.push({
             name: displayAddress(split.user),
-            portion: Number(split.share)
+            portion: Number(split.share),
           });
-        })
+        });
         txnExpenses.push({
           _id: txn.transaction.id,
           name: txn.transaction.name,
-          paidBy: displayAddress(txn.transaction.paid_by),
+          paidBy: userMap[txn.transaction.paid_by],
           participants: _participants,
           total: Number(txn.transaction.amount),
           yourShare,
-          date: txn.transaction.date.split("T")[0]
-        })
+          date: txn.transaction.date.split('T')[0],
+        });
       }
-  
+
       setRealExpense(txnExpenses);
     }
-  }, [txns, group])
+  }, [txns, group]);
 
   // Sample expense
   /*
@@ -86,21 +84,23 @@ const ExpenseList: React.FC<StatProps> = ({group, txns, providedWeb3}) => {
         return expense._id != id;
       });
 
-      console.log(filtered)
-      setRealExpense(filtered)
+      console.log(filtered);
+      setRealExpense(filtered);
 
       // setRealExpense(realExpenses.filter((expense) => {
       //   return expense._id != id;
       // }))
-    })
+    });
   };
 
   return (
     <div className="flex flex-col w-full pb-8">
       {/* Column names */}
       <div className="grid grid-cols-12 text-gray-500 dark:text-slate-300 font-medium text-md p-3">
-        <h1 className="col-span-2">Expense</h1>
-        <h1 className="col-span-1">Paid by</h1>
+        <h3 className="flex col-span-3">
+          <div className="w-1/2">Expense</div>
+          <div className="w-1/2">Paid by</div>
+        </h3>
         <h1 className="col-span-2">Participants</h1>
         <h1 className="col-span-2">Total</h1>
         <h1 className="col-span-2 -ml-1">Your Share</h1>

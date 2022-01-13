@@ -26,6 +26,7 @@ type NewTransactionModalProps = {
   isOpen: boolean;
   closeModal: () => void;
   openModal: () => void;
+  onDone: () => void;
 };
 
 export type ParticipantState = {
@@ -37,7 +38,13 @@ export type ParticipantState = {
 
 const currencies = ['CAD', 'USD', 'EUR'];
 
-const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ groupId, isOpen, closeModal, openModal }) => {
+const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
+  groupId,
+  isOpen,
+  closeModal,
+  openModal,
+  onDone,
+}) => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +71,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ groupId, isOp
           setError(err.message);
         });
     }
-  }, [groupId, isOpen]);
+  }, [groupId]);
 
   const [participantState, setParticipantState] = useState<Record<string, ParticipantState>>({});
   useEffect(() => {
@@ -114,6 +121,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({ groupId, isOp
       })
       .finally(() => {
         setIsLoading(false);
+        onDone();
       });
   };
 
