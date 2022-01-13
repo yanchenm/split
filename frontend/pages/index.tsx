@@ -88,7 +88,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               );
               startButtonArea = (
                 <Button
-                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6'}
+                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'}
                   clickHandler={() => router.push({ pathname: '/app' })}
                 >
                   Get Started
@@ -112,7 +112,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               );
               startButtonArea = (
                 <Button
-                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6'}
+                  classNames={'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'}
                   clickHandler={web3Connect}
                 >
                   Get Started

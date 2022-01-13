@@ -17,7 +17,7 @@ const ToggleButton: React.FC<ToggleProps> = ({ toggleHandler, toggleState }) => 
         checked={toggleState}
         onChange={typedToggler}
         className={`${
-          toggleState ? 'bg-violet-600' : 'bg-slate-300'
+          toggleState ? 'bg-gradient-to-r from-purple-500 to-violet-600' : 'bg-slate-300'
         } relative inline-flex items-center h-6 rounded-full w-11`}
       >
         <span
