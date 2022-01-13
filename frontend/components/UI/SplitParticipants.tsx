@@ -47,6 +47,15 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
   };
 
   useEffect(() => {
+    const sharePerPerson = splitEqually(total, currentChecked.length);
+    const newParticipantState = { ...participantState };
+    for (const name of currentChecked) {
+      newParticipantState[name].share = sharePerPerson;
+    }
+    setParticipantState(newParticipantState);
+  }, [total]);
+
+  useEffect(() => {
     onValueChange(participantState);
   }, [participantState]);
 
