@@ -2,7 +2,7 @@ use anyhow::Result;
 use sqlx::MySqlPool;
 use uuid::Uuid;
 
-use crate::models::group::Group;
+use crate::models::{group::Group, user::UserDb};
 
 pub async fn create_new_group(
     pool: &MySqlPool,
@@ -51,4 +51,20 @@ pub async fn get_groups_by_user(pool: &MySqlPool, address: &str) -> Result<Vec<G
     .fetch_all(pool)
     .await?;
     Ok(groups)
+}
+
+pub async fn get_users_in_group(pool: &MySqlPool, group_id: &str) -> Result<Vec<UserDb>> {
+    let users = sqlx::query_as!(
+        UserDb,
+        "SELECT User.* FROM `Group` 
+        JOIN Membership 
+        ON `Group`.id = Membership.`group`
+        AND `Group`.id = ?
+        JOIN User
+        ON Membership.user = User.address;",
+        group_id
+    )
+    .fetch_all(pool)
+    .await?;
+    Ok(users)
 }

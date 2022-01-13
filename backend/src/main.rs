@@ -13,7 +13,8 @@ use crate::controllers::currency::{
     get_supported_currencies, refresh_currency_conversions, refresh_harmony_price,
 };
 use crate::controllers::groups::{
-    accept_invite_to_group, create_group, get_group, get_groups_by_user, invite_to_group,
+    accept_invite_to_group, create_group, get_group, get_groups_by_user, get_users_in_group,
+    invite_to_group,
 };
 use crate::controllers::settle::{get_settlement_by_group, resolve_settlement};
 use crate::controllers::transactions::{
@@ -72,7 +73,8 @@ async fn rocket() -> _ {
                 invite_to_group,
                 accept_invite_to_group,
                 get_group,
-                get_groups_by_user
+                get_groups_by_user,
+                get_users_in_group
             ],
         )
         .mount(
