@@ -20,8 +20,6 @@ type NewGroupModalProps = {
   openModal: () => void;
 };
 
-const currencies = ['CAD', 'USD', 'EUR'];
-
 const NewGroupModal: React.FC<NewGroupModalProps> = ({ isOpen, closeModal, openModal }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);

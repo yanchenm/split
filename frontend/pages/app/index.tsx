@@ -1,14 +1,15 @@
 import { DarkmodeContext, ProvidedWeb3 } from '../_app';
+import { useEffect, useState } from 'react';
+
+import type { Group } from '../../utils/routes/group';
 import NewCard from '../../components/app/NewCard';
+import NewGroupModal from '../../components/app/NewGroupModal';
 import type { NextPage } from 'next';
+import ReactLoading from 'react-loading';
 import Sidebar from '../../components/app/Sidebar';
 import SplitCard from '../../components/app/SplitCard';
 import { getGroupsByUser } from '../../utils/routes/group';
 import { getSettlementsForGroup } from '../../utils/routes/settle';
-import type { Group } from '../../utils/routes/group';
-import { useEffect, useState } from 'react';
-import ReactLoading from 'react-loading';
-import NewGroupModal from '../../components/app/NewGroupModal';
 
 type GroupWithBalance = {
   group: Group;
@@ -89,7 +90,7 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
             <Sidebar />
 
             {/* Content */}
-            <div className="bg-white text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen transition duration-200">
+            <div className="bg-white text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen transition duration-200 overflow-y-auto">
               Current Groups
               <div className="bg-white dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap h-5/6 rounded-xl content-start">
                 {splitGroups.length === 0 ? (

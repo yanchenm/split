@@ -1,8 +1,9 @@
-import type { NextPage } from 'next/types';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { acceptInviteToGroup } from '../../../utils/routes/invite';
+
+import type { NextPage } from 'next/types';
 import ReactLoading from 'react-loading';
+import { acceptInviteToGroup } from '../../../utils/routes/invite';
+import { useRouter } from 'next/router';
 
 const AcceptInvite: NextPage = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const AcceptInvite: NextPage = () => {
         .then((res) => {
           if (res.status === 200) {
             setSuccess(true);
+            router.push(`/app/group/${res.data}`);
           } else {
             setSuccess(false);
             setStatus(res.data);
