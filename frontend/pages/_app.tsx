@@ -86,7 +86,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           setProvidedWeb3({
             w3: new Web3(anyWindow.ethereum),
             account: newAccounts[0].toLowerCase(),
-            isHarmony: chain === '0x63564c40',
+            isHarmony: chain === '0x6357d2e0',
             isConnected,
           });
         });
@@ -97,7 +97,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           setProvidedWeb3({
             w3: new Web3(anyWindow.ethereum),
             account: accounts[0].toLowerCase(),
-            isHarmony: chainId === '0x63564c40',
+            isHarmony: chainId === '0x6357d2e0',
             isConnected,
           });
           anyWindow.location.reload();
@@ -106,7 +106,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         setProvidedWeb3({
           w3,
           account: accounts[0].toLowerCase(),
-          isHarmony: chain === '0x63564c40',
+          isHarmony: chain === '0x6357d2e0',
           isConnected,
         });
       } catch (error) {
