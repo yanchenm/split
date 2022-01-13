@@ -1,13 +1,13 @@
 import { Controller, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 
-import ButtonWithLoading from '../../components/UI/ButtonWithLoading';
-import CurrencySelector from '../../components/UI/CurrencySelector';
-import CustomDatePicker from '../UI/DatePicker';
-import Input from '../../components/UI/Input';
-import Modal from '../UI/Modal';
+import ButtonWithLoading from '../ui/ButtonWithLoading';
+import CurrencySelector from '../ui/CurrencySelector';
+import CustomDatePicker from '../ui/DatePicker';
+import Input from '../ui/Input';
+import Modal from '../ui/Modal';
 import NumberFormat from 'react-number-format';
-import SplitParticipants from '../UI/SplitParticipants';
+import SplitParticipants from '../ui/SplitParticipants';
 import { useRouter } from 'next/router';
 
 type NewTransactionFormValues = {

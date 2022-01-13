@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 
 import NumberFormat from 'react-number-format';
-import { ParticipantState } from '../DetailView/NewTransactionModal';
+import { ParticipantState } from '../detailview/NewTransactionModal';
 
 type SplitParticipantsProps = {
   participants: Record<string, ParticipantState>;
