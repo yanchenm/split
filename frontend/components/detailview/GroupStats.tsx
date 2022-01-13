@@ -148,7 +148,7 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
           <span className="flex flex-row ml-3 my-2 space-x-2 items-center">
             <ChartPieIcon className={`h-6 w-6  ${userBalance < 0 ? 'text-red-500' : 'text-green-600'}`} />
             <h3 className="text-2xl text-gray-800 dark:text-slate-200 font-semibold">
-              {userBalance} {group?.currency}
+              {userBalance.toFixed(2)} {group?.currency}
             </h3>
           </span>
         </div>
@@ -158,7 +158,7 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
           <span className="flex flex-row ml-3 my-2 space-x-2 items-center">
             <CurrencyDollarIcon className="h-6 w-6" />
             <h3 className="text-2xl text-gray-800 dark:text-slate-200 font-semibold">
-              {totalExpenses} {group?.currency}
+              {totalExpenses.toFixed(2)} {group?.currency}
             </h3>
           </span>
         </div>

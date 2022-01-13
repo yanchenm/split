@@ -120,8 +120,10 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               );
             }
 
-            let isNotRegisteredAndConnected =
-              (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
+            let isNotRegisteredAndConnected = () => {
+              return (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
+            }
+              
 
             return (
               <>
@@ -131,9 +133,9 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                 <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
                   <div>
                     <Modal
-                      isOpen={isNotRegisteredAndConnected}
+                      isOpen={isNotRegisteredAndConnected()}
                       title="Enter User Details"
-                      closeHandler={closeModal}
+                      closeHandler={() => {}}
                       openHandler={() => {}}
                     >
                       <FormProvider {...formMethods}>
