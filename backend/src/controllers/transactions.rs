@@ -423,9 +423,9 @@ fn validate_total<'v>(total: &str, _splits: &Vec<Split>) -> Result<(), Error> {
 
         return sum;
     }
-    if sum_split_shares(_splits) != string_to_decimal(total) {
-        Err(anyhow!("total is not equal to split share sum"))?
-    }
+    // if sum_split_shares(_splits) < string_to_decimal(total) {
+    //     Err(anyhow!("total is not equal to split share sum"))?
+    // }
 
     Ok(())
 }
