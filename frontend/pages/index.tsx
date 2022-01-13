@@ -184,7 +184,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
 
                   <div className="flex flex-col bg-white dark:bg-slate-800 font-default h-screen items-center justify-center ">
                     <div className="absolute inset-x-0 top-0 flex justify-between p-10">
-                      <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
+                      <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold"> </h1>
                       {buttonArea}
                     </div>
                     <div className="flex flex-col justify-between items-center">
