@@ -177,12 +177,12 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                     </Modal>
                   </div>
 
-                  <div className="bg-white dark:bg-slate-800 h-screen">
-                    <div className="flex justify-between p-10">
+                  <div className="flex flex-col bg-white dark:bg-slate-800 font-default h-screen items-center justify-center ">
+                    <div className="absolute inset-x-0 top-0 flex justify-between p-10">
                       <h1 className="text-neutral-800 dark:text-slate-300 text-3xl font-bold">WheresMyMoney</h1>
                       {buttonArea}
                     </div>
-                    <div className="flex flex-col h-40 justify-between items-center mt-40">
+                    <div className="flex flex-col justify-between items-center">
                       <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600">
                         Find Your Money on the <br /> BLOCK CHAIN
                       </h1>
