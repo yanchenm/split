@@ -1,19 +1,17 @@
-import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import Head from 'next/head';
+import { DarkmodeContext, W3Context } from './_app';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { createUser, getUser } from '../utils/routes/user';
+
 import Button from '../components/ui/Button';
-import React, { useState } from 'react';
-import { W3Context, DarkmodeContext } from './_app';
+import ButtonWithLoading from '../components/ui/ButtonWithLoading';
+import Head from 'next/head';
+import Input from '../components/ui/Input';
+import Modal from '../components/ui/Modal';
+import type { NextPage } from 'next';
 import ToggleButton from '../components/ui/ToggleButton';
 import { displayAddress } from '../utils/address';
-
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import Input from '../components/ui/Input';
-import { useEffect } from 'react';
-import ReactLoading from 'react-loading';
-import ButtonWithLoading from '../components/ui/ButtonWithLoading';
-import { getUser, createUser } from '../utils/routes/user';
-import Modal from '../components/ui/Modal';
+import { useRouter } from 'next/router';
 
 type PageProps = {
   web3Connect: () => Promise<void>;
@@ -189,7 +187,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                     </div>
                     <div className="flex flex-col justify-between items-center">
                       <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600 py-3">
-                        Record. Settle. Recieve. <br /> On Harmony One
+                        Record. Settle. Recieve. <br /> <span className="mt-1 text-5xl">on Harmony One.</span>
                       </h1>
                       {startButtonArea}
                     </div>
