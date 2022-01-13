@@ -2,11 +2,10 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/solid';
 
 import React from 'react';
 import { address_to_avatar } from '../../utils/avatar';
-import { displayAddress } from '../../utils/address';
 
 type ExpenseProps = {
   id: string;
-  user_id: string | null | undefined,
+  user_id: string | null | undefined;
   name: string;
   paidBy: string;
   paidById: string;
@@ -14,6 +13,7 @@ type ExpenseProps = {
   yourShare: number;
   date: string;
   participants: any;
+  currency: string;
   deleteExpenseHandler: (id: string) => void;
 };
 
@@ -28,6 +28,7 @@ const Expense: React.FC<ExpenseProps> = ({
   total,
   yourShare,
   date,
+  currency,
   deleteExpenseHandler,
 }) => {
   return (
@@ -48,12 +49,25 @@ const Expense: React.FC<ExpenseProps> = ({
           );
         })}
       </div>
-      <h3 className="col-span-2 text-base font-medium">{total.toFixed(2)}</h3>
-      <h3 className="col-span-2 text-base font-medium">{yourShare.toFixed(2)}</h3>
+      <h3 className="col-span-2 text-base font-medium">
+        {total.toFixed(2)} {currency}
+      </h3>
+      <h3 className="col-span-2 text-base font-medium">
+        {yourShare.toFixed(2)} {currency}
+      </h3>
       <h3 className="col-span-2 text-base font-medium">{date}</h3>
       <h3 className="col-span-1 font-medium flex items-center space-x-5">
-        { paidById === user_id ? <PencilIcon className="pl-1 h-5 w-5 text-gray-400 hover:text-gray-800 cursor-pointer" /> : null }
-        { paidById === user_id ? <TrashIcon className="h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer" onClick={() => {deleteExpenseHandler(id)}}/> : null }
+        {paidById === user_id ? (
+          <PencilIcon className="pl-1 h-5 w-5 text-gray-400 hover:text-gray-800 cursor-pointer" />
+        ) : null}
+        {paidById === user_id ? (
+          <TrashIcon
+            className="h-5 w-5 text-gray-400 hover:text-red-500 cursor-pointer"
+            onClick={() => {
+              deleteExpenseHandler(id);
+            }}
+          />
+        ) : null}
       </h3>
     </div>
   );

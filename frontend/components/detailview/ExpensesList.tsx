@@ -31,6 +31,7 @@ type ExpenseType = {
   total: number;
   yourShare: number;
   date: string;
+  currency: string;
 };
 
 const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, forceRerender, setForceRerender }) => {
@@ -60,9 +61,10 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, 
           total: Number(txn.transaction.amount),
           yourShare,
           date: txn.transaction.date.split('T')[0],
+          currency: txn.transaction.currency,
         });
       }
-      
+
       setRealExpense(txnExpenses);
     }
   }, [txns, group]);
@@ -84,17 +86,15 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, 
   }
   */
 
-
-
   const deleteExpenseHandler = (id: string) => {
     deleteTransaction(id).then(() => {
       let filtered = realExpenses.filter((expense) => {
         return expense._id != id;
       });
-     
-      setRealExpense(filtered)
+
+      setRealExpense(filtered);
       setForceRerender(!forceRerender);
-    })
+    });
   };
 
   return (
@@ -127,6 +127,7 @@ const ExpenseList: React.FC<StatProps> = ({ group, txns, providedWeb3, userMap, 
               yourShare={expense.yourShare}
               date={expense.date}
               deleteExpenseHandler={deleteExpenseHandler}
+              currency={expense.currency}
             />
           );
         })}
