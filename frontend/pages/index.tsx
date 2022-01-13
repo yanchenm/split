@@ -113,7 +113,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               startButtonArea = (
                 <Button
                   classNames={
-                    'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500'
+                    'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500 text-white'
                   }
                   clickHandler={web3Connect}
                 >
