@@ -13,13 +13,15 @@ type SplitParticipantsProps = {
 const splitEqually = (total: number, numParticipants: number): number[] => {
   const equalSplit = Number((total / numParticipants).toFixed(2));
   const diff = total * 100 - equalSplit * numParticipants * 100;
+  const sign = diff < 0 ? -1 : 1;
+  const diffAbs = Math.abs(diff);
 
   const splits = new Array(numParticipants);
   const sample = Array.from(new Array(numParticipants), (_, i) => i);
 
-  for (let i = 0; i < diff; i++) {
+  for (let i = 0; i < diffAbs; i++) {
     const index = Math.floor(Math.random() * sample.length);
-    splits[sample[index]] = 0.01;
+    splits[sample[index]] = 0.01 * sign;
     sample.splice(index, 1);
   }
 
