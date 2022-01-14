@@ -151,16 +151,6 @@
       "nullable": []
     }
   },
-  "1e2d4438a2b2a50c8b2e101d7dcf8efc6549016b0028b79401c8e23d0c8fb333": {
-    "query": "UPDATE Split s\n        JOIN Transaction t ON s.tx_id = t.id AND t.group = ?\n        SET s.resolved = '1'\n        WHERE s.user = ?;",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Right": 2
-      },
-      "nullable": []
-    }
-  },
   "1ed0d92bb506a940ad2b6cd9408d12ff22cb4b803f7d7636e2d54a326302a61b": {
     "query": "SELECT g.*\n        FROM `Group` g\n        JOIN Membership\n        ON g.id = Membership.group\n        AND Membership.user = ?\n        ORDER BY updated_at DESC;",
     "describe": {
@@ -349,12 +339,25 @@
             "char_set": 63,
             "max_size": 20
           }
+        },
+        {
+          "ordinal": 9,
+          "name": "is_settlement",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 32769
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
         }
       ],
       "parameters": {
         "Right": 1
       },
       "nullable": [
+        false,
         false,
         false,
         false,
@@ -612,12 +615,25 @@
             "char_set": 63,
             "max_size": 20
           }
+        },
+        {
+          "ordinal": 14,
+          "name": "is_settlement",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 32769
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
         }
       ],
       "parameters": {
         "Right": 1
       },
       "nullable": [
+        false,
         false,
         false,
         false,
@@ -746,6 +762,18 @@
             "char_set": 63,
             "max_size": 20
           }
+        },
+        {
+          "ordinal": 9,
+          "name": "is_settlement",
+          "type_info": {
+            "type": "Tiny",
+            "flags": {
+              "bits": 32769
+            },
+            "char_set": 63,
+            "max_size": 1
+          }
         }
       ],
       "parameters": {
@@ -760,18 +788,9 @@
         false,
         false,
         false,
+        false,
         false
       ]
-    }
-  },
-  "89768960014da471f138326db290597bdb9a3c07b2c71c6d165481de2c0fc5f0": {
-    "query": "INSERT INTO Transaction (id, `group`, base_amount, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Right": 8
-      },
-      "nullable": []
     }
   },
   "8a55e5f9f628933bdf849eff65e01ca900be54a608f6bbdd75577d79479de746": {
@@ -866,6 +885,16 @@
         false,
         false
       ]
+    }
+  },
+  "cd818b18f8907954687501c987d0938a08d4d2ca2346ee71347635cb4a8c1235": {
+    "query": "INSERT INTO Transaction (id, `group`, base_amount, amount, currency, paid_by, name, date, is_settlement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 9
+      },
+      "nullable": []
     }
   },
   "ce0b5d5d94e351b1343548f2ac0550839ebe81c1039e525a72fcb36b95d2a0cb": {
