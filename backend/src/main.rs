@@ -12,11 +12,9 @@ use rocket_cors::AllowedOrigins;
 use crate::controllers::currency::{
     get_supported_currencies, refresh_currency_conversions, refresh_harmony_price,
 };
+use crate::controllers::groups::{create_group, get_group, get_groups_by_user, get_users_in_group};
 use crate::controllers::invite::{accept_invite_to_group, create_invite};
-use crate::controllers::groups::{
-    create_group, get_group, get_groups_by_user, get_users_in_group,
-};
-use crate::controllers::settle::{get_settlement_by_group, resolve_settlement};
+use crate::controllers::settle::get_settlement_by_group;
 use crate::controllers::transactions::{
     create_transaction, delete_transaction, get_transactions_by_group,
     get_transactions_by_group_with_splits, update_transaction,
@@ -94,10 +92,7 @@ async fn rocket() -> _ {
                 delete_transaction
             ],
         )
-        .mount(
-            "/settle",
-            routes![get_settlement_by_group, resolve_settlement],
-        )
+        .mount("/settle", routes![get_settlement_by_group])
         .mount("/invite", routes![accept_invite_to_group, create_invite])
         .attach(cors)
         .manage(pool)

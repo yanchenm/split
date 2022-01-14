@@ -198,10 +198,10 @@ pub async fn get_settlement_by_group<'r>(
         let creditor_user = match users::get_user_by_address(pool, creditor.address.as_str()).await
         {
             Ok(Some(user)) => user,
-            None => {
+            _ => {
                 return Err(StringResponseWithStatus {
                     status: Status::BadRequest,
-                    message: "Error geting user object for creditor",
+                    message: "Error geting user object for creditor".to_string(),
                 })
             }
         };

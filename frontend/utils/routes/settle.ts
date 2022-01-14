@@ -6,6 +6,7 @@ import { StringResponseWithStatus } from '../responses';
 export type Debt = {
     debtor: string, // Person who owes money
     creditor: string, // Person who is owed money
+    creditor_username: string,
     net_owed: string, // Amount owed in group's base currency
     net_owed_ones: string, // Amount owed in ONE
 }

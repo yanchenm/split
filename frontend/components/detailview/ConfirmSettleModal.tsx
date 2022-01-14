@@ -57,7 +57,7 @@ const ConfirmSettleModal: React.FC<ConfirmSettleModalProps> = ({
           </div>
         ))}
       </div>
-      <ButtonWithLoading buttonText="Submit" loading={isLoading} onClick={onSettle} />
+      <ButtonWithLoading buttonText="Settle" loading={isLoading} onClick={onSettle} />
     </Modal>
   );
 };

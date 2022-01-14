@@ -1,13 +1,14 @@
 import { ChartPieIcon, CurrencyDollarIcon, DocumentTextIcon } from '@heroicons/react/outline';
 import ConfirmSettleModal, { DebtDetails } from './ConfirmSettleModal';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Settlement, resolveSettle } from '../../utils/routes/settle';
+import { Settlement } from '../../utils/routes/settle';
+import { createTransaction } from '../../utils/routes/transaction';
 
 import { AbiItem } from 'web3-utils';
 import AppButton from '../ui/AppButton';
 import { Group } from '../../utils/routes/group';
 import { ProvidedWeb3 } from '../../pages/_app';
-import { TransactionWithSplits } from '../../utils/routes/transaction';
+import { RequestSplit, RequestTransaction, TransactionWithSplits } from '../../utils/routes/transaction';
 
 type StatProps = {
   providedWeb3: ProvidedWeb3 | null;
@@ -62,17 +63,55 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
     setIsConfirmModalOpen(false);
   };
 
+  const createSettleTxn = (requestTransaction: RequestTransaction) => {
+    createTransaction(requestTransaction)
+      .then((res) => {
+        if (res.status === 201 || res.status === 200) {
+          setIsTransactionPending(false);
+          setIsConfirmModalOpen(false);
+          setForceRerender(!forceRerender);
+        } else {
+          alert('Error when updating group transactions');
+        }
+      })
+      .catch((err) => {
+        alert('Error when updating group transactions');
+      })
+      .finally(() => {
+        setIsTransactionPending(false);
+        setIsConfirmModalOpen(false);
+      });
+  };
+
   const settleUp = () => {
     setIsTransactionPending(true);
     const toSendTxns: Array<HarmonyTxn> = [];
-    if (providedWeb3 && debts && providedWeb3.account && group) {
+    const toUpdateSplits: Array<RequestSplit> = [];
+    let totalValue = 0;
+    if (providedWeb3 && settle && settle.debts && providedWeb3.account && group) {
       const web3 = providedWeb3.w3;
       for (let debt of debts) {
         toSendTxns.push({
           to: debt.address,
           amountInOne: debt.ones.toFixed(10),
         });
+        // We push the inverse amounts to write as a settlement txn
+        toUpdateSplits.push({
+          address: debt.address,
+          share: String(debt.amount),
+        });
+        totalValue += debt.amount;
       }
+
+      const requestTransaction: RequestTransaction = {
+        name: 'Settlement',
+        group: group.id,
+        total: totalValue.toFixed(2),
+        currency: group.currency,
+        date: new Date().toISOString().split('T')[0],
+        splits: toUpdateSplits,
+      };
+
       const myAddrChecksum = web3.utils.toChecksumAddress(providedWeb3.account);
       if (toSendTxns.length === 0) {
         alert('You have no outstanding debts to pay :)');
@@ -85,24 +124,9 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
             value: web3.utils.toWei(toSendTxns[0].amountInOne, 'ether'),
           })
           .on('confirmation', (confirmationNumber: number, receipt: object) => {
-            resolveSettle(group.id)
-              .then((res) => {
-                if (res.status === 200) {
-                  setIsTransactionPending(false);
-                  setIsConfirmModalOpen(false);
-                  setForceRerender(!forceRerender);
-                } else {
-                  alert('Error when updating group transactions');
-                }
-              })
-              .catch((err) => {
-                alert('Error when updating group transactions');
-              })
-              .finally(() => {
-                setIsTransactionPending(false);
-                setIsConfirmModalOpen(false);
-              });
-            console.log({ receipt, confirmationNumber });
+            if (confirmationNumber === 1) {
+              createSettleTxn(requestTransaction);
+            }
           })
           .on('error', (error: Error) => {
             alert(error.message);
@@ -121,24 +145,9 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
           .multiTransfer(addrs, amounts)
           .send({ from: myAddrChecksum, value: amounts.reduce((acc, amount) => acc.add(amount)) })
           .on('confirmation', (confirmationNumber: number, receipt: object) => {
-            resolveSettle(group.id)
-              .then((res) => {
-                if (res.status === 200) {
-                  setIsTransactionPending(false);
-                  setIsConfirmModalOpen(false);
-                  setForceRerender(!forceRerender);
-                } else {
-                  alert('Error when updating group transactions');
-                }
-              })
-              .catch((err) => {
-                alert('Error when updating group transactions');
-              })
-              .finally(() => {
-                setIsTransactionPending(false);
-                setIsConfirmModalOpen(false);
-              });
-            console.log({ receipt, confirmationNumber });
+            if (confirmationNumber === 1) {
+              createSettleTxn(requestTransaction);
+            }
           })
           .on('error', (error: Error) => {
             alert(error.message);
@@ -183,7 +192,7 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
       if (debt.debtor === providedWeb3.account) {
         debts.push({
           address: debt.creditor,
-          username: 'Test Name',
+          username: debt.creditor_username,
           amount: Number(debt.net_owed),
           ones: Number(debt.net_owed_ones),
         });

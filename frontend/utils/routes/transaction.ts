@@ -20,6 +20,7 @@ export type RequestTransaction = {
     group: string,
     total: string,
     currency: string,
+    date: string,
     splits: Array<RequestSplit> 
 }
 
