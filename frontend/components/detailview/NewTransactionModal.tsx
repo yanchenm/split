@@ -33,7 +33,7 @@ type NewTransactionModalProps = {
 export type ParticipantState = {
   username: string;
   selected: boolean;
-  share: number;
+  share: number | '';
   isCustom: boolean;
 };
 
@@ -100,9 +100,16 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
       .map((address) => {
         return {
           address,
-          share: participants[address].share.toFixed(2),
+          share: Number(participants[address].share).toFixed(2),
         };
       });
+
+    let splitsSum = splits.reduce((sum, split) => (sum += Number(split.share)), 0);
+    if (splitsSum !== amount) {
+      setError('The shares do not add up to the total amount.');
+      setIsLoading(false);
+      return;
+    }
 
     let transaction = {
       name,

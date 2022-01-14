@@ -15,6 +15,10 @@ const splitEqually = (total: number, numParticipants: number): number[] => {
     return [];
   }
 
+  if (total <= 0) {
+    return new Array(numParticipants).fill(0);
+  }
+
   const equalSplit = Number((total / numParticipants).toFixed(2));
   const diff = total * 100 - equalSplit * numParticipants * 100;
   const sign = diff < 0 ? -1 : 1;
@@ -54,7 +58,7 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
     let availableTotal = total;
     Object.keys(newParticipantState).forEach((address) => {
       if (newParticipantState[address].isCustom) {
-        availableTotal -= newParticipantState[address].share;
+        availableTotal -= Number(newParticipantState[address].share);
       }
     });
 
@@ -146,7 +150,20 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
     if (!newParticipantState[participant].selected) {
       newParticipantState[participant].selected = true;
     }
-    newParticipantState[participant].share = Number(e.target.value);
+    newParticipantState[participant].share = e.target.value === '' ? '' : Number(e.target.value);
+    setParticipantState(updateAutoChecked(newParticipantState));
+  };
+
+  const onCustomInputBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    const newParticipantState = { ...participantState };
+    const participant = e.target.name.split('-')[0];
+
+    if (e.target.value === '') {
+      newParticipantState[participant].isCustom = false;
+      newParticipantState[participant].selected = false;
+      newParticipantState[participant].share = 0;
+    }
+
     setParticipantState(updateAutoChecked(newParticipantState));
   };
 
@@ -193,6 +210,7 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
             decimalScale={2}
             allowNegative={false}
             onChange={onCustomInput}
+            onBlur={onCustomInputBlur}
           />
         </div>
       ))}
