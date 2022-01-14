@@ -1,5 +1,6 @@
 import { ChartPieIcon, CurrencyDollarIcon, DocumentTextIcon } from '@heroicons/react/outline';
-import { Dispatch, SetStateAction } from 'react';
+import ConfirmSettleModal, { DebtDetails } from './ConfirmSettleModal';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Settlement, resolveSettle } from '../../utils/routes/settle';
 
 import { AbiItem } from 'web3-utils';
@@ -46,17 +47,31 @@ const contractAbi: AbiItem[] = [
 const contractAddr = '0xc70db95c991562f73fedaf0303f6e6a59da04a94';
 
 const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, forceRerender, setForceRerender }) => {
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
+
+  const openConfirmModal = () => {
+    if (debts.length === 0) {
+      alert('You have no outstanding debts to pay :)');
+      return;
+    }
+    setIsConfirmModalOpen(true);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+  };
+
   const settleUp = () => {
+    setIsTransactionPending(true);
     const toSendTxns: Array<HarmonyTxn> = [];
-    if (providedWeb3 && settle && providedWeb3.account && group) {
+    if (providedWeb3 && debts && providedWeb3.account && group) {
       const web3 = providedWeb3.w3;
-      for (let debt of settle.debts) {
-        if (debt.debtor === providedWeb3.account) {
-          toSendTxns.push({
-            to: debt.creditor,
-            amountInOne: Number(debt.net_owed_ones).toFixed(10),
-          });
-        }
+      for (let debt of debts) {
+        toSendTxns.push({
+          to: debt.address,
+          amountInOne: debt.ones.toFixed(10),
+        });
       }
       const myAddrChecksum = web3.utils.toChecksumAddress(providedWeb3.account);
       if (toSendTxns.length === 0) {
@@ -73,6 +88,8 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
             resolveSettle(group.id)
               .then((res) => {
                 if (res.status === 200) {
+                  setIsTransactionPending(false);
+                  setIsConfirmModalOpen(false);
                   setForceRerender(!forceRerender);
                 } else {
                   alert('Error when updating group transactions');
@@ -80,11 +97,19 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
               })
               .catch((err) => {
                 alert('Error when updating group transactions');
+              })
+              .finally(() => {
+                setIsTransactionPending(false);
+                setIsConfirmModalOpen(false);
               });
             console.log({ receipt, confirmationNumber });
           })
           .on('error', (error: Error) => {
             alert(error.message);
+          })
+          .finally(() => {
+            setIsTransactionPending(false);
+            setIsConfirmModalOpen(false);
           });
       } else {
         // Use multisend contract to send to multiple people
@@ -99,6 +124,8 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
             resolveSettle(group.id)
               .then((res) => {
                 if (res.status === 200) {
+                  setIsTransactionPending(false);
+                  setIsConfirmModalOpen(false);
                   setForceRerender(!forceRerender);
                 } else {
                   alert('Error when updating group transactions');
@@ -106,11 +133,19 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
               })
               .catch((err) => {
                 alert('Error when updating group transactions');
+              })
+              .finally(() => {
+                setIsTransactionPending(false);
+                setIsConfirmModalOpen(false);
               });
             console.log({ receipt, confirmationNumber });
           })
           .on('error', (error: Error) => {
             alert(error.message);
+          })
+          .finally(() => {
+            setIsTransactionPending(false);
+            setIsConfirmModalOpen(false);
           });
       }
     }
@@ -138,6 +173,20 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
         if (split.user === providedWeb3.account) {
           totalExpenses += Number(split.base_share);
         }
+      }
+    }
+  }
+
+  let debts: DebtDetails[] = [];
+  if (settle !== null && providedWeb3 !== null) {
+    for (let debt of settle.debts) {
+      if (debt.debtor === providedWeb3.account) {
+        debts.push({
+          address: debt.creditor,
+          username: 'Test Name',
+          amount: Number(debt.net_owed),
+          ones: Number(debt.net_owed_ones),
+        });
       }
     }
   }
@@ -177,11 +226,23 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
 
         <AppButton
           className="text-slate-100 font-medium col-start-5 mr-9"
-          clickHandler={settleUp}
+          clickHandler={openConfirmModal}
           isDisabled={providedWeb3 === null || settle === null || providedWeb3.account === null}
         >
           Settle Up
         </AppButton>
+
+        {group && (
+          <ConfirmSettleModal
+            isOpen={isConfirmModalOpen}
+            openModal={openConfirmModal}
+            closeModal={closeConfirmModal}
+            debts={debts}
+            currency={group.currency}
+            isLoading={isTransactionPending}
+            onSettle={settleUp}
+          />
+        )}
       </div>
     </div>
   );
