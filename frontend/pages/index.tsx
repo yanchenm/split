@@ -39,6 +39,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
         const userResponse = await getUser();
         if (userResponse.status === 200 && userResponse.data) {
           setIsRegistered(true);
+          router.push('app');
         } else {
           setIsRegistered(false);
         }
