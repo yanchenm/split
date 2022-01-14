@@ -3,11 +3,10 @@ use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 
 pub mod currency_pairs;
 pub mod groups;
+pub mod invite;
 pub mod memberships;
-pub mod split;
 pub mod transactions;
 pub mod users;
-pub mod invite;
 
 const MAX_POOL_SIZE: u32 = 30;
 

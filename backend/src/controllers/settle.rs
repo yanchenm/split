@@ -8,7 +8,7 @@ use rocket::serde::json::Json;
 use rocket::State;
 use sqlx::MySqlPool;
 
-use crate::db::{groups, memberships, split::resolve_splits_for_user, transactions};
+use crate::db::{groups, memberships, transactions, users};
 use crate::models::membership::MembershipStatus;
 use crate::utils::currency::get_currency_conversion_rate;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
@@ -20,6 +20,7 @@ use std::collections::{HashMap, HashSet};
 pub struct Debt {
     debtor: String,
     creditor: String,
+    creditor_username: String,
     net_owed: Decimal,
     net_owed_ones: Decimal,
 }
@@ -131,85 +132,27 @@ pub async fn get_settlement_by_group<'r>(
             }
         };
 
-    // Get distinct currencies to convert from
-    let distinct_currencies_reqs = transactions_with_splits
-        .iter()
-        .filter(|txn| txn.transaction.currency != group.currency)
-        .map(|txn| txn.transaction.currency.clone())
-        .collect::<HashSet<String>>()
-        .into_iter()
-        .map(|currency| get_currency_conversion_rate(pool, currency, group.currency.clone()));
-
-    let currency_pairs = match try_join_all(distinct_currencies_reqs).await {
-        Ok(currency_pair) => currency_pair,
-        Err(_) => {
-            return Err(StringResponseWithStatus {
-                status: Status::BadRequest,
-                message: "failed to get currency conversion".to_string(),
-            })
-        }
-    };
-
-    // Cache currency conversion rates
-    let mut conversion_rates = HashMap::new();
-    for (rate, currency) in currency_pairs {
-        conversion_rates.insert(currency, rate);
-    }
-
     let mut net_owed = HashMap::new();
 
     // Add txn credits to net_owed and splits
     for transaction_with_splits in transactions_with_splits {
         let txn = transaction_with_splits.transaction;
         let splits = transaction_with_splits.splits;
-        let mut final_amount = txn.amount.clone();
 
-        if txn.currency != group.currency {
-            let conversion_rate = match conversion_rates.get(&txn.currency) {
-                Some(rate) => rate,
-                None => {
-                    return Err(StringResponseWithStatus {
-                        status: Status::BadRequest,
-                        message: "currency conversion rate not found".to_string(),
-                    });
-                }
-            };
-            final_amount *= conversion_rate;
-        }
+        // Add credit for transaction creator (creditor)
         {
             let txn_owed = net_owed
                 .entry(txn.paid_by.clone())
                 .or_insert(Decimal::new(0, 2));
-            *txn_owed += final_amount;
+            *txn_owed += txn.base_amount;
         }
 
+        // Subtract debts for debtors
         for split in splits {
-            let mut final_share = split.share.clone();
-            if txn.currency != group.currency {
-                let conversion_rate = match conversion_rates.get(&txn.currency) {
-                    Some(rate) => rate,
-                    None => {
-                        return Err(StringResponseWithStatus {
-                            status: Status::BadRequest,
-                            message: "currency conversion rate not found".to_string(),
-                        });
-                    }
-                };
-                final_share *= conversion_rate;
-            }
-            if split.resolved {
-                // We have added the total value of the txn to the txn creator's net_owed.
-                // If this split portion of the txn was already resolved, remove it from the txn creator's net_allowed
-                let txn_owed = net_owed
-                    .entry(txn.paid_by.clone())
-                    .or_insert(Decimal::new(0, 2));
-                *txn_owed -= final_share;
-            } else {
-                let split_owed = net_owed
-                    .entry(split.user.clone())
-                    .or_insert(Decimal::new(0, 2));
-                *split_owed -= final_share;
-            }
+            let split_owed = net_owed
+                .entry(split.user.clone())
+                .or_insert(Decimal::new(0, 2));
+            *split_owed -= split.base_share;
         }
     }
 
@@ -252,6 +195,17 @@ pub async fn get_settlement_by_group<'r>(
             }
         };
 
+        let creditor_user = match users::get_user_by_address(pool, creditor.address.as_str()).await
+        {
+            Ok(Some(user)) => user,
+            None => {
+                return Err(StringResponseWithStatus {
+                    status: Status::BadRequest,
+                    message: "Error geting user object for creditor",
+                })
+            }
+        };
+
         let debtor_amt = debtor.net_owed;
         let creditor_amt = creditor.net_owed;
         // If we are getting zero for creditor or debtor amounts, we are done!
@@ -272,6 +226,7 @@ pub async fn get_settlement_by_group<'r>(
             ret.push(Debt {
                 debtor: debtor.address.clone(),
                 creditor: creditor.address.clone(),
+                creditor_username: creditor_user.username,
                 net_owed: debtor_amt.abs(),
                 net_owed_ones: debtor_amt.abs() * one_rate,
             });
@@ -290,6 +245,7 @@ pub async fn get_settlement_by_group<'r>(
             ret.push(Debt {
                 debtor: debtor.address.clone(),
                 creditor: creditor.address.clone(),
+                creditor_username: creditor_user.username,
                 net_owed: creditor_amt,
                 net_owed_ones: creditor_amt * one_rate,
             });
@@ -308,6 +264,7 @@ pub async fn get_settlement_by_group<'r>(
             ret.push(Debt {
                 debtor: debtor.address.clone(),
                 creditor: creditor.address.clone(),
+                creditor_username: creditor_user.username,
                 net_owed: creditor_amt,
                 net_owed_ones: creditor_amt * one_rate,
             });
@@ -327,22 +284,4 @@ pub async fn get_settlement_by_group<'r>(
         group_id: group_id.to_string(),
         debts: ret,
     }))
-}
-
-#[put("/resolve/<group_id>")]
-pub async fn resolve_settlement<'r>(
-    pool: &State<MySqlPool>,
-    group_id: &str,
-    authed_user: AuthedDBUser<'r>,
-) -> StringResponseWithStatus {
-    match resolve_splits_for_user(pool, group_id, authed_user.address.as_str()).await {
-        Ok(_) => StringResponseWithStatus {
-            status: Status::Ok,
-            message: "Resolved splits.".to_string(),
-        },
-        Err(_) => StringResponseWithStatus {
-            status: Status::InternalServerError,
-            message: "Could not resolve splits due to error.".to_string(),
-        },
-    }
 }
