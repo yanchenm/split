@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
+import Head from 'next/head';
+import Link from 'next/link';
 import type { NextPage } from 'next/types';
 import ReactLoading from 'react-loading';
 import { acceptInviteToGroup } from '../../../utils/routes/invite';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
-import Link from 'next/link';
 
 const AcceptInvite: NextPage = () => {
   const router = useRouter();
@@ -50,12 +50,10 @@ const AcceptInvite: NextPage = () => {
               ) : (
                 <div>
                   <div>Sorry, the invite didn`&apos;`t work due to: {status}</div>
-                    <span>
-                      Please register at:  
-                    </span>
-                    <span className="text-violet-600 hover:text-violet-500">
-                      <Link href='/'> wheresmymoney.one</Link>
-                    </span>
+                  <span>Please register at:</span>
+                  <span className="text-violet-600 hover:text-violet-500">
+                    <Link href="/"> wheresmymoney.one</Link>
+                  </span>
                 </div>
               )}
             </h3>

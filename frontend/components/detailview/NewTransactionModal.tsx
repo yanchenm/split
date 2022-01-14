@@ -152,6 +152,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
                 name="date"
                 render={({ field: { onChange, value } }) => <CustomDatePicker onChange={onChange} selected={value} />}
                 rules={{ required: { value: true, message: 'Please select a date.' } }}
+                defaultValue={new Date()}
               />
               <div className="text-sm text-red-500 mt-1">{formErrors.date?.message}</div>
             </div>
