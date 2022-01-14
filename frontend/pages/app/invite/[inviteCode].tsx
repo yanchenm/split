@@ -49,7 +49,7 @@ const AcceptInvite: NextPage = () => {
                 'You have successfully accepted the invite!'
               ) : (
                 <div>
-                  <div>Sorry, the invite didn't work due to: {status}</div>
+                  <div>Sorry, the invite didn`&apos;`t work due to: {status}</div>
                     <span>
                       Please register at:  
                     </span>
