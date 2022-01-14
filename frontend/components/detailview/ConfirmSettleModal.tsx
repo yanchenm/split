@@ -44,18 +44,20 @@ const ConfirmSettleModal: React.FC<ConfirmSettleModalProps> = ({
           )} ONE`}</div>
         </div>
         <h3 className="font-medium mt-6 mb-3">To be paid to:</h3>
-        {debts.map((debt) => (
-          <div className="grid grid-cols-12 w-full items-center text-sm mb-1" key={debt.address}>
-            <div className="col-span-6">
-              <div>{debt.username}</div>
-              <div className="font-mono">{displayAddress(debt.address)}</div>
+        <div className="flex flex-col w-full space-y-3">
+          {debts.map((debt) => (
+            <div className="grid grid-cols-12 w-full items-center text-sm" key={debt.address}>
+              <div className="col-span-6">
+                <div>{debt.username}</div>
+                <div className="font-mono">{displayAddress(debt.address)}</div>
+              </div>
+              <div className="col-span-3">
+                {debt.amount.toFixed(2)} {currency}
+              </div>
+              <div className="col-span-3">{debt.ones.toFixed(5)} ONE</div>
             </div>
-            <div className="col-span-3">
-              {debt.amount.toFixed(2)} {currency}
-            </div>
-            <div className="col-span-3">{debt.ones.toFixed(5)} ONE</div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       <ButtonWithLoading buttonText="Settle" loading={isLoading} onClick={onSettle} />
     </Modal>
