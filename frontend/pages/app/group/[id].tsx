@@ -7,12 +7,12 @@ import { useEffect, useState } from 'react';
 
 import ExpenseList from '../../../components/detailview/ExpensesList';
 import GroupStats from '../../../components/detailview/GroupStats';
+import Head from 'next/head';
 import NewInviteModal from '../../../components/detailview/NewInviteModal';
 import NewTransactionModal from '../../../components/detailview/NewTransactionModal';
 import type { NextPage } from 'next/types';
 import Sidebar from '../../../components/app/Sidebar';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 
 const DetailView: NextPage = () => {
   const router = useRouter();
@@ -119,22 +119,25 @@ const DetailView: NextPage = () => {
                             setForceRerender={setForceRerender}
                             forceRerender={forceRerender}
                           />
-                          <ExpenseList
-                            group={group}
-                            txns={txns}
-                            providedWeb3={consumerProps}
-                            userMap={userMap}
-                            forceRerender={forceRerender}
-                            setForceRerender={setForceRerender}
-                          />
+                          {group && Object.keys(userMap).length > 0 && (
+                            <ExpenseList
+                              group={group}
+                              txns={txns}
+                              providedWeb3={consumerProps}
+                              userMap={userMap}
+                              forceRerender={forceRerender}
+                              setForceRerender={setForceRerender}
+                            />
+                          )}
+
                           {group && (
                             <NewTransactionModal
-                              groupId={group?.id}
+                              groupId={group.id}
                               isOpen={isNewTxnModalOpen}
                               closeModal={closeNewTxnModal}
                               openModal={openNewTxnModal}
                               onDone={forceRerenderPage}
-                              currency={group?.currency}
+                              currency={group.currency}
                             />
                           )}
                           {group && (
