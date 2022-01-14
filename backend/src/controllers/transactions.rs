@@ -26,6 +26,7 @@ pub struct Transaction {
     pub date: chrono::NaiveDate,
     pub image: Option<String>,
     pub splits: Vec<Split>,
+    pub is_settlement: i8,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -123,8 +124,6 @@ pub async fn create_transaction<'r>(
             };
         }
     }
-
-    // TODO: Validate splits add up to 1
 
     // Create transaction and splits atomically
     match transactions::batch_create_transaction_splits(

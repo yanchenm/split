@@ -27,9 +27,10 @@ pub async fn create_new_transaction(
     paid_by: &str,
     name: &str,
     date: &NaiveDate,
+    is_settlement: i8,
 ) -> Result<()> {
     sqlx::query!(
-        "INSERT INTO Transaction (id, `group`, base_amount, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+        "INSERT INTO Transaction (id, `group`, base_amount, amount, currency, paid_by, name, date, is_settlement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
         id,
         group,
         base_amount,
@@ -37,7 +38,8 @@ pub async fn create_new_transaction(
         currency.to_uppercase(),
         paid_by.to_lowercase(),
         name,
-        date
+        date,
+        is_settlement,
     )
     .execute(pool)
     .await?;
@@ -112,7 +114,6 @@ pub async fn batch_update_transaction_splits(
     tx_id: &str, // user_address: &str
     group: &Group,
 ) -> Result<()> {
-    // let current_date = Utc::now().date().naive_utc();
     let total_amount = string_to_decimal(updated_transaction.total.as_str());
     let (conversion_rate, _) = if updated_transaction.currency != group.currency {
         get_currency_conversion_rate(
@@ -185,6 +186,7 @@ pub async fn batch_create_transaction_splits(
         user_address,
         new_transaction.name.as_str(),
         &new_transaction.date,
+        new_transaction.is_settlement,
     )
     .await?;
 
@@ -267,6 +269,7 @@ pub async fn get_transactions_by_group_with_splits(
                 name: txn.name.clone(),
                 date: txn.date.clone(),
                 updated_at: txn.updated_at.clone(),
+                is_settlement: txn.is_settlement.clone(),
             },
         );
 

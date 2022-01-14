@@ -14,6 +14,7 @@ pub struct DbTransaction {
     pub paid_by: String,
     pub name: String,
     pub date: NaiveDate,
+    pub is_settlement: i8,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
@@ -26,6 +27,7 @@ pub struct DbTransactionWithSplits {
     pub paid_by: String,
     pub name: String,
     pub date: NaiveDate,
+    pub is_settlement: i8,
     pub updated_at: chrono::DateTime<chrono::Utc>,
     pub tx_id: String,
     pub user: String,

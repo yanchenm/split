@@ -1,5 +1,4 @@
 use log::error;
-use rocket::futures::future::try_join_all;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +13,7 @@ use crate::utils::currency::get_currency_conversion_rate;
 use crate::{auth::user::AuthedDBUser, utils::responders::StringResponseWithStatus};
 
 use std;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Debt {

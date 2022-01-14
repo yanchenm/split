@@ -43,6 +43,7 @@ export type DbTransaction = {
     name: string,
     date: string,
     updated_at: string,
+    is_settlement: string,
 }
 
 export type TransactionWithSplits = {

@@ -178,9 +178,11 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
   if (txns !== null && providedWeb3 !== null) {
     numTxns = txns.length;
     for (let txn of txns) {
-      for (let split of txn.splits) {
-        if (split.user === providedWeb3.account) {
-          totalExpenses += Number(split.base_share);
+      if (!txn.transaction.is_settlement) {
+        for (let split of txn.splits) {
+          if (split.user === providedWeb3.account) {
+            totalExpenses += Number(split.base_share);
+          }
         }
       }
     }
