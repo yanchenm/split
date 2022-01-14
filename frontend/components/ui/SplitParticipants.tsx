@@ -10,8 +10,28 @@ type SplitParticipantsProps = {
   onValueChange: (value: Record<string, ParticipantState>) => void;
 };
 
-const splitEqually = (total: number, numParticipants: number): number => {
-  return Number((total / numParticipants).toFixed(2));
+const splitEqually = (total: number, numParticipants: number): number[] => {
+  const equalSplit = Number((total / numParticipants).toFixed(2));
+  const diff = total * 100 - equalSplit * numParticipants * 100;
+
+  const splits = new Array(numParticipants);
+  const sample = Array.from(new Array(numParticipants), (_, i) => i);
+
+  for (let i = 0; i < diff; i++) {
+    const index = Math.floor(Math.random() * sample.length);
+    splits[sample[index]] = 0.01;
+    sample.splice(index, 1);
+  }
+
+  for (let i = 0; i < numParticipants; i++) {
+    if (splits[i] === undefined) {
+      splits[i] = equalSplit;
+    } else {
+      splits[i] += equalSplit;
+    }
+  }
+
+  return splits;
 };
 
 const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, total, toggleReset, onValueChange }) => {
@@ -33,10 +53,10 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
       newParticipantState[e.target.value].isCustom = false;
     }
 
-    const sharePerPerson = splitEqually(total, checked.length);
-    for (const name of checked) {
+    const shares = splitEqually(total, checked.length);
+    for (const [index, name] of checked.entries()) {
       newParticipantState[name].selected = true;
-      newParticipantState[name].share = sharePerPerson;
+      newParticipantState[name].share = shares[index];
     }
 
     setCurrentChecked(checked);
@@ -44,10 +64,10 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
   };
 
   useEffect(() => {
-    const sharePerPerson = splitEqually(total, currentChecked.length);
+    const shares = splitEqually(total, currentChecked.length);
     const newParticipantState = { ...participantState };
-    for (const name of currentChecked) {
-      newParticipantState[name].share = sharePerPerson;
+    for (const [index, name] of currentChecked.entries()) {
+      newParticipantState[name].share = shares[index];
     }
     setParticipantState(newParticipantState);
   }, [total]);
@@ -91,11 +111,11 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
       }
       setParticipantState(newParticipantState);
     } else {
-      const sharePerPerson = splitEqually(total, Object.keys(participantState).length);
+      const shares = splitEqually(total, Object.keys(participantState).length);
       const newParticipantState = { ...participantState };
-      for (const name of Object.keys(participantState)) {
+      for (const [index, name] of Object.keys(participantState).entries()) {
         newParticipantState[name].selected = true;
-        newParticipantState[name].share = sharePerPerson;
+        newParticipantState[name].share = shares[index];
       }
 
       setCurrentChecked(Object.keys(participantState));
