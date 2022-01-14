@@ -10,6 +10,7 @@ import Sidebar from '../../components/app/Sidebar';
 import SplitCard from '../../components/app/SplitCard';
 import { getGroupsByUser } from '../../utils/routes/group';
 import { getSettlementsForGroup } from '../../utils/routes/settle';
+import Head from 'next/head';
 
 type GroupWithBalance = {
   group: Group;
@@ -83,52 +84,61 @@ const Dashboard: NextPage<PageProps> = ({ ...props }) => {
   console.log({ splitGroupsWithBalance });
 
   return (
-    <DarkmodeContext.Consumer>
-      {(darkmodeProps) => {
-        return (
-          <div className={`min-h-screen flex ${darkmodeProps.isDarkmode ? 'dark' : ''}`}>
-            <Sidebar />
+    <>
+      <Head>
+        <title>WheresMyMoney</title>
+      </Head>
+      <DarkmodeContext.Consumer>
+        {(darkmodeProps) => {
+          return (
+            <div className={`min-h-screen flex ${darkmodeProps.isDarkmode ? 'dark' : ''}`}>
+              <Sidebar />
 
-            {/* Content */}
-            <div className="bg-white text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen transition duration-200 overflow-y-auto">
-              Current Groups
-              <div className="bg-white dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap h-5/6 rounded-xl content-start">
-                {splitGroups.length === 0 ? (
-                  <ReactLoading />
-                ) : splitGroups.length > splitGroupsWithBalance.length ? (
-                  splitGroups.map((split) => {
-                    return (
-                      <SplitCard
-                        key={split.id}
-                        groupId={split.id}
-                        name={split.name}
-                        currency={split.currency}
-                        lastUpdate={split.updated_at.split('T')[0]}
-                      />
-                    );
-                  })
-                ) : (
-                  splitGroupsWithBalance.map((split) => {
-                    return (
-                      <SplitCard
-                        key={split.group.id}
-                        groupId={split.group.id}
-                        name={split.group.name}
-                        currency={split.group.currency}
-                        userBalance={split.userBalance}
-                        lastUpdate={split.group.updated_at.split('T')[0]}
-                      />
-                    );
-                  })
-                )}
-                <NewCard clickHandler={openNewGroupModal} />
+              {/* Content */}
+              <div className="bg-white text-neutral-800 dark:bg-slate-800 dark:text-white flex-1 p-10 text-2xl font-bold h-screen transition duration-200 overflow-y-auto">
+                Current Groups
+                <div className="bg-white dark:bg-slate-800 dark:shadow-slate-900 mt-10 flex flex-row flex-wrap h-5/6 rounded-xl content-start">
+                  {splitGroups.length === 0 ? (
+                    <ReactLoading />
+                  ) : splitGroups.length > splitGroupsWithBalance.length ? (
+                    splitGroups.map((split) => {
+                      return (
+                        <SplitCard
+                          key={split.id}
+                          groupId={split.id}
+                          name={split.name}
+                          currency={split.currency}
+                          lastUpdate={split.updated_at.split('T')[0]}
+                        />
+                      );
+                    })
+                  ) : (
+                    splitGroupsWithBalance.map((split) => {
+                      return (
+                        <SplitCard
+                          key={split.group.id}
+                          groupId={split.group.id}
+                          name={split.group.name}
+                          currency={split.group.currency}
+                          userBalance={split.userBalance}
+                          lastUpdate={split.group.updated_at.split('T')[0]}
+                        />
+                      );
+                    })
+                  )}
+                  <NewCard clickHandler={openNewGroupModal} />
+                </div>
               </div>
+              <NewGroupModal
+                isOpen={isNewGroupModalOpen}
+                closeModal={closeNewGroupModal}
+                openModal={openNewGroupModal}
+              />
             </div>
-            <NewGroupModal isOpen={isNewGroupModalOpen} closeModal={closeNewGroupModal} openModal={openNewGroupModal} />
-          </div>
-        );
-      }}
-    </DarkmodeContext.Consumer>
+          );
+        }}
+      </DarkmodeContext.Consumer>
+    </>
   );
 };
 

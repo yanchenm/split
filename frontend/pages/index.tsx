@@ -70,67 +70,67 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
   };
 
   return (
-    <W3Context.Consumer>
-      {(consumerProps) => (
-        <DarkmodeContext.Consumer>
-          {(darkmodeProps) => {
-            let buttonArea = <></>;
-            let startButtonArea = <></>;
-            if (consumerProps && consumerProps.account && consumerProps.isConnected && consumerProps.isHarmony) {
-              buttonArea = (
-                <div>
-                  <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold ">
-                    {consumerProps.account ? displayAddress(consumerProps.account) : ''}
+    <>
+      <Head>
+        <title>WheresMyMoney</title>
+      </Head>
+      <W3Context.Consumer>
+        {(consumerProps) => (
+          <DarkmodeContext.Consumer>
+            {(darkmodeProps) => {
+              let buttonArea = <></>;
+              let startButtonArea = <></>;
+              if (consumerProps && consumerProps.account && consumerProps.isConnected && consumerProps.isHarmony) {
+                buttonArea = (
+                  <div>
+                    <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold ">
+                      {consumerProps.account ? displayAddress(consumerProps.account) : ''}
+                    </p>
+                  </div>
+                );
+                startButtonArea = (
+                  <Button
+                    classNames={
+                      'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500 text-white'
+                    }
+                    clickHandler={() => router.push({ pathname: '/app' })}
+                  >
+                    Get Started
+                  </Button>
+                );
+              } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
+                buttonArea = (
+                  <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">
+                    Please connect to Harmony Network
                   </p>
-                </div>
-              );
-              startButtonArea = (
-                <Button
-                  classNames={
-                    'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500 text-white'
-                  }
-                  clickHandler={() => router.push({ pathname: '/app' })}
-                >
-                  Get Started
-                </Button>
-              );
-            } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
-              buttonArea = (
-                <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">
-                  Please connect to Harmony Network
-                </p>
-              );
-            } else if (consumerProps && consumerProps.account) {
-              buttonArea = (
-                <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">Network disconnected...</p>
-              );
-            } else {
-              buttonArea = (
-                <Button classNames={'bg-violet-800 hover:bg-blue-500'} clickHandler={web3Connect}>
-                  Connect Wallet
-                </Button>
-              );
-              startButtonArea = (
-                <Button
-                  classNames={
-                    'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500 text-white'
-                  }
-                  clickHandler={web3Connect}
-                >
-                  Get Started
-                </Button>
-              );
-            }
+                );
+              } else if (consumerProps && consumerProps.account) {
+                buttonArea = (
+                  <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">Network disconnected...</p>
+                );
+              } else {
+                buttonArea = (
+                  <Button classNames={'bg-violet-800 hover:bg-blue-500'} clickHandler={web3Connect}>
+                    Connect Wallet
+                  </Button>
+                );
+                startButtonArea = (
+                  <Button
+                    classNames={
+                      'bg-gradient-to-r from-purple-500 to-violet-600 margin-top mt-6 hover:from-pink-500 hover:to-yellow-500 text-white'
+                    }
+                    clickHandler={web3Connect}
+                  >
+                    Get Started
+                  </Button>
+                );
+              }
 
-            let isNotRegisteredAndConnected = () => {
-              return (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
-            };
+              let isNotRegisteredAndConnected = () => {
+                return (!isRegistered && consumerProps?.isHarmony && consumerProps?.isConnected) || false;
+              };
 
-            return (
-              <>
-                <Head>
-                  <title>WheresMyMoney</title>
-                </Head>
+              return (
                 <div className={`${darkmodeProps?.isDarkmode ? 'dark' : ''}`}>
                   <div>
                     <Modal
@@ -199,12 +199,12 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                     </div>
                   </div>
                 </div>
-              </>
-            );
-          }}
-        </DarkmodeContext.Consumer>
-      )}
-    </W3Context.Consumer>
+              );
+            }}
+          </DarkmodeContext.Consumer>
+        )}
+      </W3Context.Consumer>
+    </>
   );
 };
 

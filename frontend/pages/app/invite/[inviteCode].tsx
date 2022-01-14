@@ -4,6 +4,7 @@ import type { NextPage } from 'next/types';
 import ReactLoading from 'react-loading';
 import { acceptInviteToGroup } from '../../../utils/routes/invite';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 const AcceptInvite: NextPage = () => {
   const router = useRouter();
@@ -31,21 +32,26 @@ const AcceptInvite: NextPage = () => {
   }, [inviteCode]);
 
   return (
-    <div className="flex flex-row bg-white dark:bg-slate-800 text-neutral-800 dark:text-slate-400 h-screen w-full">
-      <div className="flex flex-row w-full justify-center overflow-y-auto">
-        <div className="flex flex-col space-y-10 w-11/12 items-center place-content-center">
-          <h3 className="ml-3 text-3xl font-medium text-gray-500 dark:text-slate-400 text-left">
-            {success === null ? (
-              <ReactLoading type="spin" color="#9c3aed" height="100px" width="100px" />
-            ) : success ? (
-              'You have successfully accepted the invite!'
-            ) : (
-              "Sorry, the invite didn't work due to: " + status
-            )}
-          </h3>
+    <>
+      <Head>
+        <title>WheresMyMoney</title>
+      </Head>
+      <div className="flex flex-row bg-white dark:bg-slate-800 text-neutral-800 dark:text-slate-400 h-screen w-full">
+        <div className="flex flex-row w-full justify-center overflow-y-auto">
+          <div className="flex flex-col space-y-10 w-11/12 items-center place-content-center">
+            <h3 className="ml-3 text-3xl font-medium text-gray-500 dark:text-slate-400 text-left">
+              {success === null ? (
+                <ReactLoading type="spin" color="#9c3aed" height="100px" width="100px" />
+              ) : success ? (
+                'You have successfully accepted the invite!'
+              ) : (
+                "Sorry, the invite didn't work due to: " + status
+              )}
+            </h3>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
