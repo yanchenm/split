@@ -45,7 +45,7 @@ const ConfirmSettleModal: React.FC<ConfirmSettleModalProps> = ({
         </div>
         <h3 className="font-medium mt-6 mb-3">To be paid to:</h3>
         {debts.map((debt) => (
-          <div className="grid grid-cols-12 w-full items-center text-sm" key={debt.address}>
+          <div className="grid grid-cols-12 w-full items-center text-sm mb-1" key={debt.address}>
             <div className="col-span-6">
               <div>{debt.username}</div>
               <div className="font-mono">{displayAddress(debt.address)}</div>
