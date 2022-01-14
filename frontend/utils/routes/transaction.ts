@@ -6,6 +6,7 @@ import { url } from '../constants';
 export type Split = {
     tx_id: string,
     user: string,
+    base_share: string,
     share: string,
 }
 
@@ -34,6 +35,7 @@ export type Transaction = {
 export type DbTransaction = {
     id: string,
     group: string,
+    base_amount: string,
     amount: string,
     currency: string,
     paid_by: string,

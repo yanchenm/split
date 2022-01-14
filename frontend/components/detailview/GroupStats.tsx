@@ -1,12 +1,12 @@
 import { ChartPieIcon, CurrencyDollarIcon, DocumentTextIcon } from '@heroicons/react/outline';
-import { ProvidedWeb3 } from '../../pages/_app';
-import { Group } from '../../utils/routes/group';
-import { Settlement, resolveSettle } from '../../utils/routes/settle';
-import { TransactionWithSplits } from '../../utils/routes/transaction';
-import { AbiItem } from 'web3-utils';
-
-import AppButton from '../ui/AppButton';
 import { Dispatch, SetStateAction } from 'react';
+import { Settlement, resolveSettle } from '../../utils/routes/settle';
+
+import { AbiItem } from 'web3-utils';
+import AppButton from '../ui/AppButton';
+import { Group } from '../../utils/routes/group';
+import { ProvidedWeb3 } from '../../pages/_app';
+import { TransactionWithSplits } from '../../utils/routes/transaction';
 
 type StatProps = {
   providedWeb3: ProvidedWeb3 | null;
@@ -70,15 +70,17 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
             value: web3.utils.toWei(toSendTxns[0].amountInOne, 'ether'),
           })
           .on('confirmation', (confirmationNumber: number, receipt: object) => {
-            resolveSettle(group.id).then((res) => {
-              if (res.status === 200) {
-                setForceRerender(!forceRerender)
-              } else {
-                alert("Error when updating group transactions");
-              }
-            }).catch((err) => {
-              alert("Error when updating group transactions");
-            });
+            resolveSettle(group.id)
+              .then((res) => {
+                if (res.status === 200) {
+                  setForceRerender(!forceRerender);
+                } else {
+                  alert('Error when updating group transactions');
+                }
+              })
+              .catch((err) => {
+                alert('Error when updating group transactions');
+              });
             console.log({ receipt, confirmationNumber });
           })
           .on('error', (error: Error) => {
@@ -94,15 +96,17 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
           .multiTransfer(addrs, amounts)
           .send({ from: myAddrChecksum, value: amounts.reduce((acc, amount) => acc.add(amount)) })
           .on('confirmation', (confirmationNumber: number, receipt: object) => {
-            resolveSettle(group.id).then((res) => {
-              if (res.status === 200) {
-                setForceRerender(!forceRerender)
-              } else {
-                alert("Error when updating group transactions");
-              }
-            }).catch((err) => {
-              alert("Error when updating group transactions");
-            });
+            resolveSettle(group.id)
+              .then((res) => {
+                if (res.status === 200) {
+                  setForceRerender(!forceRerender);
+                } else {
+                  alert('Error when updating group transactions');
+                }
+              })
+              .catch((err) => {
+                alert('Error when updating group transactions');
+              });
             console.log({ receipt, confirmationNumber });
           })
           .on('error', (error: Error) => {
@@ -132,19 +136,18 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
     for (let txn of txns) {
       for (let split of txn.splits) {
         if (split.user === providedWeb3.account) {
-          totalExpenses += Number(split.share);
+          totalExpenses += Number(split.base_share);
         }
       }
     }
   }
-
 
   return (
     <div className="w-full border-solid border-2 border-neutral-300 dark:border-slate-700 rounded-xl py-4">
       <div className="grid grid-cols-5 items-center">
         <div className="flex flex-col col-span-1 mt-2 ml-4">
           <h3 className="ml-3 text-md font-medium text-gray-500 dark:text-slate-400 text-left">
-            {userBalance === 0 ? 'No Balance' : (userBalance < 0 ? 'You owe' : 'You are owed')}
+            {userBalance === 0 ? 'No Balance' : userBalance < 0 ? 'You owe' : 'You are owed'}
           </h3>
           <span className="flex flex-row ml-3 my-2 space-x-2 items-center">
             <ChartPieIcon className={`h-6 w-6  ${userBalance < 0 ? 'text-red-500' : 'text-green-600'}`} />

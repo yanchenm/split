@@ -37,7 +37,7 @@ const Expense: React.FC<ExpenseProps> = ({
         <div className="w-1/2 font-bold truncate pr-3">{name}</div>
         <div className="w-1/2 font-medium pr-3 truncate">{paidBy}</div>
       </h3>
-      <div className="col-span-2 flex flex-row space-x-1">
+      <div className="col-span-2 flex flex-row space-x-0.5">
         {participants.slice(0, 3).map((person: any) => {
           return (
             <span className="text-start" key={person.name}>
