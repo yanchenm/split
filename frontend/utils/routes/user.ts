@@ -19,6 +19,5 @@ export const createUser = (user: RequestUser): Promise<AxiosResponse<StringRespo
 }
 
 export const getUser = (): Promise<AxiosResponse<StringResponseWithStatus>> => {
-    console.log(process.env.BACKEND_URL);
     return axios.get(`${url}/user`);
 }

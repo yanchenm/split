@@ -19,15 +19,10 @@ type ProvidedDarkmode = {
 // Set axios to intercept requests and add auth header on all of them.
 axios.interceptors.request.use(async (request) => {
   if (request) {
+    await tryUpdateToken();
     // First check that token exists and isn't expired, try to update otherwise
-    let authToken = localStorage.getItem('token');
+    let authToken = localStorage.getItem('accountToken');
     let currentExpiry = localStorage.getItem('tokenEpochTime');
-    if (!authToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
-      await tryUpdateToken();
-      // Grab the new auth token this method created
-      authToken = localStorage.getItem('token');
-      currentExpiry = localStorage.getItem('tokenEpochTime');
-    }
     if (request.headers && request.headers && authToken && currentExpiry) {
       request.headers.Authorization = authToken;
       request.headers.epoch_signed_time = currentExpiry;
@@ -36,22 +31,33 @@ axios.interceptors.request.use(async (request) => {
   }
 });
 
-// Attempts to update user's web3 auth token for our site
+// Attempts to update user's web3 auth token for our site if needed
 const tryUpdateToken = async () => {
   let anyWindow = window as any;
   if (typeof anyWindow.ethereum !== 'undefined') {
-    const currentToken = localStorage.getItem('token');
+    const authAccount = localStorage.getItem('account');
+    const currentToken = localStorage.getItem('accountToken');
     const currentExpiry = localStorage.getItem('tokenEpochTime');
     let w3 = new Web3(anyWindow.ethereum);
     let accounts = await w3.eth.getAccounts();
-    // Check if current token doesn't exist or is expired (Older than 14 days).
-    if (!currentToken || !currentExpiry || new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14) {
+    if (accounts.length === 0) {
+      // Abort for now, don't want to create metamask prompt on home screen
+      return;
+    }
+    // Check if current token doesn't exist or is expired (Older than 14 days) or is for wrong account.
+    if (
+      !currentToken ||
+      !currentExpiry ||
+      new Date().getTime() / 1000 - parseInt(currentExpiry) > 60 * 60 * 24 * 14 ||
+      accounts[0] !== authAccount
+    ) {
       // Shifting by 0 forces the float to integer
       let epoch = String((new Date().getTime() / 1000) >> 0);
       let msg = w3.utils.toHex('Split app login: ' + epoch);
       let from = accounts[0];
       const signature = await anyWindow.ethereum.request({ method: 'personal_sign', params: [msg, from] });
-      localStorage.setItem('token', signature);
+      localStorage.setItem('account', accounts[0]);
+      localStorage.setItem('accountToken', signature);
       localStorage.setItem('tokenEpochTime', epoch);
     }
   }
@@ -81,14 +87,21 @@ function MyApp({ Component, pageProps }: AppProps) {
 
         // Add event handler callback on ethereum window for user changing account
         anyWindow.ethereum.on('accountsChanged', async (newAccounts: Array<string>) => {
+          console.log('accountsChanged', newAccounts);
+          // User changed accounts so we should log them out of the site and get them to sign a message on new account
           const chain = await anyWindow.ethereum.request({ method: 'eth_chainId' });
           const isConnected = await anyWindow.ethereum.isConnected();
-          setProvidedWeb3({
-            w3: new Web3(anyWindow.ethereum),
-            account: newAccounts[0].toLowerCase(),
-            isHarmony: chain === '0x6357d2e0',
-            isConnected,
-          });
+          if (newAccounts.length > 0) {
+            await tryUpdateToken();
+            setProvidedWeb3({
+              w3: new Web3(anyWindow.ethereum),
+              account: newAccounts[0].toLowerCase(),
+              isHarmony: chain === '0x6357d2e0',
+              isConnected,
+            });
+          } else {
+            setProvidedWeb3(null);
+          }
         });
 
         // Add event handler callback on ethereum window for user changing network
