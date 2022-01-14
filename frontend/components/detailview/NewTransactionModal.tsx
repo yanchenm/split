@@ -92,6 +92,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
 
   const onSubmit: SubmitHandler<NewTransactionFormValues> = ({ name, amount, currency, date, participants }) => {
     setIsLoading(true);
+    setError('');
 
     let amountString = amount.toFixed(2);
     let dateString = date.toISOString().split('T')[0];
