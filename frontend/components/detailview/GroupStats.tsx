@@ -110,6 +110,7 @@ const GroupStats: React.FC<StatProps> = ({ providedWeb3, group, settle, txns, fo
         currency: group.currency,
         date: new Date().toISOString().split('T')[0],
         splits: toUpdateSplits,
+        is_settlement: 1,
       };
 
       const myAddrChecksum = web3.utils.toChecksumAddress(providedWeb3.account);

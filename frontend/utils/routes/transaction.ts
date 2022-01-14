@@ -21,7 +21,8 @@ export type RequestTransaction = {
     total: string,
     currency: string,
     date: string,
-    splits: Array<RequestSplit> 
+    splits: Array<RequestSplit>,
+    is_settlement: number
 }
 
 export type Transaction = {

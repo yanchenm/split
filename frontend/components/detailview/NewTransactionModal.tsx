@@ -111,6 +111,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
       currency,
       date: dateString,
       splits,
+      is_settlement: 0,
     };
 
     createTransaction(transaction)
