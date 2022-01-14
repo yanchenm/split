@@ -109,7 +109,7 @@ pub async fn accept_invite_to_group<'r>(
         Ok(Some(MembershipStatus::OWNER | MembershipStatus::ACTIVE)) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
-                message: "user is already in the group".to_string(),
+                message: format!("user is already in group {}", invite.group_id),
             }
         }
         Ok(_) => (),

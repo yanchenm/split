@@ -27,9 +27,15 @@ const AcceptInvite: NextPage = () => {
           }
         })
         .catch((err) => {
-          setSuccess(false);
-          setStatus(err.message);
-          // router.push('/');
+          if (err.response.data.startsWith('user is already in group')) {
+            let groupId = err.response.data.split(' ').slice(-1)[0];
+            setSuccess(true);
+            router.push(`/app/group/${groupId}`);
+          } else {
+            setSuccess(false);
+            setStatus(err.message);
+            // router.push('/');
+          }
         });
     }
   }, [inviteCode]);
@@ -49,7 +55,7 @@ const AcceptInvite: NextPage = () => {
                 'You have successfully accepted the invite!'
               ) : (
                 <div>
-                  <div>Sorry, the invite didn`&apos;`t work due to: {status}</div>
+                  <div>Sorry, the invite didn&apos;t work due to: {status}</div>
                   <span>Please register at:</span>
                   <span className="text-violet-600 hover:text-violet-500">
                     <Link href="/"> wheresmymoney.one</Link>
