@@ -11,6 +11,10 @@ type SplitParticipantsProps = {
 };
 
 const splitEqually = (total: number, numParticipants: number): number[] => {
+  if (numParticipants === 0) {
+    return [];
+  }
+
   const equalSplit = Number((total / numParticipants).toFixed(2));
   const diff = total * 100 - equalSplit * numParticipants * 100;
   const sign = diff < 0 ? -1 : 1;
@@ -38,56 +42,56 @@ const splitEqually = (total: number, numParticipants: number): number[] => {
 
 const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, total, toggleReset, onValueChange }) => {
   const [participantState, setParticipantState] = useState<Record<string, ParticipantState>>(participants);
-  const [currentChecked, setCurrentChecked] = useState<string[]>([]);
   const [allChecked, setAllChecked] = useState(false);
   const [allowCustom, setAllowCustom] = useState(false);
+
+  const updateAutoChecked = (state: Record<string, ParticipantState>): Record<string, ParticipantState> => {
+    const newParticipantState = { ...state };
+    const autoChecked = Object.keys(newParticipantState).filter(
+      (address) => newParticipantState[address].selected && !newParticipantState[address].isCustom
+    );
+
+    let availableTotal = total;
+    Object.keys(newParticipantState).forEach((address) => {
+      if (newParticipantState[address].isCustom) {
+        availableTotal -= newParticipantState[address].share;
+      }
+    });
+
+    const shares = splitEqually(availableTotal, autoChecked.length);
+    for (let i = 0; i < autoChecked.length; i++) {
+      newParticipantState[autoChecked[i]].share = shares[i];
+    }
+    return newParticipantState;
+  };
 
   const onCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     let checked;
     const newParticipantState = { ...participantState };
 
     if (!participantState[e.target.value].selected) {
-      checked = [...currentChecked, e.target.value];
+      newParticipantState[e.target.value].selected = true;
     } else {
-      checked = currentChecked.filter((name) => name !== e.target.value);
       newParticipantState[e.target.value].selected = false;
       newParticipantState[e.target.value].share = 0;
       newParticipantState[e.target.value].isCustom = false;
     }
 
-    const shares = splitEqually(total, checked.length);
-    for (const [index, name] of checked.entries()) {
-      newParticipantState[name].selected = true;
-      newParticipantState[name].share = shares[index];
-    }
-
-    setCurrentChecked(checked);
-    setParticipantState(newParticipantState);
+    const updatedState = updateAutoChecked(newParticipantState);
+    setParticipantState(updatedState);
   };
 
   useEffect(() => {
-    const shares = splitEqually(total, currentChecked.length);
-    const newParticipantState = { ...participantState };
-    for (const [index, name] of currentChecked.entries()) {
-      newParticipantState[name].share = shares[index];
-    }
-    setParticipantState(newParticipantState);
+    setParticipantState(updateAutoChecked(participantState));
   }, [total]);
 
   useEffect(() => {
     onValueChange(participantState);
+    let checked = Object.keys(participantState).every((address) => participantState[address].selected);
+    setAllChecked(checked);
   }, [participantState]);
 
   useEffect(() => {
-    if (currentChecked.length === Object.keys(participantState).length) {
-      setAllChecked(true);
-    } else {
-      setAllChecked(false);
-    }
-  }, [currentChecked]);
-
-  useEffect(() => {
-    setCurrentChecked([]);
     setAllChecked(false);
     setAllowCustom(false);
 
@@ -102,7 +106,6 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
 
   const onCheckAllChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (allChecked) {
-      setCurrentChecked([]);
       setAllChecked(false);
 
       const newParticipantState = { ...participantState };
@@ -113,20 +116,25 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
       }
       setParticipantState(newParticipantState);
     } else {
-      const shares = splitEqually(total, Object.keys(participantState).length);
       const newParticipantState = { ...participantState };
       for (const [index, name] of Object.keys(participantState).entries()) {
         newParticipantState[name].selected = true;
-        newParticipantState[name].share = shares[index];
       }
 
-      setCurrentChecked(Object.keys(participantState));
-      setParticipantState(newParticipantState);
+      setParticipantState(updateAutoChecked(newParticipantState));
       setAllChecked(true);
     }
   };
 
   const onAllowCustomChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (allowCustom) {
+      let newParticipantState = { ...participantState };
+      for (const name of Object.keys(participantState)) {
+        participantState[name].isCustom = false;
+      }
+      setParticipantState(updateAutoChecked(newParticipantState));
+    }
+
     setAllowCustom(!allowCustom);
   };
 
@@ -135,11 +143,11 @@ const SplitParticipants: React.FC<SplitParticipantsProps> = ({ participants, tot
     const participant = e.target.name.split('-')[0];
 
     newParticipantState[participant].isCustom = true;
-
     if (!newParticipantState[participant].selected) {
-      setCurrentChecked([...currentChecked, participant]);
       newParticipantState[participant].selected = true;
     }
+    newParticipantState[participant].share = Number(e.target.value);
+    setParticipantState(updateAutoChecked(newParticipantState));
   };
 
   return (
