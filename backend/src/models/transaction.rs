@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 pub struct DbTransaction {
     pub id: String,
     pub group: String,
+    pub base_amount: Decimal,
     pub amount: Decimal,
     pub currency: String,
     pub paid_by: String,
@@ -19,6 +20,7 @@ pub struct DbTransaction {
 pub struct DbTransactionWithSplits {
     pub id: String,
     pub group: String,
+    pub base_amount: Decimal,
     pub amount: Decimal,
     pub currency: String,
     pub paid_by: String,
@@ -27,6 +29,7 @@ pub struct DbTransactionWithSplits {
     pub updated_at: chrono::DateTime<chrono::Utc>,
     pub tx_id: String,
     pub user: String,
+    pub base_share: Decimal,
     pub share: Decimal,
     pub resolved: i8,
 }

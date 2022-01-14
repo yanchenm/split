@@ -65,8 +65,8 @@ pub async fn create_transaction<'r>(
     }
 
     // Check if the group exists
-    match groups::get_group_by_id(pool, new_transaction.group.as_str()).await {
-        Ok(Some(_)) => (),
+    let group = match groups::get_group_by_id(pool, new_transaction.group.as_str()).await {
+        Ok(Some(group)) => group,
         Ok(None) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
@@ -80,7 +80,7 @@ pub async fn create_transaction<'r>(
                 message: "error while checking if group exists".to_string(),
             };
         }
-    }
+    };
 
     // Check if person is in the group
     match memberships::get_membership_by_group_and_user(
@@ -130,6 +130,7 @@ pub async fn create_transaction<'r>(
     match transactions::batch_create_transaction_splits(
         pool,
         new_transaction,
+        &group,
         authed_user.address.as_str(),
     )
     .await
@@ -158,8 +159,8 @@ pub async fn update_transaction<'r>(
     authed_user: AuthedDBUser<'r>,
 ) -> StringResponseWithStatus {
     // Check if the group exists
-    match groups::get_group_by_id(pool, updated_transaction.group.as_str()).await {
-        Ok(Some(_)) => (),
+    let group = match groups::get_group_by_id(pool, updated_transaction.group.as_str()).await {
+        Ok(Some(group)) => group,
         Ok(None) => {
             return StringResponseWithStatus {
                 status: Status::BadRequest,
@@ -173,7 +174,7 @@ pub async fn update_transaction<'r>(
                 message: "error while checking if group exists".to_string(),
             };
         }
-    }
+    };
 
     // Check if person is in the group
     match memberships::get_membership_by_group_and_user(
@@ -223,7 +224,9 @@ pub async fn update_transaction<'r>(
     // TODO: Validate splits add up to 1
 
     // Create transaction and splits atomically
-    match transactions::batch_update_transaction_splits(pool, updated_transaction, tx_id).await {
+    match transactions::batch_update_transaction_splits(pool, updated_transaction, tx_id, &group)
+        .await
+    {
         Ok(()) => {
             return StringResponseWithStatus {
                 status: Status::Accepted,
@@ -344,16 +347,8 @@ pub async fn get_transactions_by_group_with_splits<'r>(
     )
     .await
     {
-        Ok(Some(membership)) => match membership {
-            MembershipStatus::OWNER | MembershipStatus::ACTIVE => (),
-            _ => {
-                return Err(StringResponseWithStatus {
-                    status: Status::BadRequest,
-                    message: "authed user is not a member of the group".to_string(),
-                });
-            }
-        },
-        Ok(None) => {
+        Ok(Some(MembershipStatus::OWNER | MembershipStatus::ACTIVE)) => (),
+        Ok(_) => {
             return Err(StringResponseWithStatus {
                 status: Status::BadRequest,
                 message: "authed user is not a member of the group".to_string(),
@@ -423,9 +418,9 @@ fn validate_total<'v>(total: &str, _splits: &Vec<Split>) -> Result<(), Error> {
 
         return sum;
     }
-    // if sum_split_shares(_splits) < string_to_decimal(total) {
-    //     Err(anyhow!("total is not equal to split share sum"))?
-    // }
+    if sum_split_shares(_splits) < string_to_decimal(total) {
+        Err(anyhow!("total is not equal to split share sum"))?
+    }
 
     Ok(())
 }

@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS Transaction (
     id CHAR(32) PRIMARY KEY,
     `group` CHAR(32) NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
+    base_amount DECIMAL(18, 2) NOT NULL,
+    amount DECIMAL(18,2) NOT NULL,
     currency CHAR(3) NOT NULL,
     paid_by VARCHAR(42) NOT NULL,
     name VARCHAR(64) NOT NULL,

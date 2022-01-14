@@ -337,6 +337,18 @@
             "char_set": 63,
             "max_size": 19
           }
+        },
+        {
+          "ordinal": 8,
+          "name": "base_amount",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
         }
       ],
       "parameters": {
@@ -350,18 +362,9 @@
         false,
         false,
         false,
+        false,
         false
       ]
-    }
-  },
-  "38d51af5f7033d39b0e16a4d83622e0d28e478cc5f2e27978a816d46a3317d7b": {
-    "query": "UPDATE Transaction SET amount = ?, currency = ?, name = ? WHERE id = ?;",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Right": 4
-      },
-      "nullable": []
     }
   },
   "3cdaa98175d5f1734b1c3b4bcde2026954446d0f0a3fa7f2133ffe0080dd8225": {
@@ -428,22 +431,12 @@
       ]
     }
   },
-  "4a15d7c2030e0e3e7b1a4a75638b0653935a731c8be65d9852016055bb33d9be": {
-    "query": "INSERT INTO Transaction (id, `group`, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?);",
+  "64b538c11a8eccbbab8c83a69718933a06c0770407239b18742269da8e58237f": {
+    "query": "UPDATE Transaction SET base_amount = ?, amount = ?, currency = ?, name = ? WHERE id = ?;",
     "describe": {
       "columns": [],
       "parameters": {
-        "Right": 7
-      },
-      "nullable": []
-    }
-  },
-  "674a4488a43fbe8375f6b48f1c361984a1891fbead06eb9ad2006bd2d6b0ec2d": {
-    "query": "INSERT INTO Split (tx_id, user, share) VALUES (?, ?, ?);",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Right": 3
+        "Right": 5
       },
       "nullable": []
     }
@@ -502,6 +495,18 @@
         },
         {
           "ordinal": 4,
+          "name": "base_share",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
+        },
+        {
+          "ordinal": 5,
           "name": "id",
           "type_info": {
             "type": "String",
@@ -513,7 +518,7 @@
           }
         },
         {
-          "ordinal": 5,
+          "ordinal": 6,
           "name": "group",
           "type_info": {
             "type": "String",
@@ -525,7 +530,7 @@
           }
         },
         {
-          "ordinal": 6,
+          "ordinal": 7,
           "name": "amount",
           "type_info": {
             "type": "NewDecimal",
@@ -537,7 +542,7 @@
           }
         },
         {
-          "ordinal": 7,
+          "ordinal": 8,
           "name": "currency",
           "type_info": {
             "type": "String",
@@ -549,7 +554,7 @@
           }
         },
         {
-          "ordinal": 8,
+          "ordinal": 9,
           "name": "paid_by",
           "type_info": {
             "type": "VarString",
@@ -561,7 +566,7 @@
           }
         },
         {
-          "ordinal": 9,
+          "ordinal": 10,
           "name": "name",
           "type_info": {
             "type": "VarString",
@@ -573,7 +578,7 @@
           }
         },
         {
-          "ordinal": 10,
+          "ordinal": 11,
           "name": "date",
           "type_info": {
             "type": "Date",
@@ -585,7 +590,7 @@
           }
         },
         {
-          "ordinal": 11,
+          "ordinal": 12,
           "name": "updated_at",
           "type_info": {
             "type": "Timestamp",
@@ -595,12 +600,26 @@
             "char_set": 63,
             "max_size": 19
           }
+        },
+        {
+          "ordinal": 13,
+          "name": "base_amount",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
         }
       ],
       "parameters": {
         "Right": 1
       },
       "nullable": [
+        false,
+        false,
         false,
         false,
         false,
@@ -715,6 +734,18 @@
             "char_set": 63,
             "max_size": 19
           }
+        },
+        {
+          "ordinal": 8,
+          "name": "base_amount",
+          "type_info": {
+            "type": "NewDecimal",
+            "flags": {
+              "bits": 36865
+            },
+            "char_set": 63,
+            "max_size": 20
+          }
         }
       ],
       "parameters": {
@@ -728,8 +759,19 @@
         false,
         false,
         false,
+        false,
         false
       ]
+    }
+  },
+  "89768960014da471f138326db290597bdb9a3c07b2c71c6d165481de2c0fc5f0": {
+    "query": "INSERT INTO Transaction (id, `group`, base_amount, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 8
+      },
+      "nullable": []
     }
   },
   "8a55e5f9f628933bdf849eff65e01ca900be54a608f6bbdd75577d79479de746": {
@@ -748,6 +790,16 @@
       "columns": [],
       "parameters": {
         "Right": 3
+      },
+      "nullable": []
+    }
+  },
+  "b9ec06679888a0719b5463407ad0bc77ef015ea483da6ebbe597a408766708e6": {
+    "query": "INSERT INTO Split (tx_id, user, base_share, share) VALUES (?, ?, ?, ?);",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 4
       },
       "nullable": []
     }

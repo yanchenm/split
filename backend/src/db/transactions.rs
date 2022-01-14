@@ -5,12 +5,15 @@ use anyhow::Result;
 use chrono::NaiveDate;
 use rocket::serde::json::Json;
 use rust_decimal::Decimal;
+use rust_decimal_macros::dec;
 use sqlx::MySqlPool;
 use uuid::Uuid;
 
 use crate::controllers::transactions::Transaction;
+use crate::models::group::Group;
 use crate::models::split::Split;
 use crate::models::transaction::{DbTransaction, DbTransactionWithSplits, TransactionWithSplits};
+use crate::utils::currency::get_currency_conversion_rate;
 use crate::utils::transaction_helpers::string_to_decimal;
 
 // Transaction queries
@@ -18,6 +21,7 @@ pub async fn create_new_transaction(
     pool: &MySqlPool,
     id: &str,
     group: &str,
+    base_amount: &Decimal,
     amount: &Decimal,
     currency: &str,
     paid_by: &str,
@@ -25,9 +29,10 @@ pub async fn create_new_transaction(
     date: &NaiveDate,
 ) -> Result<()> {
     sqlx::query!(
-        "INSERT INTO Transaction (id, `group`, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?);",
+        "INSERT INTO Transaction (id, `group`, base_amount, amount, currency, paid_by, name, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
         id,
         group,
+        base_amount,
         amount,
         currency.to_uppercase(),
         paid_by.to_lowercase(),
@@ -42,12 +47,14 @@ pub async fn create_new_transaction(
 pub async fn update_transaction(
     pool: &MySqlPool,
     id: &str,
+    base_amount: &Decimal,
     amount: &Decimal,
     currency: &str,
     name: &str,
 ) -> Result<()> {
     sqlx::query!(
-        "UPDATE Transaction SET amount = ?, currency = ?, name = ? WHERE id = ?;",
+        "UPDATE Transaction SET base_amount = ?, amount = ?, currency = ?, name = ? WHERE id = ?;",
+        base_amount,
         amount,
         currency.to_uppercase(),
         name,
@@ -63,12 +70,14 @@ pub async fn create_new_split(
     pool: &MySqlPool,
     tx_id: &str,
     user: &str,
+    base_share: &Decimal,
     share: &Decimal,
 ) -> Result<()> {
     sqlx::query!(
-        "INSERT INTO Split (tx_id, user, share) VALUES (?, ?, ?);",
+        "INSERT INTO Split (tx_id, user, base_share, share) VALUES (?, ?, ?, ?);",
         tx_id,
         user.to_lowercase(),
+        base_share,
         share,
     )
     .execute(pool)
@@ -101,14 +110,27 @@ pub async fn batch_update_transaction_splits(
     pool: &MySqlPool,
     updated_transaction: Json<Transaction>,
     tx_id: &str, // user_address: &str
+    group: &Group,
 ) -> Result<()> {
     // let current_date = Utc::now().date().naive_utc();
     let total_amount = string_to_decimal(updated_transaction.total.as_str());
+    let (conversion_rate, _) = if updated_transaction.currency != group.currency {
+        get_currency_conversion_rate(
+            pool,
+            updated_transaction.currency.clone(),
+            group.currency.clone(),
+        )
+        .await?
+    } else {
+        (dec!(1.0), "".to_string())
+    };
+    let base_amount = total_amount.clone() * conversion_rate;
     let tx = pool.begin().await?;
 
     update_transaction(
         pool,
         tx_id,
+        &base_amount,
         &total_amount,
         updated_transaction.currency.as_str(),
         updated_transaction.name.as_str(),
@@ -119,7 +141,8 @@ pub async fn batch_update_transaction_splits(
 
     for split in updated_transaction.splits.iter() {
         let share_str = string_to_decimal(split.share.as_str());
-        create_new_split(pool, tx_id, split.address.as_str(), &share_str).await?;
+        let base_share = share_str * conversion_rate;
+        create_new_split(pool, tx_id, split.address.as_str(), &base_share, &share_str).await?;
     }
 
     tx.commit().await?;
@@ -129,9 +152,21 @@ pub async fn batch_update_transaction_splits(
 pub async fn batch_create_transaction_splits(
     pool: &MySqlPool,
     new_transaction: Json<Transaction>,
+    group: &Group,
     user_address: &str,
 ) -> Result<()> {
     let total_amount = string_to_decimal(new_transaction.total.as_str());
+    let (conversion_rate, _) = if new_transaction.currency != group.currency {
+        get_currency_conversion_rate(
+            pool,
+            new_transaction.currency.clone(),
+            group.currency.clone(),
+        )
+        .await?
+    } else {
+        (dec!(1.0), "".to_string())
+    };
+    let base_amount = total_amount.clone() * conversion_rate;
 
     let id = Uuid::new_v4();
     let tx_id_str = id
@@ -144,6 +179,7 @@ pub async fn batch_create_transaction_splits(
         pool,
         tx_id_str.as_str(),
         new_transaction.group.as_str(),
+        &base_amount,
         &total_amount,
         new_transaction.currency.as_str(),
         user_address,
@@ -154,7 +190,15 @@ pub async fn batch_create_transaction_splits(
 
     for split in new_transaction.splits.iter() {
         let share_str = string_to_decimal(split.share.as_str());
-        create_new_split(pool, tx_id_str.as_str(), split.address.as_str(), &share_str).await?;
+        let base_share = share_str * conversion_rate;
+        create_new_split(
+            pool,
+            tx_id_str.as_str(),
+            split.address.as_str(),
+            &base_share,
+            &share_str,
+        )
+        .await?;
     }
 
     tx.commit().await?;
@@ -216,6 +260,7 @@ pub async fn get_transactions_by_group_with_splits(
             DbTransaction {
                 id: txn.id.clone(),
                 group: txn.group.clone(),
+                base_amount: txn.base_amount.clone(),
                 amount: txn.amount.clone(),
                 currency: txn.currency.clone(),
                 paid_by: txn.paid_by.clone(),
@@ -231,6 +276,7 @@ pub async fn get_transactions_by_group_with_splits(
             .push(Split {
                 tx_id: txn.id.clone(),
                 user: txn.user.clone(),
+                base_share: txn.base_share.clone(),
                 share: txn.share.clone(),
                 resolved: txn.resolved.clone() == 1,
             });
