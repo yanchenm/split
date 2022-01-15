@@ -6,7 +6,6 @@ import NewGroupModal from './NewGroupModal';
 import ToggleButton from '../ui/ToggleButton';
 import { useRouter } from 'next/router';
 
-
 const Sidebar: React.FC = () => {
   const router = useRouter();
 
