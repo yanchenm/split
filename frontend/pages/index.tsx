@@ -101,7 +101,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
               } else if (consumerProps && consumerProps.account && consumerProps.isConnected) {
                 buttonArea = (
                   <p className="text-neutral-800 dark:text-slate-300 text-xl font-semibold">
-                    Please connect to Harmony Network
+                    Please connect to Harmony Test Net
                   </p>
                 );
               } else if (consumerProps && consumerProps.account) {
