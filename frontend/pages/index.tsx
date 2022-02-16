@@ -187,7 +187,7 @@ const Home: NextPage<PageProps> = ({ ...props }) => {
                     </div>
                     <div className="flex flex-col justify-between items-center">
                       <h1 className="font-bold text-7xl text-transparent text-center bg-clip-text bg-gradient-to-r from-purple-500 to-violet-600 py-3">
-                        Record. Settle. Recieve. <br /> <span className="mt-1 text-5xl">on Harmony One.</span>
+                        Record. Settle. Receive. <br /> <span className="mt-1 text-5xl">on Harmony One.</span>
                       </h1>
                       {startButtonArea}
                     </div>
